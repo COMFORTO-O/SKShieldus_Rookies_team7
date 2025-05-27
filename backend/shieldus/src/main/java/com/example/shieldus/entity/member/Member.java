@@ -1,6 +1,6 @@
 package com.example.shieldus.entity.member;
 
-import com.example.shieldus.entity.enumration.MemberRoleEnum;
+import com.example.shieldus.entity.member.enumration.MemberRoleEnum;
 import jakarta.persistence.*;
         import lombok.*;
 

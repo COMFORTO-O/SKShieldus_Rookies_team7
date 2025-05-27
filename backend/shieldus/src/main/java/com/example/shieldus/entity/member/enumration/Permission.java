@@ -1,4 +1,4 @@
-package com.example.shieldus.entity.enumration;
+package com.example.shieldus.entity.member.enumration;
 
 public enum Permission {
     // 문제

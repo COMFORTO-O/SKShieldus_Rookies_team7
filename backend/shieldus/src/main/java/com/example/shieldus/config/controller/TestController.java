@@ -1,7 +1,7 @@
 package com.example.shieldus.config.controller;
 
 
-import com.example.shieldus.entity.enumration.MemberRoleEnum;
+import com.example.shieldus.entity.member.enumration.MemberRoleEnum;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;

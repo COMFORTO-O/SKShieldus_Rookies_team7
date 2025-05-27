@@ -1,7 +1,7 @@
 package com.example.shieldus.entity.member;
 
 
-import com.example.shieldus.entity.enumration.MemberTempCodeStatusEnum;
+import com.example.shieldus.entity.member.enumration.MemberTempCodeStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

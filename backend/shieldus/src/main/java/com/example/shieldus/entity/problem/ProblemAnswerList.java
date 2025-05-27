@@ -1,13 +1,19 @@
 package com.example.shieldus.entity.problem;
 
+import com.example.shieldus.entity.member.Member;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity
+
 @Data
-public class ProblemAnswerList {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@Entity(name = "problem_answer_list")
+public class ProblemAnswerList extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +30,5 @@ public class ProblemAnswerList {
     @Lob
     private String code;
 
-    private LocalDateTime createdAt;
 
-    private LocalDateTime updatedAt;
 }

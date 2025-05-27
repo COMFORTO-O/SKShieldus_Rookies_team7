@@ -2,15 +2,17 @@ package com.example.shieldus.entity.problem;
 
 
 import com.example.shieldus.entity.member.Member;
+import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
 
-@Getter
-@Setter
+
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@EqualsAndHashCode(callSuper = true)
 @Entity(name = "problem")
 public class Problem extends BaseEntity {
 
@@ -27,16 +29,9 @@ public class Problem extends BaseEntity {
 
     private String detail;
 
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private ProblemCategoryEnum category;
 
     private Integer level;
-
-
-
-
-
-
-
-
 
 }

@@ -1,4 +1,4 @@
-package com.example.shieldus.entity;
+package com.example.shieldus.entity.member;
 
 import jakarta.persistence.*;
 import lombok.Data;

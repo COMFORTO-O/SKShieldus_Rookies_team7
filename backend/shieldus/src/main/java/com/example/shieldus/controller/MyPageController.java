@@ -1,6 +1,6 @@
 package com.example.shieldus.controller;
 
-import com.example.shieldus.dto.MyPageResponse;
+import com.example.shieldus.controller.dto.MyPageResponse;
 import com.example.shieldus.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

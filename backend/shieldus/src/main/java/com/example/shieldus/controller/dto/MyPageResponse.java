@@ -1,4 +1,4 @@
-package com.example.shieldus.dto;
+package com.example.shieldus.controller.dto;
 
 import lombok.Builder;
 import lombok.Getter;

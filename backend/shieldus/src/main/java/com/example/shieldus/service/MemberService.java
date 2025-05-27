@@ -1,6 +1,6 @@
 package com.example.shieldus.service;
 
-import com.example.shieldus.dto.MyPageResponse;
+import com.example.shieldus.controller.dto.MyPageResponse;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
 import com.example.shieldus.repository.MemberRepository;

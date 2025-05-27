@@ -35,6 +35,11 @@ export default {
                     950: "#200e67",
                 },
                 vanila: "#FFF4E3",
+                levelColor: {
+                    hard: "#ff7919",
+                    medium: "#ffdd30",
+                    easy: "#49fc4c",
+                },
             },
             fontFamily: {
                 sans: ["Inter", "system-ui", "sans-serif"],

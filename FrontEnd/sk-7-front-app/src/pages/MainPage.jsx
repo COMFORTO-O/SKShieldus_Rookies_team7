@@ -1,17 +1,22 @@
-import React from "react";
-import { Link } from "react-router-dom"; // 페이지 이동을 위한 Link 컴포넌트
-import Input from "../components/atoms/Input";
+import MainContents from "../components/molecules/MainContents";
+
+// 컨테이너 스타일
+const containerClass = "bg-base-100 h-full flex flex-col md:flex-row min-h-0";
+// 컨텐츠 섹션 스타일
+const mainContentClass = "flex-1 order-2 md:order-1 px-6 py-4";
+// 유저 정보 섹션 스타일
+const rightSideContentClass =
+    "w-full md:w-72 border-t md:border-t-0 md:border-l bg-base-100 px-6 py-4 \
+ flex-shrink-0 order-1 md:order-2";
 
 function MainPage() {
     return (
-        <div>
-            <h1>메인 페이지</h1>
-            <p>메인 페이지에 오신 것을 환영합니다!</p>
-            <nav>
-                <Link to="/login">로그인 페이지로 이동</Link>
-            </nav>
-
-            <Input />
+        // 메인 페이지 컨테이너
+        <div className={containerClass}>
+            <div className={mainContentClass}>
+                <MainContents />
+            </div>
+            <div className={rightSideContentClass}>오른쪽 유저 정보 섹션</div>
         </div>
     );
 }

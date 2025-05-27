@@ -1,8 +1,6 @@
 import AuthLayout from "../components/auth/AuthLayout";
 import AuthInput from "../components/atoms/AuthInput";
 import Button from "../components/atoms/Button";
-import Label from "../components/atoms/Label";
-import Input from "../components/atoms/Input";
 
 function LoginPage() {
     return (
@@ -30,12 +28,12 @@ function LoginPage() {
                                 <AuthInput
                                     label="아이디"
                                     placeholder="ID"
-                                    bottomText="아이디를 입력허세요."
+                                    bottomText="아이디를 입력하세요."
                                 />
                                 <AuthInput
                                     label="비밀번호"
                                     placeholder="PW"
-                                    bottomText="비밀번호를 입력허세요."
+                                    bottomText="비밀번호를 입력하세요."
                                 />
 
                                 {/* 로그인 버튼 */}

@@ -18,7 +18,7 @@ function SignupPage() {
                                 <AuthInput
                                     label="아이디"
                                     placeholder="ID"
-                                    bottomText="아이디를 입력허세요."
+                                    bottomText="아이디를 입력하세요."
                                     type="text"
                                 />
                                 <AuthInput

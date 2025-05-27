@@ -1,5 +1,6 @@
 package com.example.shieldus.entity.member;
 
+import com.example.shieldus.entity.enumration.MemberRoleEnum;
 import jakarta.persistence.*;
         import lombok.*;
 
@@ -14,6 +15,10 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // auto increment, unique, primary key
+
+
+    @Enumerated(EnumType.STRING)
+    private MemberRoleEnum role;
 
     private String email;
     private String password;

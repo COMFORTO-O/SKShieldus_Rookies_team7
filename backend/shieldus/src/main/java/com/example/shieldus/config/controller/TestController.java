@@ -1,6 +1,7 @@
 package com.example.shieldus.config.controller;
 
 
+import com.example.shieldus.entity.enumration.MemberRoleEnum;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class TestController {
                 .email("test@test.com")
                 .phone("1231231231")
                 .name("test")
+                .role(MemberRoleEnum.ADMIN)
                 .password(passwordEncoder.encode("test1234"))
                 .memberRank(10).build();
         memberRepository.save(member);

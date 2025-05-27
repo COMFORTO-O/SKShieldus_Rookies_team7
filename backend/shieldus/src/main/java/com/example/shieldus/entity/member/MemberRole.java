@@ -1,10 +1,13 @@
 package com.example.shieldus.entity.member;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
-@Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity(name = "member_role")
 public class MemberRole {
 
     @Id

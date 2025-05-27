@@ -2,12 +2,15 @@ package com.example.shieldus.entity.member;
 
 import com.example.shieldus.entity.problem.Problem;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity(name = "member_submit_problem")
 public class MemberSubmitProblem {
 
     @Id

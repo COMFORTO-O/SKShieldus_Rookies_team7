@@ -1,5 +1,6 @@
 package com.example.shieldus.entity.member;
 
+import com.example.shieldus.entity.problem.Problem;
 import jakarta.persistence.*;
 import lombok.Data;
 

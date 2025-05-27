@@ -19,9 +19,9 @@ public class ProblemTestCase extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id", nullable = false)
-
     private Problem problem;
 
+    private Boolean isTestCase;
     @Lob
     @Column(nullable = false)
     private String input;

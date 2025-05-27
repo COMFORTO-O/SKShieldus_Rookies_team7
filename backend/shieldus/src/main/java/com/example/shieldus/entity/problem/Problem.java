@@ -24,7 +24,7 @@ public class Problem extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member memberId;
+    private Member member;
 
     private String title;
 

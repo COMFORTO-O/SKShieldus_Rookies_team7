@@ -25,7 +25,7 @@ public class ProblemComments extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
-    private Member memberId;
+    private Member member;
 
     private String comment;
 }

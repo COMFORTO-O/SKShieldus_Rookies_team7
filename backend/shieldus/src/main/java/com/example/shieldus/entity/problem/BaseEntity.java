@@ -1,4 +1,4 @@
-package com.example.shieldus.entity.propblem;
+package com.example.shieldus.entity.problem;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

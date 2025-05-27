@@ -1,10 +1,9 @@
-package com.example.shieldus.entity.propblem;
+package com.example.shieldus.entity.problem;
 
 
+import com.example.shieldus.entity.member.Member;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 
 @Getter
@@ -17,14 +16,15 @@ public class ProblemComments extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id")
     private Problem problem;
 
-    // TODO : 추후 UserEntity 변경
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member memberId;
 
     private String comment;
 }

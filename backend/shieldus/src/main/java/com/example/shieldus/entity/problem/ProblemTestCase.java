@@ -1,4 +1,4 @@
-package com.example.shieldus.entity.propblem;
+package com.example.shieldus.entity.problem;
 
 
 import jakarta.persistence.*;
@@ -15,11 +15,13 @@ public class ProblemTestCase extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long testCaseId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id")
     private Problem problem;
+
     private String input;
+
     private String output;
 }

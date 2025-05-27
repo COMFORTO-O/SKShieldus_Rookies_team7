@@ -1,4 +1,4 @@
-package com.example.shieldus.repository;
+package com.example.shieldus.repository.member;
 
 import com.example.shieldus.entity.member.MemberSubmitProblem;
 import org.springframework.data.jpa.repository.JpaRepository;

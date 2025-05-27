@@ -1,10 +1,10 @@
-package com.example.shieldus.service;
+package com.example.shieldus.service.member;
 
 import com.example.shieldus.controller.dto.MyPageResponse;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
-import com.example.shieldus.repository.MemberRepository;
-import com.example.shieldus.repository.MemberSubmitProblemRepository;
+import com.example.shieldus.repository.member.MemberRepository;
+import com.example.shieldus.repository.member.MemberSubmitProblemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;

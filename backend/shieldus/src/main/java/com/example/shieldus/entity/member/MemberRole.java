@@ -1,4 +1,3 @@
-// UserRole.java
 package com.example.shieldus.entity;
 
 import jakarta.persistence.*;
@@ -6,11 +5,11 @@ import lombok.Data;
 
 @Entity
 @Data
-public class UserRole {
+public class MemberRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long adminRole;
 
-    private String roleName;
+    private String memberRole;
 }

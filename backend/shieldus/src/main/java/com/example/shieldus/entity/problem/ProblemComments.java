@@ -11,7 +11,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Entity(name = "problem_comments")
+@Entity
+@Table(name = "problem_comments")
 public class ProblemComments extends BaseEntity {
 
     @Id

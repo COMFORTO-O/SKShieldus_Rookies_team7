@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "member_temp_code")
+@Entity
+@Table(name = "member_temp_code")
 public class MemberTempCode {
 
 

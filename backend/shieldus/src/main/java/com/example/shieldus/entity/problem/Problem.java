@@ -13,7 +13,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Entity(name = "problem")
+@Entity
+@Table(name = "problem")
 public class Problem extends BaseEntity {
 
 

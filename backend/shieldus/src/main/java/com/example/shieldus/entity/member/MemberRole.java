@@ -7,12 +7,15 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "member_role")
+@Entity
+@Table(name = "member_role")
 public class MemberRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long adminRole;
+    private Long id;
 
+
+    private Long adminRole;
     private String memberRole;
 }

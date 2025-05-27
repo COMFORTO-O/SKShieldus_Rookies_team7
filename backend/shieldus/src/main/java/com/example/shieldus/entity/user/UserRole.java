@@ -1,5 +1,5 @@
 // UserRole.java
-package com.example.shieldus.entity;
+package com.example.shieldus.entity.user;
 
 import jakarta.persistence.*;
 import lombok.Data;

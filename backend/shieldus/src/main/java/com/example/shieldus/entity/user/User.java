@@ -1,17 +1,16 @@
+// User.java
 package com.example.shieldus.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 
 @Entity
-@Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -23,6 +22,6 @@ public class User {
     private String rank;
 
     @ManyToOne
-    @JoinColumn(name = "user_role_fk")
-    private UserRole userRole;
+    @JoinColumn(name = "role_id")
+    private UserRole role;
 }

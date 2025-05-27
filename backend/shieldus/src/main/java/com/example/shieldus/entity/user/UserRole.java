@@ -1,17 +1,16 @@
+// UserRole.java
 package com.example.shieldus.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 
 @Entity
-@Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class UserRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long adminRole;
+    private Long id;
 
-    private String userRole;
+    private String roleName;
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom"; // 페이지 이동을 위한 Link 컴포넌트
+import Input from "../components/atoms/Input";
 
 function MainPage() {
     return (
@@ -9,6 +10,8 @@ function MainPage() {
             <nav>
                 <Link to="/login">로그인 페이지로 이동</Link>
             </nav>
+
+            <Input />
         </div>
     );
 }

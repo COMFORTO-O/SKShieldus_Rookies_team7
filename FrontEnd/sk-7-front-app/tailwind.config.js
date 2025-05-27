@@ -17,6 +17,10 @@ export default {
                 success: "#36d399",
                 fail: "#fbbd23",
                 error: "#f87272",
+                hoverButton: {
+                    400: "#94a3b8",
+                    900: "#0f172a",
+                },
                 melrose: {
                     50: "#f3f3ff",
                     100: "#eae8ff",

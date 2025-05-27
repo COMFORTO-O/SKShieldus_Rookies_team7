@@ -1,7 +1,7 @@
 package com.example.shieldus.entity.member;
 
 import jakarta.persistence.*;
-import lombok.*;
+        import lombok.*;
 
 @Data
 @Builder
@@ -19,6 +19,6 @@ public class Member {
     private String password;
     private String name;
     private String phone;
-    private String rank;
+    private Integer memberRank;
 
 }

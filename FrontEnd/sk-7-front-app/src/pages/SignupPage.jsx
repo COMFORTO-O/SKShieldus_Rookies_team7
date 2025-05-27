@@ -8,11 +8,11 @@ function SignupPage() {
     return (
         <>
             {/* 전체 레이아웃 */}
-            <div className="grid grid-cols-[1fr_40%] h-screen">
+            <div className="grid grid-cols-1 2xl:grid-cols-[1fr_40%] h-screen overflow-y-auto">
                 {/* 왼쪽 컨테이너 */}
                 <div className="w-full bg-white flex items-center justify-center">
                     {/* 섹션 */}
-                    <div className="w-full">
+                    <div className="w-full max-w-2xl">
                         <AuthLayout title="User Register">
                             <form className="w-full space-y-4">
                                 <AuthInput
@@ -84,7 +84,7 @@ function SignupPage() {
                 </div>
 
                 {/* 오른쪽 컨테이너 */}
-                <div className="flex flex-col h-screen">
+                <div className="hidden 2xl:flex flex-col h-screen">
                     {/* 섹션 */}
                     <div className="h-full bg-primary text-white font-bold text-6xl">
                         {/* 텍스트 배치 */}

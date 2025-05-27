@@ -6,9 +6,9 @@ function LoginPage() {
     return (
         <>
             {/* 전체 레이아웃 */}
-            <div className="grid grid-cols-[40%_1fr] h-screen">
+            <div className="grid grid-cols-1 xl:grid-cols-[40%_1fr] h-screen overflow-y-auto">
                 {/* 왼쪽 컨테이너 */}
-                <div className="flex flex-col h-screen">
+                <div className="hidden xl:flex flex-col h-screen">
                     {/* 섹션 */}
                     <div className="h-full bg-primary text-white font-bold text-6xl">
                         {/* 텍스트 배치 */}
@@ -22,7 +22,7 @@ function LoginPage() {
                 {/* 오른쪽 컨테이너 */}
                 <div className="w-full bg-white flex items-center justify-center">
                     {/* 섹션 */}
-                    <div className="w-full">
+                    <div className="w-full max-w-xl">
                         <AuthLayout title="Login">
                             <form className="w-full space-y-8">
                                 <AuthInput

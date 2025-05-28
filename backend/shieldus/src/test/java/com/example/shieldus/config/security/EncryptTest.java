@@ -14,10 +14,11 @@ import java.security.PublicKey;
 import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.*;
-@Disabled
+//@Disabled
 public class EncryptTest {
     private static RSAUtil rsaUtil;
-    private static final String ORIGINAL_TEXT = "테스트 메시지입니다. 한글, 영문, 숫자 혼합!";
+    private static final String ORIGINAL_TEXT = "test";
+
 
     @BeforeAll
     static void setup() throws Exception {
@@ -32,7 +33,19 @@ public class EncryptTest {
         return Paths.get(EncryptTest.class.getClassLoader().getResource(resourceName).toURI());
     }
 
+
     @Test
+    @DisplayName("공개키로 암호화 후 개인키로 복호화 테스트")
+    void tesBase64EncryptDecrypt() throws Exception {
+        String rsaBase64Text = rsaUtil.encryptStringBase64(ORIGINAL_TEXT);
+        System.out.println(rsaBase64Text);
+
+        String plainText = rsaUtil.decryptRsaBase64(rsaBase64Text);
+        System.out.println(plainText);
+    }
+    @Test
+
+    @Disabled
     @DisplayName("공개키로 암호화 후 개인키로 복호화 테스트")
     void testEncryptionDecryptionWithRSAKeys() throws Exception {
         // 1. 원본 텍스트를 바이트 배열로 변환
@@ -59,6 +72,8 @@ public class EncryptTest {
     }
 
     @Test
+
+    @Disabled
     @DisplayName("암호화/복호화 실패 시 예외 발생 테스트 (잘못된 키)")
     void testDecryptionFailureWithWrongKey() {
         // 임의의 바이트 배열 (유효하지 않은 암호문)

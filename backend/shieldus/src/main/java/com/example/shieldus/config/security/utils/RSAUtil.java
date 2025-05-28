@@ -83,6 +83,13 @@ public class RSAUtil {
         cipher.init(Cipher.ENCRYPT_MODE, this.publicKey);
         return cipher.doFinal(data);
     }
+    public byte[] encryptString(String plainText) throws Exception {
+        return encrypt(plainText.getBytes(StandardCharsets.UTF_8));
+    }
+    public String encryptStringBase64(String plainText) throws Exception {
+        byte[] encryptedBytes = encrypt(plainText.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(encryptedBytes);
+    }
 
     /**
      * 데이터를 개인키로 복호화합니다.
@@ -99,10 +106,8 @@ public class RSAUtil {
     }
     public String decryptRsaBase64(String encrypted) {
         try {
-            Cipher cipher = Cipher.getInstance("RSA");
-            cipher.init(Cipher.DECRYPT_MODE, privateKey);
             byte[] decodedBytes = Base64.getDecoder().decode(encrypted);
-            byte[] decrypted = cipher.doFinal(decodedBytes);
+            byte[] decrypted = decrypt(decodedBytes);
             return new String(decrypted, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException("RSA 복호화 실패", e);

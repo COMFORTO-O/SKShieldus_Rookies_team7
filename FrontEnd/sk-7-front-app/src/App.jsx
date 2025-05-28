@@ -1,28 +1,28 @@
-import "./App.css";
-import React from "react";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom"; // RouterLink로 별칭 사용 가능
+import { Routes, Route, Link } from "react-router-dom"; // RouterLink로 별칭 사용 가능
 import MainPage from "./pages/MainPage";
 import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import Navbar from "./components/molecules/Navbar";
+
+/* 
+    앱 컨테이너
+    
+*/
 
 function App() {
     return (
-        <BrowserRouter>
-            <header>
-                <nav className="">
-                    <Link to="/">메인</Link>
-                    <Link to="/login">로그인</Link>
-                </nav>
+        <div className="h-screen flex flex-col">
+            <header className="flex-none sticky top-0 z-50">
+                <Navbar />
             </header>
-            <main>
+            <main className="flex-auto min-h-0 overflow-auto">
                 <Routes>
-                    {/* 루트 경로 ("/")에 MainPage 컴포넌트를 연결합니다. */}
                     <Route path="/" element={<MainPage />} />
-
-                    {/* "/login" 경로에 LoginPage 컴포넌트를 연결합니다. */}
                     <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<SignupPage />} />
                 </Routes>
             </main>
-        </BrowserRouter>
+        </div>
     );
 }
 

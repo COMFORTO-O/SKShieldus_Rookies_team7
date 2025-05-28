@@ -1,34 +1,27 @@
 import AuthLayout from "../components/auth/AuthLayout";
 import AuthInput from "../components/atoms/AuthInput";
 import Button from "../components/atoms/Button";
-import { useCallback, useState } from "react";
+import useAuthForm from "../hooks/useAuthForm";
+
+import { Link } from "react-router-dom";
+import { useCallback } from "react";
 
 function LoginPage() {
-    // 아이디, 비밀번호 상태 저장
-    const [id, setId] = useState("");
-    const [password, setPassword] = useState("");
-
-    // 아이디 onChange
-    const handleIdChange = useCallback((e) => {
-        setId(e.target.value);
-    }, []);
-
-    // 비밀번호 onChange
-    const handlePasswordChange = useCallback((e) => {
-        setPassword(e.target.value);
-    }, []);
+    // 아이디, 비밀번호 상태 관리
+    const { inputs, errors, handleChange } = useAuthForm({
+        id: "",
+        password: "",
+    });
 
     // 로그인 폼 클릭 핸들러
     const handleLogin = useCallback(() => {
         // 비밀번호 암호화 ( RSA 공개키 암호화 )
     }, []);
 
-    console.log(id, password);
-
     return (
         <>
             {/* 전체 레이아웃 */}
-            <div className="grid grid-cols-1 xl:grid-cols-[40%_1fr] overflow-y-auto">
+            <div className="grid grid-cols-1 xl:grid-cols-[40%_1fr] min-h-screen">
                 {/* 왼쪽 컨테이너 */}
                 <div className="hidden xl:flex flex-col">
                     {/* 섹션 */}
@@ -42,7 +35,7 @@ function LoginPage() {
                 </div>
 
                 {/* 오른쪽 컨테이너 */}
-                <div className="w-full bg-white flex items-center justify-center">
+                <div className="w-full bg-white flex items-center justify-center min-h-screen">
                     {/* 섹션 */}
                     <div className="w-full max-w-xl">
                         <AuthLayout title="Login">
@@ -50,14 +43,33 @@ function LoginPage() {
                                 <AuthInput
                                     label="아이디"
                                     placeholder="ID"
-                                    bottomText="아이디를 입력하세요."
-                                    onChange={handleIdChange}
+                                    bottomMessage={
+                                        errors.id
+                                            ? errors.id
+                                            : inputs.id == ""
+                                            ? "비밀번호를 입력하세요."
+                                            : ""
+                                    }
+                                    required={false}
+                                    value={inputs.id}
+                                    error={errors.id}
+                                    onChange={handleChange("id")}
                                 />
                                 <AuthInput
                                     label="비밀번호"
                                     placeholder="PW"
-                                    bottomText="비밀번호를 입력하세요."
-                                    onChange={handlePasswordChange}
+                                    bottomMessage={
+                                        errors.password
+                                            ? errors.password
+                                            : inputs.password == ""
+                                            ? "비밀번호를 입력하세요."
+                                            : ""
+                                    }
+                                    type="password"
+                                    required={false}
+                                    value={inputs.password}
+                                    error={errors.password}
+                                    onChange={handleChange("password")}
                                 />
 
                                 {/* 로그인 버튼 */}
@@ -70,9 +82,11 @@ function LoginPage() {
                                 </Button>
 
                                 {/* 회원가입 버튼 */}
-                                <Button className="w-full bg-gray-300 text-black font-bold py-2 rounded hover:bg-gray-400">
-                                    회원가입
-                                </Button>
+                                <Link to="/register" className="block">
+                                    <Button className="w-full bg-gray-300 text-black font-bold py-2 rounded hover:bg-gray-400">
+                                        회원가입
+                                    </Button>
+                                </Link>
                             </form>
                         </AuthLayout>
                     </div>

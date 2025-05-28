@@ -27,18 +27,18 @@ const useAuthForm = (initialFields) => {
                 "이름은 한글 또는 영문으로 2자 이상 입력해 주세요.";
         }
 
-        if (
-            (inputs.emailId || inputs.emailDomain) &&
+        if (!inputs.emailId || !inputs.emailDomain) {
+            newErrors.emailId = "이메일을 입력해 주세요.";
+        } else if (
             !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
                 `${inputs.emailId}@${inputs.emailDomain}`
             )
         ) {
             newErrors.emailId = "이메일 형식이 올바르지 않습니다.";
-            newErrors.emailDomain = "이메일 형식이 올바르지 않습니다.";
         }
 
-        if (!inputs.tel || !/^010\d{7}$/.test(inputs.tel)) {
-            newErrors.tel = "010으로 시작하는 11자리 숫자만 입력하세요.";
+        if (!inputs.phone || !/^010\d{7}$/.test(inputs.phone)) {
+            newErrors.phone = "010으로 시작하는 11자리 숫자만 입력하세요.";
         }
 
         setErrors(newErrors);

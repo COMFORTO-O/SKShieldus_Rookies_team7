@@ -40,7 +40,7 @@ function LoginPage() {
             // 로그인 시도
             try {
                 const result = await loginTask({
-                    id,
+                    email: id,
                     encryptedPassword: e_pwd,
                 });
                 // 예시: result.token, result.user 등

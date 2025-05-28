@@ -7,8 +7,13 @@ export async function loginTask({ email, encryptedPassword }) {
         const response = await axios.post(
             `${import.meta.env.VITE_API_URL}/api/account/login`,
             {
-                email,
+                email: email,
                 password: encryptedPassword,
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
             }
         );
         return response.data;

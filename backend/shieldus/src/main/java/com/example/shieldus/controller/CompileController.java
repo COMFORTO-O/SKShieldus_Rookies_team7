@@ -2,6 +2,7 @@ package com.example.shieldus.controller;
 
 import com.example.shieldus.controller.dto.CompileRequestDto;
 import com.example.shieldus.controller.dto.CompileResponseDto;
+import com.example.shieldus.controller.dto.ResponseDto;
 import com.example.shieldus.service.CompileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +16,14 @@ public class CompileController {
     private final CompileService compileService;
 
     @PostMapping("/test")
-    public ResponseEntity<CompileResponseDto> test(@RequestBody CompileRequestDto requestDto) {
-        return ResponseEntity.ok(compileService.runTest(requestDto));
+    public ResponseEntity<ResponseDto<CompileResponseDto>> test(@RequestBody CompileRequestDto requestDto) {
+        CompileResponseDto result = compileService.runTest(requestDto);
+        return ResponseEntity.ok(ResponseDto.success(result));
     }
 
     @PostMapping("/score")
-    public ResponseEntity<CompileResponseDto> score(@RequestBody CompileRequestDto requestDto) {
-        return ResponseEntity.ok(compileService.runScore(requestDto));
+    public ResponseEntity<ResponseDto<CompileResponseDto>> score(@RequestBody CompileRequestDto requestDto) {
+        CompileResponseDto result = compileService.runScore(requestDto);
+        return ResponseEntity.ok(ResponseDto.success(result));
     }
 }

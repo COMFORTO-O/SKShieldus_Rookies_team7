@@ -3,12 +3,14 @@ package com.example.shieldus.config.security.filter;
 
 import com.example.shieldus.config.jwt.JwtTokenProvider;
 import com.example.shieldus.config.security.dto.LoginRequestDto;
+import com.example.shieldus.config.security.utils.RSAUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,15 +21,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RSAUtil rsaUtil;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, RSAUtil rsaUtil) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.rsaUtil = rsaUtil;
         // 로그인 URL 설정
         setFilterProcessesUrl("/api/account/login");
     }
@@ -37,11 +40,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
         try {
-
+            // 로그인 object 추출
             LoginRequestDto loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
-
+            // password 디코딩
+            String password = rsaUtil.decryptRsaBase64(loginRequest.getPassword());
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), password);
 
             return authenticationManager.authenticate(authenticationToken);
         } catch (IOException e) {

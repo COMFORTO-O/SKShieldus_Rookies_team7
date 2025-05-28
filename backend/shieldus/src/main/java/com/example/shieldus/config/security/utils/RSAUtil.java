@@ -1,6 +1,11 @@
 package com.example.shieldus.config.security.utils;
 
+import org.springframework.stereotype.Component;
+
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -10,12 +15,29 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import javax.crypto.Cipher;
 
-
+@Component
 public class RSAUtil {
 
     private static final String ALGORITHM = "RSA";
     private static final String CIPHER_TRANSFORMATION = "RSA/ECB/PKCS1Padding";
+    private final PrivateKey privateKey;
+    private final PublicKey publicKey;
 
+    public RSAUtil(String privateKeyPath, String publicKeyPath) throws Exception {
+        this.privateKey = loadPrivateKey(privateKeyPath);
+        this.publicKey = loadPublicKey(publicKeyPath);
+    }
+    public RSAUtil() throws Exception {
+
+        Path privateKeyPath = getResourcePath("private_key.pem");
+        Path publicKeyPath = getResourcePath("public_key.pem");
+        this.privateKey = loadPrivateKey(privateKeyPath.toString());
+        this.publicKey = loadPublicKey(publicKeyPath.toString());
+    }
+
+    private Path getResourcePath(String resourceName) throws URISyntaxException {
+        return Paths.get(RSAUtil.class.getClassLoader().getResource(resourceName).toURI());
+    }
     /**
      * 개인키 파일에서 PrivateKey 객체를 로드합니다.
      */
@@ -51,18 +73,39 @@ public class RSAUtil {
     /**
      * 데이터를 공개키로 암호화합니다.
      */
-    public static byte[] encrypt(byte[] data, PublicKey publicKey) throws Exception {
+    public byte[] encrypt(byte[] data, PublicKey customPublicKey) throws Exception {
         Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        cipher.init(Cipher.ENCRYPT_MODE, customPublicKey);
+        return cipher.doFinal(data);
+    }
+    public byte[] encrypt(byte[] data) throws Exception {
+        Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
+        cipher.init(Cipher.ENCRYPT_MODE, this.publicKey);
         return cipher.doFinal(data);
     }
 
     /**
      * 데이터를 개인키로 복호화합니다.
      */
-    public static byte[] decrypt(byte[] data, PrivateKey privateKey) throws Exception {
+    public byte[] decrypt(byte[] data, PrivateKey customPrivateKey) throws Exception {
+        Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
+        cipher.init(Cipher.DECRYPT_MODE, customPrivateKey);
+        return cipher.doFinal(data);
+    }
+    public byte[] decrypt(byte[] data) throws Exception {
         Cipher cipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
         return cipher.doFinal(data);
+    }
+    public String decryptRsaBase64(String encrypted) {
+        try {
+            Cipher cipher = Cipher.getInstance("RSA");
+            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            byte[] decodedBytes = Base64.getDecoder().decode(encrypted);
+            byte[] decrypted = cipher.doFinal(decodedBytes);
+            return new String(decrypted, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw new RuntimeException("RSA 복호화 실패", e);
+        }
     }
 }

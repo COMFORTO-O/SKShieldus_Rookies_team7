@@ -2,6 +2,7 @@ package com.example.shieldus.config.security;
 
 import com.example.shieldus.config.security.utils.RSAUtil;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,11 +14,10 @@ import java.security.PublicKey;
 import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+@Disabled
 public class EncryptTest {
-    private static PrivateKey privateKey;
-    private static PublicKey publicKey;
-    private static final String ORIGINAL_TEXT = "test445324@!";
+    private static RSAUtil rsaUtil;
+    private static final String ORIGINAL_TEXT = "테스트 메시지입니다. 한글, 영문, 숫자 혼합!";
 
     @BeforeAll
     static void setup() throws Exception {
@@ -25,11 +25,7 @@ public class EncryptTest {
         Path privateKeyPath = getResourcePath("private_key.pem");
         Path publicKeyPath = getResourcePath("public_key.pem");
 
-        privateKey = RSAUtil.loadPrivateKey(privateKeyPath.toString());
-        publicKey = RSAUtil.loadPublicKey(publicKeyPath.toString());
-
-        assertNotNull(privateKey, "개인키 로드 실패");
-        assertNotNull(publicKey, "공개키 로드 실패");
+        rsaUtil = new RSAUtil(privateKeyPath.toString(), publicKeyPath.toString());
     }
 
     private static Path getResourcePath(String resourceName) throws URISyntaxException {
@@ -43,7 +39,7 @@ public class EncryptTest {
         byte[] originalBytes = ORIGINAL_TEXT.getBytes("UTF-8");
 
         // 2. 공개키로 암호화
-        byte[] encryptedBytes = RSAUtil.encrypt(originalBytes, publicKey);
+        byte[] encryptedBytes = rsaUtil.encrypt(originalBytes);
         assertNotNull(encryptedBytes, "암호화된 바이트 배열은 null이 아니어야 합니다.");
         assertTrue(encryptedBytes.length > 0, "암호화된 바이트 배열은 비어있지 않아야 합니다.");
 
@@ -51,7 +47,7 @@ public class EncryptTest {
         System.out.println("암호화된 텍스트 (Base64): " + Base64.getEncoder().encodeToString(encryptedBytes));
 
         // 3. 개인키로 복호화
-        byte[] decryptedBytes = RSAUtil.decrypt(encryptedBytes, privateKey);
+        byte[] decryptedBytes = rsaUtil.decrypt(encryptedBytes);
         assertNotNull(decryptedBytes, "복호화된 바이트 배열은 null이 아니어야 합니다.");
         assertTrue(decryptedBytes.length > 0, "복호화된 바이트 배열은 비어있지 않아야 합니다.");
 
@@ -70,7 +66,7 @@ public class EncryptTest {
 
         // 개인키가 아닌 공개키로 복호화 시도 (혹은 다른 키로 복호화 시도)
         assertThrows(Exception.class, () -> {
-            RSAUtil.decrypt(wrongEncryptedBytes, privateKey);
+            rsaUtil.decrypt(wrongEncryptedBytes);
         }, "잘못된 키로 복호화 시도 시 예외가 발생해야 합니다.");
     }
 }

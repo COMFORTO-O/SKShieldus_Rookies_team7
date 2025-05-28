@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -30,5 +31,6 @@ public class MemberSubmitProblem {
 
     private LocalDateTime completeDate;
 
-    private Long userTempCodeId;
+    @OneToMany(mappedBy = "memberSubmitProblem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemberTempCode> MemberTempCodes;
 }

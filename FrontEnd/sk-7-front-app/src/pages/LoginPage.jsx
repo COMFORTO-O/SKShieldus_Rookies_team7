@@ -4,21 +4,26 @@ import Button from "../components/atoms/Button";
 import { useCallback, useState } from "react";
 
 function LoginPage() {
-
     // 아이디, 비밀번호 상태 저장
     const [id, setId] = useState("");
     const [password, setPassword] = useState("");
 
     // 아이디 onChange
+    const handleIdChange = useCallback((e) => {
+        setId(e.target.value);
+    }, []);
 
     // 비밀번호 onChange
-    
+    const handlePasswordChange = useCallback((e) => {
+        setPassword(e.target.value);
+    }, []);
+
     // 로그인 폼 클릭 핸들러
     const handleLogin = useCallback(() => {
         // 비밀번호 암호화 ( RSA 공개키 암호화 )
+    }, []);
 
-
-    }, [])
+    console.log(id, password);
 
     return (
         <>
@@ -46,11 +51,13 @@ function LoginPage() {
                                     label="아이디"
                                     placeholder="ID"
                                     bottomText="아이디를 입력하세요."
+                                    onChange={handleIdChange}
                                 />
                                 <AuthInput
                                     label="비밀번호"
                                     placeholder="PW"
                                     bottomText="비밀번호를 입력하세요."
+                                    onChange={handlePasswordChange}
                                 />
 
                                 {/* 로그인 버튼 */}

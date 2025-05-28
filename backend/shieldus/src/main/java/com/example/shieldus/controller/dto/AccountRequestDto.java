@@ -12,7 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-public class AccountRequest {
+public class AccountRequestDto {
 
 
     /*

@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class MyPageResponse {
+public class MyPageResponseDto {
     private String name;
     private String email;
     private List<SolvedProblem> solvedProblems; // 풀었던 문제 리스트

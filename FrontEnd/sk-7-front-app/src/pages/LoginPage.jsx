@@ -2,11 +2,22 @@ import AuthLayout from "../components/auth/AuthLayout";
 import AuthInput from "../components/atoms/AuthInput";
 import Button from "../components/atoms/Button";
 import { useCallback, useState } from "react";
+import { encryptPassword } from "../encrypt/encryptPassword";
+import { loginTask } from "../api/loginTask";
+import useAuthStore from "../store/useAuthStore";
+import { useNavigate } from "react-router-dom";
+
+// 로그인 페이지
 
 function LoginPage() {
     // 아이디, 비밀번호 상태 저장
     const [id, setId] = useState("");
     const [password, setPassword] = useState("");
+    // 로그인 정보 상태
+    const { isLoggedIn, setLogin } = useAuthStore();
+
+    // 페이지 이동 네비게이터
+    const navigate = useNavigate();
 
     // 아이디 onChange
     const handleIdChange = useCallback((e) => {
@@ -19,11 +30,33 @@ function LoginPage() {
     }, []);
 
     // 로그인 폼 클릭 핸들러
-    const handleLogin = useCallback(() => {
-        // 비밀번호 암호화 ( RSA 공개키 암호화 )
-    }, []);
+    const handleLogin = useCallback(
+        async (e) => {
+            e.preventDefault();
 
-    console.log(id, password);
+            // 비밀번호 암호화 ( RSA 공개키 암호화 )
+            const e_pwd = encryptPassword(password);
+
+            // 로그인 시도
+            try {
+                const result = await loginTask({
+                    id,
+                    encryptedPassword: e_pwd,
+                });
+                // 예시: result.token, result.user 등
+                if (result && result.token) {
+                    setLogin(result.user); // zustand 상태 저장
+                    // Cookies.set("token", result.token, { expires: 1 }); // 쿠키 1일 저장
+                    // 페이지 이동
+                    navigate("/");
+                }
+            } catch (err) {
+                alert("로그인 실패");
+                console.error(err);
+            }
+        },
+        [id, password, setLogin, navigate]
+    );
 
     return (
         <>
@@ -48,9 +81,9 @@ function LoginPage() {
                         <AuthLayout title="Login">
                             <form className="w-full space-y-8">
                                 <AuthInput
-                                    label="아이디"
-                                    placeholder="ID"
-                                    bottomText="아이디를 입력하세요."
+                                    label="이메일"
+                                    placeholder="Email"
+                                    bottomText="이메일을 입력하세요."
                                     onChange={handleIdChange}
                                 />
                                 <AuthInput
@@ -58,6 +91,7 @@ function LoginPage() {
                                     placeholder="PW"
                                     bottomText="비밀번호를 입력하세요."
                                     onChange={handlePasswordChange}
+                                    type="password"
                                 />
 
                                 {/* 로그인 버튼 */}

@@ -1,3 +1,5 @@
+// 정렬 카테고리 전역 상태
+
 import { create } from "zustand";
 
 const useCategoryStore = create((set) => ({

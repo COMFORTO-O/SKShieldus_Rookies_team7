@@ -13,3 +13,7 @@ spring:
         format_sql: true
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
+
+jwt:
+  secret-key: test1235467566434598374539458735498798
+  expiration-time: 360000

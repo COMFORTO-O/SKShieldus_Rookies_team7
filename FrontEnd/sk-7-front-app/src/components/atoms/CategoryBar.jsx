@@ -17,12 +17,7 @@ const orderOptions = [
 
 const CategoryBar = ({ onRefresh, onSearch }) => {
     // 상태
-    const {
-        sort,
-        setSort,
-        order = "desc",
-        setOrder,
-    } = useCategoryStore();
+    const { sort, setSort, order = "desc", setOrder } = useCategoryStore();
 
     // 검색어
     const [search, setSearch] = useState("");
@@ -116,6 +111,12 @@ const CategoryBar = ({ onRefresh, onSearch }) => {
                         </button>
                     ))}
                 </div> */}
+
+                {/* 내가 푼 문제 제외 체크 박스 */}
+                <label className="flex items-center gap-1 ml-2">
+                    <input type="checkbox" />
+                    내가 푼 문제 제외
+                </label>
 
                 {/* 새로고침 버튼 */}
                 <button

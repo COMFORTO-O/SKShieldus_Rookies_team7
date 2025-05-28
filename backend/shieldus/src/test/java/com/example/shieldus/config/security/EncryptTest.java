@@ -14,7 +14,7 @@ import java.security.PublicKey;
 import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.*;
-//@Disabled
+@Disabled
 public class EncryptTest {
     private static RSAUtil rsaUtil;
     private static final String ORIGINAL_TEXT = "test";

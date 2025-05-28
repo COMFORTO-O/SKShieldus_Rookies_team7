@@ -1,6 +1,6 @@
 package com.example.shieldus.controller;
 
-import com.example.shieldus.controller.dto.AccountRequest;
+import com.example.shieldus.controller.dto.AccountRequestDto;
 import com.example.shieldus.controller.dto.ResponseDto;
 import com.example.shieldus.service.member.MemberService;
 import jakarta.validation.Valid;
@@ -18,7 +18,7 @@ public class AccountController {
     private final MemberService memberService;
 
     @PostMapping("/register")
-    public ResponseDto<String> registerMember(@RequestBody @Valid AccountRequest.Register dto){
+    public ResponseDto<String> registerMember(@RequestBody @Valid AccountRequestDto.Register dto){
         // 회원가입 요청을 서비스 계층에 위임
         memberService.register(dto);
 

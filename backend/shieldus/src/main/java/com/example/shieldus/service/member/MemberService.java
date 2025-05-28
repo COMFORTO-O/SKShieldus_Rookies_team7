@@ -1,7 +1,7 @@
 package com.example.shieldus.service.member;
 
-import com.example.shieldus.controller.dto.AccountRequest;
-import com.example.shieldus.controller.dto.MyPageResponse;
+import com.example.shieldus.controller.dto.AccountRequestDto;
+import com.example.shieldus.controller.dto.MyPageResponseDto;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
 import com.example.shieldus.entity.member.enumration.MemberRoleEnum;
@@ -24,7 +24,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     // 마이페이지 정보 조회
-    public MyPageResponse getMyPageInfo(Long memberId) {
+    public MyPageResponseDto getMyPageInfo(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid member ID"));
 
@@ -33,12 +33,12 @@ public class MemberService {
                 .findByMemberIdAndPassTrue(memberId); // 정답만 필터링
 
     // 3. DTO 변환
-        return MyPageResponse.builder()
+        return MyPageResponseDto.builder()
                 .name(member.getName())
                 .email(member.getEmail())
                 .solvedProblems(
                         solvedProblems.stream()
-                                .map(sub -> MyPageResponse.SolvedProblem.builder()
+                                .map(sub -> MyPageResponseDto.SolvedProblem.builder()
                                         .problemTitle(sub.getProblem().getTitle())
                                         .completeDate(sub.getCompleteDate())
                                         .build())
@@ -53,7 +53,7 @@ public class MemberService {
 
     // 회원가입
     @Transactional
-    public void register(AccountRequest.Register dto) {
+    public void register(AccountRequestDto.Register dto) {
 
         if(!memberRepository.existsByEmail(dto.getEmail())) {
             // TODO : exception 추가

@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -29,5 +31,9 @@ public class MemberTempCode {
     @Column(name = "status")
     private MemberTempCodeStatusEnum status;
 
+    @Column(name= "code")
+    private String code;
 
+    @Column(updatable = false)
+    private LocalDateTime submitDate;
 }

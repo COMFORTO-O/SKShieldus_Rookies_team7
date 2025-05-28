@@ -4,6 +4,7 @@ package com.example.shieldus.config.security;
 import com.example.shieldus.config.jwt.JwtTokenProvider;
 import com.example.shieldus.config.security.filter.JwtAuthenticationFilter;
 import com.example.shieldus.config.security.filter.JwtRequestFilter;
+import com.example.shieldus.config.security.utils.RSAUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.nio.file.Path;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -31,6 +34,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class ServletSecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final RSAUtil rsaUtil;
 
     public String WHITE_LIST = "";
     @Bean
@@ -59,7 +63,7 @@ public class ServletSecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
                 .addFilterBefore(new JwtRequestFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAt(new JwtAuthenticationFilter(authenticationManager, jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new JwtAuthenticationFilter(authenticationManager, jwtTokenProvider, rsaUtil), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -1,10 +1,11 @@
 import AuthLayout from "../components/auth/AuthLayout";
 import AuthInput from "../components/atoms/AuthInput";
 import Button from "../components/atoms/Button";
+import useAuthStore from "../store/useAuthStore";
+
 import { useCallback, useState } from "react";
 import { encryptPassword } from "../encrypt/encryptPassword";
 import { loginTask } from "../api/loginTask";
-import useAuthStore from "../store/useAuthStore";
 import { useNavigate } from "react-router-dom";
 
 // 로그인 페이지

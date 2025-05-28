@@ -3,7 +3,15 @@ import AuthInput from "../components/atoms/AuthInput";
 import Button from "../components/atoms/Button";
 import useAuthForm from "../hooks/useAuthForm";
 
+import { useCallback, useState } from "react";
+import { encryptPassword } from "../encrypt/encryptPassword";
+import { RegisterTask } from "../api/RegisterTask";
+import { useNavigate } from "react-router-dom";
+
 function SignupPage() {
+    // 페이지 이동 네비게이터
+    const navigate = useNavigate();
+
     // 아이디, 비밀번호, 비밀번호 확인, 이름, 이메일, 전화번호 상태 관리 및 검증
     const { inputs, errors, handleChange, validate } = useAuthForm({
         id: "",
@@ -12,19 +20,40 @@ function SignupPage() {
         name: "",
         emailId: "",
         emailDomain: "",
-        tel: "",
+        phone: "",
     });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const isValid = validate();
+    // 회원가입 폼 클릭 핸들러
+    const handleRegister = useCallback(
+        async (e) => {
+            e.preventDefault();
 
-        if (isValid) {
-            console.log("폼 제출 준비 완료", inputs);
-        } else {
-            console.log("유효성 검사 실패", errors);
-        }
-    };
+            // 유효성 검사 실패 시 종료
+            if (!validate()) return;
+
+            const { id, password, name, phone, emailId, emailDomain } = inputs;
+
+            // 비밀번호 암호화 ( RSA 공개키 암호화 )
+            const e_pwd = encryptPassword(password);
+
+            try {
+                const result = await RegisterTask({
+                    email: `${emailId}@${emailDomain}`,
+                    encryptedPassword: e_pwd,
+                    name,
+                    phone,
+                });
+
+                if (result && result.token) {
+                    navigate("/login");
+                }
+            } catch (err) {
+                alert("회원가입 실패");
+                console.error(err);
+            }
+        },
+        [inputs, validate, navigate]
+    );
 
     return (
         <>
@@ -142,24 +171,24 @@ function SignupPage() {
                                     label="전화번호"
                                     placeholder="휴대폰 번호 ('-' 제외 11자리 입력 )"
                                     bottomMessage={
-                                        errors.tel
-                                            ? errors.tel
-                                            : inputs.tel == ""
+                                        errors.phone
+                                            ? errors.phone
+                                            : inputs.phone == ""
                                             ? "휴대폰 번호을 입력하세요."
                                             : ""
                                     }
-                                    type="tel"
+                                    type="phone"
                                     required={true}
-                                    value={inputs.tel}
-                                    error={errors.tel}
-                                    onChange={handleChange("tel")}
+                                    value={inputs.phone}
+                                    error={errors.phone}
+                                    onChange={handleChange("phone")}
                                 />
 
                                 {/* 회원가입 버튼 */}
                                 <div>
                                     <Button
                                         type="submit"
-                                        onClick={handleSubmit}
+                                        onClick={handleRegister}
                                         className="h-14 my-14 w-full bg-gray-300 text-black font-bold py-2 rounded hover:bg-gray-400"
                                     >
                                         회원가입

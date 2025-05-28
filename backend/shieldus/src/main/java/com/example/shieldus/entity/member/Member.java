@@ -16,14 +16,17 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // auto increment, unique, primary key
 
-
     @Enumerated(EnumType.STRING)
     private MemberRoleEnum role;
 
     private String email;
+
     private String password;
+
     private String name;
+
     private String phone;
+
     private Integer memberRank;
 
 }

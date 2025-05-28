@@ -59,14 +59,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Map<String, String> responseBody = new HashMap<>();
 
         // TODO : cookie 에 추가
-        Cookie jwtCookie = new Cookie("Authorization", jwt);
+        Cookie jwtCookie = new Cookie("Authorization",  "Bearer " +jwt);
         jwtCookie.setHttpOnly(true); // JavaScript 접근 불가 (XSS 공격 방어)
         jwtCookie.setSecure(true);   // HTTPS 통신에서만 전송 (Man-in-the-Middle 공격 방어)
         jwtCookie.setPath("/");
         response.addCookie(jwtCookie);
-
-        responseBody.put("token", "Bearer " +jwt);
-        responseBody.put("username", authResult.getName());
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");

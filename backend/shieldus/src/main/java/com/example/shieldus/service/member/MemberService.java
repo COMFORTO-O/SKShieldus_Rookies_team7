@@ -1,13 +1,18 @@
 package com.example.shieldus.service.member;
 
+import com.example.shieldus.controller.dto.AccountRequest;
 import com.example.shieldus.controller.dto.MyPageResponse;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
+import com.example.shieldus.entity.member.enumration.MemberRoleEnum;
 import com.example.shieldus.repository.member.MemberRepository;
 import com.example.shieldus.repository.member.MemberSubmitProblemRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -16,6 +21,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final MemberSubmitProblemRepository submitProblemRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // 마이페이지 정보 조회
     public MyPageResponse getMyPageInfo(Long memberId) {
@@ -39,5 +45,21 @@ public class MemberService {
                                 .collect(Collectors.toList())
                 )
                 .build();
+    }
+
+
+
+
+
+    // 회원가입
+    @Transactional
+    public void register(AccountRequest.Register dto) {
+
+        if(!memberRepository.existsByEmail(dto.getEmail())) {
+            // TODO : exception 추가
+            throw new IllegalArgumentException("Invalid email");
+        }
+        // TODO: 검사 로직 필요
+        memberRepository.save(dto.toMember(passwordEncoder));
     }
 }

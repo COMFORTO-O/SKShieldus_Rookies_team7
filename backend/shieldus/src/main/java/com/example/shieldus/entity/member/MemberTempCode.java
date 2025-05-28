@@ -29,5 +29,7 @@ public class MemberTempCode {
     @Column(name = "status")
     private MemberTempCodeStatusEnum status;
 
+    @Column(name= "code")
+    private String code;
 
 }

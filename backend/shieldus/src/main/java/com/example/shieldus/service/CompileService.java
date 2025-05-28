@@ -15,14 +15,17 @@ import com.example.shieldus.repository.problem.ProblemTestCaseRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CompileService {
@@ -102,6 +105,7 @@ public class CompileService {
         memberTempCodeRepository.save(MemberTempCode.builder()
                 .memberSubmitProblem(submit)
                 .status(allPass ? MemberTempCodeStatusEnum.CORRECT : MemberTempCodeStatusEnum.INCORRECT)
+                .code(requestDto.getCode())
                 .build());
 
         if (allPass) {
@@ -112,7 +116,7 @@ public class CompileService {
 
         return CompileResponseDto.builder()
                 .passedCount(passed)
-                .totalCount(Math.min(testCases.size(), 3))
+                .totalCount(testCases.size())
                 .testCaseResults(results)
                 .build();
     }
@@ -123,10 +127,24 @@ public class CompileService {
 
         int languageId = getLanguageId(language);
 
-        String body = String.format(
-                "{\"source_code\": \"%s\", \"language_id\": %d, \"stdin\": \"%s\", \"expected_output\": \"%s\"}",
-                escapeJson(sourceCode), languageId, escapeJson(testCase.getInput()), escapeJson(testCase.getOutput())
-        );
+        Map<String, Object> request = new HashMap<>();
+        request.put("source_code", sourceCode);
+        request.put("language_id", languageId);
+        request.put("stdin", testCase.getInput());
+        request.put("expected_output", testCase.getOutput());
+
+        String body;
+        try {
+            body = objectMapper.writeValueAsString(request);
+        } catch (Exception e) {
+            return TestCaseResult.builder()
+                    .input(testCase.getInput())
+                    .expectedOutput(testCase.getOutput())
+                    .actualOutput(null)
+                    .isCorrect(false)
+                    .error("JSON 직렬화 실패: " + e.getMessage())
+                    .build();
+        }
 
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
@@ -160,12 +178,6 @@ public class CompileService {
         }
     }
 
-    private String escapeJson(String str) {
-        return str.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r");
-    }
 
     private int getLanguageId(String language) {
         return switch (language.toLowerCase()) {

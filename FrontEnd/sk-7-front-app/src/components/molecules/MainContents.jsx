@@ -17,25 +17,26 @@ export default function MainContents() {
     }, [sort, selectedLanguages]);
 
     return (
-        <div className="h-full">
-            <div className="h-auto mt-20">
+        <div>
+            <div className="mt-10">
                 <CategoryBar />
             </div>
             <div className="border-solid border-2 mt-5">
+                {/* 문제 리스트 가져오기 */}
                 <ProblemItem
                     title={"새로운 문제1"}
                     level={"어려움"}
-                    languages={["Java", "Python"]}
+                    createdAt={"2025-05-27"}
                 />
                 <ProblemItem
                     title={"새로운 문제2"}
                     level={"중간"}
-                    languages={["Java", "Python"]}
+                    createdAt={"2025-05-27"}
                 />
                 <ProblemItem
                     title={"새로운 문제3"}
                     level={"쉬움"}
-                    languages={["Java", "Python"]}
+                    createdAt={"2025-05-27"}
                 />
             </div>
         </div>

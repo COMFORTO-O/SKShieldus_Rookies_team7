@@ -2,9 +2,9 @@ import { create } from "zustand";
 
 const useCategoryStore = create((set) => ({
     sort: "recent",
-    selectedLanguages: [],
+    // selectedLanguages: [],
     setSort: (sort) => set({ sort }),
-    setSelectedLanguages: (langs) => set({ selectedLanguages: langs }),
+    // setSelectedLanguages: (langs) => set({ selectedLanguages: langs }),
 }));
 
 export default useCategoryStore;

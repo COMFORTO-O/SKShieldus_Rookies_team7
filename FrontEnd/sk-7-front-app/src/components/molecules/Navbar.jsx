@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
+    // 로그인 유무 ( 로컬 스토리지, 쿠키 )
+
     return (
-        <div className="h-16 flex justify-between border-b-2">
+        <div className="h-14 flex justify-between border-b-2">
             {/* 아이콘 */}
             <p>아이콘</p>
             {/* 네비게이션 바 */}

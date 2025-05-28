@@ -12,10 +12,10 @@ import Navbar from "./components/molecules/Navbar";
 function App() {
     return (
         <div className="h-screen flex flex-col">
-            <header className="flex-none">
+            <header className="flex-none sticky top-0 z-50">
                 <Navbar />
             </header>
-            <main className="flex-1 overflow-hidden bg-black">
+            <main className="flex-auto min-h-0 overflow-auto">
                 <Routes>
                     <Route path="/" element={<MainPage />} />
                     <Route path="/login" element={<LoginPage />} />

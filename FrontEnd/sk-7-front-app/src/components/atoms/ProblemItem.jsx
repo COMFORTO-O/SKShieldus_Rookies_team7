@@ -6,31 +6,26 @@ const levelColor = {
     쉬움: "bg-levelColor-easy text-vanila",
 };
 
-const ProblemItem = ({
-    level,
-    title,
-    p_id,
-    languages = [],
-    createdAt,
-    onClick,
-}) => {
+const ProblemItem = ({ level, title, p_id, createdAt, onClick }) => {
     return (
         <div
             className="flex items-center justify-between border rounded-lg px-4 py-3 mb-2 cursor-pointer hover:bg-secondary transition"
             onClick={() => onClick && onClick(p_id)}
         >
-            {/* 난이도 */}
-            <span
-                className={`px-2 py-1 rounded text-xs font-bold  ${
-                    levelColor[level] || "bg-gray-300"
-                }`}
-            >
-                {level}
-            </span>
-            {/* 제목 */}
-            <span className="flex-1 ml-4 font-semibold">{title}</span>
+            <div className="flex-1">
+                {/* 제목 */}
+                <span className=" ml-4 font-semibold">{title}</span>
+                {/* 난이도 */}
+                <span
+                    className={`ml-4 px-2 py-1 rounded text-xs font-bold  ${
+                        levelColor[level] || "bg-gray-300"
+                    }`}
+                >
+                    {level}
+                </span>
+            </div>
             {/* 사용 가능 언어 */}
-            <div className="flex gap-1 mr-4">
+            {/* <div className="flex gap-1 mr-4">
                 {languages.map((lang) => (
                     <span
                         key={lang}
@@ -39,9 +34,10 @@ const ProblemItem = ({
                         {lang}
                     </span>
                 ))}
-            </div>
+            </div> */}
             {/* 등록 시간 */}
             <span className="text-xs text-gray-400">{createdAt}</span>
+            {/* 정답률 */}
         </div>
     );
 };

@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
 import useCategoryStore from "../../store/useCategoryStore";
 
-// 정렬, 카테고리, 푼 문제 제외 체크박스 등
-const languages = ["Java", "C", "Python", "Javascript"];
+// // 정렬, 카테고리, 푼 문제 제외 체크박스 등
+// const languages = ["Java", "C", "Python", "Javascript"];
 
 const sortOptions = [
     { label: "최신순", value: "recent" },
@@ -19,9 +19,7 @@ const CategoryBar = ({ onRefresh, onSearch }) => {
     // 상태
     const {
         sort,
-        selectedLanguages,
         setSort,
-        setSelectedLanguages,
         order = "desc",
         setOrder,
     } = useCategoryStore();
@@ -46,19 +44,19 @@ const CategoryBar = ({ onRefresh, onSearch }) => {
         [setOrder]
     );
 
-    // 언어 선택
-    const handleLangToggle = useCallback(
-        (lang) => {
-            let next;
-            if (selectedLanguages.includes(lang)) {
-                next = selectedLanguages.filter((l) => l !== lang);
-            } else {
-                next = [...selectedLanguages, lang];
-            }
-            setSelectedLanguages(next);
-        },
-        [selectedLanguages, setSelectedLanguages]
-    );
+    // // 언어 선택
+    // const handleLangToggle = useCallback(
+    //     (lang) => {
+    //         let next;
+    //         if (selectedLanguages.includes(lang)) {
+    //             next = selectedLanguages.filter((l) => l !== lang);
+    //         } else {
+    //             next = [...selectedLanguages, lang];
+    //         }
+    //         setSelectedLanguages(next);
+    //     },
+    //     [selectedLanguages, setSelectedLanguages]
+    // );
 
     // 새로고침 버튼 클릭
     const handleRefresh = () => {
@@ -102,7 +100,7 @@ const CategoryBar = ({ onRefresh, onSearch }) => {
                 </select>
 
                 {/* 언어 선택 박스 */}
-                <div className="flex gap-2 flex-wrap">
+                {/* <div className="flex gap-2 flex-wrap">
                     {languages.map((lang) => (
                         <button
                             key={lang}
@@ -117,7 +115,7 @@ const CategoryBar = ({ onRefresh, onSearch }) => {
                             {lang}
                         </button>
                     ))}
-                </div>
+                </div> */}
 
                 {/* 새로고침 버튼 */}
                 <button

@@ -9,7 +9,7 @@ services:
   server:
     image: judge0/judge0:latest
     volumes:
-      - ./judge0.conf:/judge0.conf:ro
+    #  - ./judge0.conf:/judge0.conf:ro
     ports:
       - "2358:2358"
     privileged: true

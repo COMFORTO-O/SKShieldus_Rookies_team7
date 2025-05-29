@@ -17,7 +17,6 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
-    querydsl
 }
 
 repositories {
@@ -33,8 +32,12 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
 
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-    querydsl 'com.querydsl:querydsl-apt:5.0.0:jakarta'
-    querydsl 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+    // Q클래스 생성을 위한 Annotation Processor (jakarta 버전)
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+    // Jakarta Persistence API (Q클래스 생성에 필요)
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+    // Jakarta Annotation API (Q클래스 생성에 필요)
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -53,34 +56,4 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
-}
-
-def querydslDir = "$buildDir/generated/querydsl"
-
-sourceSets {
-    main {
-        java {
-            srcDirs += querydslDir
-        }
-    }
-}
-
-task compileQuerydsl(type: JavaCompile) {
-    group = 'build'
-    description = 'Generate QueryDSL Q-classes'
-
-    source = sourceSets.main.java
-    classpath = sourceSets.main.compileClasspath + configurations.querydsl
-    destinationDirectory = file(querydslDir)
-    options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
-
-    options.compilerArgs += [
-        '-proc:only',
-        '-processor', 'com.querydsl.apt.jpa.JPAAnnotationProcessor'
-    ]
-    options.annotationProcessorPath = configurations.querydsl
-}
-
-tasks.named('compileJava') {
-    dependsOn compileQuerydsl
 }

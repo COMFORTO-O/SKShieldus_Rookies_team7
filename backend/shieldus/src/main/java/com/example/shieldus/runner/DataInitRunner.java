@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,7 @@ public class DataInitRunner implements CommandLineRunner {
     private final MemberRepository memberRepository;
     private final ProblemRepository problemRepository;
     private final ProblemTestCaseRepository testCaseRepository;
-
+    private final PasswordEncoder passwordEncoder;
     @Override
     @Transactional
     public void run(String... args) {
@@ -34,8 +35,8 @@ public class DataInitRunner implements CommandLineRunner {
 
         // 회원 생성
         Member member = Member.builder()
-                .email("test@example.com")
-                .password("encoded-password") // 비밀번호 인코딩된 값
+                .email("a@a.com")
+                .password(passwordEncoder.encode("123"))
                 .name("테스트유저")
                 .phone("01012345678")
                 .memberRank(0)

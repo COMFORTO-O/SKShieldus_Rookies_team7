@@ -1,5 +1,9 @@
 package com.example.shieldus.config.websocket;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +18,17 @@ public class RoomController {
     public String roomListPage() {
         return "rooms";
     }
-
+    @Getter
+    @Setter
+    public static class CreateRoomRequestDto{
+        String name;
+    }
     @PostMapping("/api/rooms")
     @ResponseBody
-    public Room createRoom(@RequestParam String name) {
+    public Room createRoom(@RequestBody CreateRoomRequestDto createRoomRequestDto,@AuthenticationPrincipal UserDetails userDetails) {
         String roomId = UUID.randomUUID().toString();
-        Room room = new Room(roomId, name);
+        System.out.println("testests"+userDetails.getUsername());
+        Room room = new Room(roomId, createRoomRequestDto.getName(), userDetails.getUsername());
         roomMap.put(roomId, room);
         return room;
     }

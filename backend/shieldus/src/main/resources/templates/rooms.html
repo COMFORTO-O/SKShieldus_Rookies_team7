@@ -33,8 +33,9 @@
       const name = document.getElementById('roomName').value;
       await fetch('/api/rooms', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ name })
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({name:name})
       });
       document.getElementById('roomName').value = '';
       fetchRooms();

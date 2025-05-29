@@ -24,14 +24,12 @@ public class MemberUserDetails implements UserDetails {
         this.password=member.getPassword();
 
         // TODO : 05-27 : getRole 권한 넣기
-        this.authorities= Stream.of("ROLE_ADMIN")
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        this.authorities= member.getRole().getAuthorities();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return authorities;
     }
 
     @Override

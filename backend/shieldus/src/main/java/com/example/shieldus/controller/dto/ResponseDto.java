@@ -7,6 +7,7 @@ import lombok.Getter;
 @Builder
 public class ResponseDto<T> {
     private int status;
+    private String code;
     private String message;
     private T data;
 
@@ -20,9 +21,10 @@ public class ResponseDto<T> {
     }
 
     // 실패 응답 생성 메서드
-    public static <T> ResponseDto<T> error(int status, String message) {
+    public static <T> ResponseDto<T> error(int status, String code,String message) {
         return ResponseDto.<T>builder()
                 .status(status)
+                .code(code)
                 .message(message)
                 .data(null)
                 .build();

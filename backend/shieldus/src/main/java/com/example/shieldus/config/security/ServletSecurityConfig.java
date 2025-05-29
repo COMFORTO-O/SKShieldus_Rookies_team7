@@ -58,12 +58,16 @@ public class ServletSecurityConfig {
                         .requestMatchers("/api/account/register").permitAll()
                         .requestMatchers("/api/compile/**").permitAll()
                         .requestMatchers("/api/problem/**").permitAll()
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable) // HTTP Basic 인증 비활성화
-                .addFilterBefore(new JwtRequestFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAt(new JwtAuthenticationFilter(authenticationManager, jwtTokenProvider, rsaUtil), UsernamePasswordAuthenticationFilter.class);
+                .httpBasic(AbstractHttpConfigurer::disable)
+        // ↓↓↓ 테스트 중 JWT 필터 비활성화
+        // .addFilterBefore(new JwtRequestFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+        // .addFilterAt(new JwtAuthenticationFilter(authenticationManager, jwtTokenProvider, rsaUtil), UsernamePasswordAuthenticationFilter.class)
+        ;
 
         return http.build();
     }

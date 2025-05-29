@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>방 목록</title>
+</head>
+<body>
+<h2>도움방 목록</h2>
+<form id="createForm">
+  <input type="text" id="roomName" placeholder="방 이름 입력" required>
+  <button type="submit">방 만들기</button>
+</form>
+<ul id="roomList"></ul>
+
+<script>
+  async function fetchRooms() {
+      const res = await fetch('/api/rooms');
+      const rooms = await res.json();
+      const list = document.getElementById('roomList');
+      list.innerHTML = '';
+      rooms.forEach(room => {
+          const li = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = `/room/${room.roomId}`;
+          link.innerText = room.name;
+          li.appendChild(link);
+          list.appendChild(li);
+      });
+  }
+
+  document.getElementById('createForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('roomName').value;
+      await fetch('/api/rooms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ name })
+      });
+      document.getElementById('roomName').value = '';
+      fetchRooms();
+  });
+
+  fetchRooms();
+</script>
+</body>
+</html>

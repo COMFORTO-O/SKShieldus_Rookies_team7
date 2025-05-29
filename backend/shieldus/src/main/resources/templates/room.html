@@ -1,0 +1,25 @@
+<!-- room.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>방 입장</title>
+</head>
+<body>
+<h2>방 ID: [[${roomId}]]</h2>
+<textarea id="editor" rows="15" cols="80"></textarea>
+
+<script>
+  const roomId = "[[${roomId}]]";
+  const socket = new WebSocket("ws://localhost:8080/ws/room/" + roomId);
+
+  socket.onmessage = function (event) {
+      document.getElementById("editor").value = event.data;
+  };
+
+  document.getElementById("editor").addEventListener("input", function () {
+      socket.send(this.value);
+  });
+</script>
+</body>
+</html>

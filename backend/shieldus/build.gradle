@@ -45,6 +45,9 @@ dependencies {
 	// JWT 토큰 설정
 	implementation 'com.auth0:java-jwt:4.5.0'
 
+
+	//WEB SOCKET
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 tasks.named('test') {

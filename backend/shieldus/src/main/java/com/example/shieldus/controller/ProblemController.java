@@ -4,29 +4,31 @@ import com.example.shieldus.controller.dto.ProblemResponseDto;
 import com.example.shieldus.controller.dto.ResponseDto;
 import com.example.shieldus.service.problem.ProblemService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
-@RequestMapping("/api/problems")  // 공통 URL prefix 설정
+@RequestMapping("/api/problem")
 @RequiredArgsConstructor
 public class ProblemController {
 
     private final ProblemService problemService;
 
     @GetMapping
-    public ResponseDto<List<ProblemResponseDto>> getAllProblems() {
-        // 전체 문제 목록을 서비스 계층에서 조회
-        List<ProblemResponseDto> problems = problemService.getAllProblems();
+    public ResponseDto<Page<ProblemResponseDto>> getProblems(
+            @RequestParam Long memberId,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Integer level,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String status,
+            @PageableDefault(size = 10, sort = "id") Pageable pageable) {
 
-        // 조회 결과를 통일된 응답 형식으로 감싸서 반환
-        return ResponseDto.success(problems);
+        Page<ProblemResponseDto> page = problemService.getFilteredProblems(
+                memberId, category, level, title, status, pageable
+        );
+
+        return ResponseDto.success(page);
     }
-
-//    private final ProblemService problemService;
-//
-//    @GetMapping
-//    public List<ProblemResponseDto> getAllProblems() {
-//        return problemService.getAllProblems();
-//    }
 }

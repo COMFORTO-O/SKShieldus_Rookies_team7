@@ -15,4 +15,5 @@ public class ProblemResponseDto {
     private ProblemCategoryEnum category;
     private Integer level;
     private String memberName;
+    private boolean solved;
 }

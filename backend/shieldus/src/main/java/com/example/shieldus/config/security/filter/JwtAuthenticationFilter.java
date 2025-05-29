@@ -11,6 +11,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -64,11 +65,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Map<String, String> responseBody = new HashMap<>();
 
         // TODO : cookie 에 추가
-        Cookie jwtCookie = new Cookie("Authorization",  jwt);
-        jwtCookie.setHttpOnly(true); // JavaScript 접근 불가 (XSS 공격 방어)
-        jwtCookie.setSecure(true);   // HTTPS 통신에서만 전송 (Man-in-the-Middle 공격 방어)
-        jwtCookie.setPath("/");
-        response.addCookie(jwtCookie);
+        ResponseCookie jwtCookie = ResponseCookie.from("Authorization", jwt)
+                .httpOnly(false) // JavaScript 접근 불가 (XSS 공격 방어)
+                .secure(false)   // 개발 환경 (HTTP)에서는 false로 설정!
+                // ⭐ 중요: 프로덕션 (HTTPS) 환경에서는 true로 변경해야 합니다.
+                .path("/")       // 모든 경로에서 쿠키 사용 가능
+                .sameSite("Lax") // ⭐ 중요: SameSite 속성 명시.
+                // 크로스 오리진 요청 시 쿠키 전송 규칙을 정의합니다.
+                // 개발 중에는 "Lax"를 먼저 시도하고, 그래도 안되면 HTTPS로 전환 후 "None"을 시도합니다.
+                .maxAge(60 * 60 * 24) // 쿠키 유효 기간 (초 단위, 예: 1일)
+                .build();
+
+
+        response.addHeader("Set-Cookie", jwtCookie.toString());
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");

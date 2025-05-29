@@ -17,3 +17,5 @@ spring:
 jwt:
   secret-key: test1235467566434598374539458735498798
   expiration-time: 360000
+
+

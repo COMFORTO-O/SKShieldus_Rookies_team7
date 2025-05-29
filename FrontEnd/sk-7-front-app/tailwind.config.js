@@ -38,11 +38,15 @@ export default {
                 levelColor: {
                     hard: "#ff7919",
                     medium: "#ffdd30",
-                    easy: "#49fc4c",
+                    easy: "#7efc5b",
                 },
             },
             fontFamily: {
                 sans: ["Inter", "system-ui", "sans-serif"],
+                roboto: ["Roboto", "system-ui", "sans-serif"],
+                dot42: ["42dot Sans", "sans-serif"],
+                blackhan: ["Black Han Sans", "sans-serif"],
+                sourgummy: ["Sour Gummy", "sans-serif"],
             },
         },
     },

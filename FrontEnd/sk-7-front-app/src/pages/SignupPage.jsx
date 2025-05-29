@@ -117,7 +117,7 @@ function SignupPage() {
             });
 
             if (result && result.token) {
-                navigate("/login");
+                navigate("/login", { replace: true });
             }
         } catch (err) {
             alert("회원가입 실패");

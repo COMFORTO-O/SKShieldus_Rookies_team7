@@ -1,11 +1,11 @@
-import AuthInput from "../components/atoms/AuthInput";
-import Button from "../components/atoms/Button";
-import useAuthStore from "../store/useAuthStore";
-import Spinner from "../components/atoms/Spinner";
+import AuthInput from "../atoms/AuthInput";
+import Button from "../atoms/Button";
+import useAuthStore from "../../store/useAuthStore";
+import Spinner from "../atoms/Spinner";
 
 import { useCallback, useState, useEffect } from "react";
-import { encryptPassword } from "../encrypt/encryptPassword";
-import { loginTask } from "../api/loginTask";
+import { encryptPassword } from "../../encrypt/encryptPassword";
+import { loginTask } from "../../api/loginTask";
 import { useNavigate } from "react-router-dom";
 
 // 로그인 페이지

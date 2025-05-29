@@ -1,6 +1,6 @@
 import AuthInput from "../atoms/AuthInput";
 import Button from "../atoms/Button";
-import useAuthForm from "../../hooks/useAuthForm";
+import AuthValidation from "../molecules/AuthValidation";
 
 import { encryptPassword } from "../../encrypt/encryptPassword";
 import { RegisterTask } from "../../api/RegisterTask";
@@ -10,7 +10,7 @@ function SignupForm() {
     const navigate = useNavigate();
 
     // 검증 훅 불러오기
-    const { inputs, errors, handleChange } = useAuthForm({
+    const { inputs, errors, handleChange } = AuthValidation({
         id: "",
         password: "",
         checkPassword: "",

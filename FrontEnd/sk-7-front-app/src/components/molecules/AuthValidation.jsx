@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const useAuthForm = (initialFields) => {
+const AuthValidation = (initialFields) => {
     const [inputs, setInputs] = useState(initialFields);
     const [errors, setErrors] = useState({});
 
@@ -75,4 +75,4 @@ const useAuthForm = (initialFields) => {
     };
 };
 
-export default useAuthForm;
+export default AuthValidation;

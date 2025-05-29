@@ -28,7 +28,11 @@ public enum ErrorCode {
     DUPLICATE_RESOURCE("RES409", HttpStatus.CONFLICT, "이미 존재하는 리소스입니다.", false),
     VALIDATION_FAILED("VAL422", HttpStatus.UNPROCESSABLE_ENTITY, "요청 데이터의 유효성 검사에 실패했습니다.", false),
     DATABASE_ERROR("DB500", HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 처리 중 오류가 발생했습니다.", true),
-    INTERNAL_SERVER_ERROR("SYS500", HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.", true);
+    INTERNAL_SERVER_ERROR("SYS500", HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.", true),
+    PROBLEM_NOT_FOUND("PRB404", HttpStatus.NOT_FOUND, "문제를 찾을 수 없습니다.", false),
+    JUDGE_SERVER_ERROR("JUD502", HttpStatus.BAD_GATEWAY, "채점 서버 연결에 실패했습니다.", true),
+    JSON_PARSING_ERROR("JSON400", HttpStatus.BAD_REQUEST, "JSON 처리 중 오류가 발생했습니다.", false),
+    UNSUPPORTED_LANGUAGE("LANG400", HttpStatus.BAD_REQUEST, "지원하지 않는 프로그래밍 언어입니다.", false);
 
     private final String code;
     private final HttpStatus httpStatus;

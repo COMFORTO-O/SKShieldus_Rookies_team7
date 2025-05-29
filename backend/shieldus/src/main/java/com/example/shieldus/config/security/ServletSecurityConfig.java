@@ -23,8 +23,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -50,7 +55,7 @@ public class ServletSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
         http
-                .cors(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
@@ -68,5 +73,29 @@ public class ServletSecurityConfig {
         return http.build();
     }
 
-
+    /*
+     * cors 설정. Allow Origin YML 추출 필요.
+     * */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000"));
+        // 허용할 HTTP 메서드 (GET, POST, PUT, DELETE, OPTIONS 등)
+        configuration.setAllowedMethods(List.of("*"));
+        // 허용할 헤더 (모든 헤더 허용)
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Authorization",
+                "Content-Type",
+                "Accept",
+                "X-Requested-With", // XMLHttpRequest를 사용할 때 자주 포함되는 헤더
+                "Cache-Control" // 캐시 제어 관련 헤더
+        ));
+        configuration.setAllowCredentials(true);
+        // 사전 비행(Preflight) 요청의 캐싱 시간 (초 단위)
+        configuration.setMaxAge(3600L);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // 모든 경로("/**")에 이 CORS 설정을 적용
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }

@@ -11,6 +11,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -62,13 +63,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         Map<String, String> responseBody = new HashMap<>();
 
-        // TODO : cookie 에 추가
-        Cookie jwtCookie = new Cookie("Authorization",  jwt);
-        jwtCookie.setHttpOnly(true); // JavaScript 접근 불가 (XSS 공격 방어)
-        jwtCookie.setSecure(true);   // HTTPS 통신에서만 전송 (Man-in-the-Middle 공격 방어)
-        jwtCookie.setPath("/");
-        response.addCookie(jwtCookie);
+        ResponseCookie jwtCookie = ResponseCookie.from("Authorization", jwt)
+                .httpOnly(false)
+                .secure(false)
+                .path("/")
+                .sameSite("Lax")
+                .maxAge(60 * 60 * 24)
+                .build();
 
+        response.addHeader("Set-Cookie", jwtCookie.toString());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         new ObjectMapper().writeValue(response.getWriter(), responseBody);

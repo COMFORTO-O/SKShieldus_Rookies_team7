@@ -12,14 +12,13 @@ export async function loginTask({ email, encryptedPassword }) {
             },
             {
                 headers: {
-                    'Content-Type': 'application/json',
-                }
+                    "Content-Type": "application/json",
+                },
             }
         );
         return response.data;
     } catch (error) {
         // 에러 출력
-        console.error(error);
-        throw error;
+        throw error.response?.data?.message || error.message || "Login failed";
     }
 }

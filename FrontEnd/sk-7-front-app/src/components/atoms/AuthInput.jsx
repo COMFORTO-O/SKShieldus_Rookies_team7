@@ -5,7 +5,7 @@ const AuthInput = ({
     label,
     type = "text",
     placeholder = "",
-    bottomMessage = "",
+    bottomText = "",
     value,
     required = false,
     error = "",
@@ -58,7 +58,7 @@ const AuthInput = ({
                     error ? " text-red-600" : " text-gray-400"
                 }`}
             >
-                {bottomMessage}
+                {bottomText}
             </div>
         </div>
     );

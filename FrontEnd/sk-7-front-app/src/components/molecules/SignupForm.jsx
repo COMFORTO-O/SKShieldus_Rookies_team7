@@ -35,7 +35,10 @@ function SignupForm() {
                 name,
                 phone,
             });
-            if (result?.token) navigate("/login");
+
+            if (result && result.token) {
+                navigate("/login", { replace: true });
+            }
         } catch (err) {
             alert("회원가입 실패");
             console.error(err);

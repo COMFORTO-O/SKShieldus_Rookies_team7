@@ -1,27 +1,41 @@
 package com.example.shieldus.config.websocket;
 
+
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
+import java.util.concurrent.*;
 
 @Component
 public class ChatWebSocketHandler extends TextWebSocketHandler {
-    private final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+
+    private final Map<String, List<WebSocketSession>> chatRooms = new ConcurrentHashMap<>();
 
     @Override
-    public void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
-        for (WebSocketSession s : sessions) {
-            s.sendMessage(message);
+    public void afterConnectionEstablished(WebSocketSession session) {
+        String roomId = getRoomId(session);
+        chatRooms.computeIfAbsent(roomId, k -> new CopyOnWriteArrayList<>()).add(session);
+    }
+
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
+        String roomId = getRoomId(session);
+        for (WebSocketSession s : chatRooms.getOrDefault(roomId, List.of())) {
+            if (s.isOpen()) s.sendMessage(message);
         }
     }
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) {
-        sessions.add(session);
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+        String roomId = getRoomId(session);
+        chatRooms.getOrDefault(roomId, List.of()).remove(session);
+    }
+
+    private String getRoomId(WebSocketSession session) {
+        String uri = session.getUri().toString();
+        return uri.substring(uri.lastIndexOf("/") + 1);
     }
 }

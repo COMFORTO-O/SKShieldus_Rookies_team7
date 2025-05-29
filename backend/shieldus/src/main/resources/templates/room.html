@@ -1,25 +1,80 @@
-<!-- room.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <title>방 입장</title>
+  <style>
+    body {
+      display: flex;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .editor {
+      flex: 2;
+      padding: 1rem;
+    }
+    .chat {
+      flex: 1;
+      border-left: 1px solid #ccc;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+    #editor {
+      width: 100%;
+      height: 90vh;
+    }
+    #chatLog {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      list-style: none;
+    }
+    #chatInput {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  </style>
 </head>
 <body>
-<h2>방 ID: [[${roomId}]]</h2>
-<textarea id="editor" rows="15" cols="80"></textarea>
-
+<div class="editor">
+  <h2>방 ID: [[${roomId}]]</h2>
+  <textarea id="editor"></textarea>
+</div>
+<div class="chat">
+  <h3>채팅</h3>
+  <ul id="chatLog"></ul>
+  <input type="text" id="chatInput" placeholder="메시지를 입력하세요">
+  <button onclick="sendChat()">전송</button>
+</div>
 <script>
   const roomId = "[[${roomId}]]";
-  const socket = new WebSocket("ws://localhost:8080/ws/room/" + roomId);
-
-  socket.onmessage = function (event) {
-      document.getElementById("editor").value = event.data;
+  const docSocket = new WebSocket("ws://localhost:8080/ws/room/" + roomId);
+  docSocket.onmessage = (event) => {
+    document.getElementById("editor").value = event.data;
   };
-
   document.getElementById("editor").addEventListener("input", function () {
-      socket.send(this.value);
+    docSocket.send(this.value);
   });
+
+  const chatSocket = new WebSocket("ws://localhost:8080/ws/chat/" + roomId);
+  chatSocket.onmessage = (event) => {
+    const li = document.createElement("li");
+    li.textContent = event.data;
+    document.getElementById("chatLog").appendChild(li);
+  };
+  function sendChat() {
+    const input = document.getElementById("chatInput");
+    if (input.value.trim() !== "") {
+      chatSocket.send(input.value);
+      input.value = "";
+    }
+  }
 </script>
 </body>
 </html>

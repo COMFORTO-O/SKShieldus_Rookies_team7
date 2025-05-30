@@ -36,4 +36,10 @@ public class Member {
 
     private LocalDateTime deletedOn;
 
+
+    public void delete(){
+        this.isDeleted = true;
+        this.deletedOn = LocalDateTime.now();
+    }
+
 }

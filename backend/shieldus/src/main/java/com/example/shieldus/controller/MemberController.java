@@ -42,6 +42,7 @@ public class MemberController {
     // 사용자 삭제 ( soft ), 진짜 삭제가 아닌 컬럼 붙여서 삭제
     @GetMapping("/delete")
     public ResponseDto<String> deleteMember(@AuthenticationPrincipal MemberUserDetails userDetails) {
+        memberService.deleteMember(userDetails.getMemberId());
         return ResponseDto.success("ok");
     }
 

@@ -75,4 +75,18 @@ public class MemberService {
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
         }
     }
+
+    @Transactional
+    public void deleteMember(Long memberId) {
+        Optional<Member> member = memberRepository.findById(memberId);
+        if (member.isEmpty()) {
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+        }
+        try{
+            member.get().delete();
+        }catch (DataAccessException e){
+            throw new CustomException(ErrorCode.DATABASE_ERROR, e);
+        }
+
+    }
 }

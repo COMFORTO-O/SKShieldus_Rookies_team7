@@ -39,6 +39,7 @@ public class ProblemService {
         }
     }
 
+<<<<<<< HEAD
     public void deleteProblem(Long problemId, Long memberId) {
         try {
             Problem problem = problemRepository.findById(problemId)
@@ -59,5 +60,12 @@ public class ProblemService {
             log.error("Unexpected error in deleteProblem", e);
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
         }
+=======
+
+    public ProblemResponseDto getProblem(Long id) {
+        Problem problem = problemRepository.findById(id).orElseThrow(()->new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+        return ProblemResponseDto.fromProblem(problem);
+
+>>>>>>> 98dbc1b039a5671c9abf82022e942bbd96788bfc
     }
 }

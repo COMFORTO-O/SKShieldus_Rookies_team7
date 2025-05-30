@@ -1,6 +1,7 @@
 package com.example.shieldus.config.websocket;
 
 import com.example.shieldus.config.jwt.JwtTokenProvider;
+import com.example.shieldus.config.security.service.MemberUserDetails;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -55,8 +56,27 @@ public class RoomWebSocketHandler extends TextWebSocketHandler {
         String roomId = getRoomId(session);
         JsonNode jsonNode = objectMapper.readTree(message.getPayload());
 
-        String type = jsonNode.get("type").asText(); // "chat" or "code_update" 등
+        String type = jsonNode.get("type").asText();
 
+        Object principal = session.getPrincipal();
+        if (!(principal instanceof MemberUserDetails userDetails)) {
+            System.out.println("인증되지 않은 사용자 요청 차단");
+            return;
+        }
+
+        String username = userDetails.getUsername();
+        Room room = RoomController.roomMap.get(roomId);
+        if (room == null) return;
+
+        RoomRole role = room.getMemberRoles().getOrDefault(username, RoomRole.CHAT_ONLY);
+
+        // ✅ 권한 확인
+        if (type.equals("code_update") && role != RoomRole.CHAT_AND_EDIT) {
+            System.out.println("[" + roomId + "] " + username + "는 코드 수정 권한이 없습니다.");
+            return;
+        }
+
+        // ✅ 브로드캐스트
         for (WebSocketSession s : roomSessions.getOrDefault(roomId, List.of())) {
             if (s.isOpen()) {
                 ObjectNode outbound = objectMapper.createObjectNode();
@@ -96,5 +116,24 @@ public class RoomWebSocketHandler extends TextWebSocketHandler {
             System.out.println("연결 종료: " + reason);
             session.close(CloseStatus.BAD_DATA);
         } catch (IOException ignored) {}
+    }
+
+    public void broadcastRoleChange(String roomId, String username, RoomRole role) {
+        List<WebSocketSession> sessions = roomSessions.getOrDefault(roomId, List.of());
+
+        ObjectNode message = objectMapper.createObjectNode();
+        message.put("type", "role_changed");
+        ObjectNode data = objectMapper.createObjectNode();
+        data.put("username", username);
+        data.put("newRole", role.toString());
+        message.set("data", data);
+
+        for (WebSocketSession session : sessions) {
+            try {
+                if (session.isOpen()) {
+                    session.sendMessage(new TextMessage(message.toString()));
+                }
+            } catch (IOException ignored) {}
+        }
     }
 }

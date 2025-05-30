@@ -1,5 +1,6 @@
 package com.example.shieldus.config.websocket;
 
+import com.example.shieldus.config.security.service.MemberUserDetails;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,7 +26,7 @@ public class RoomController {
     }
     @PostMapping("/api/rooms")
     @ResponseBody
-    public Room createRoom(@RequestBody CreateRoomRequestDto createRoomRequestDto,@AuthenticationPrincipal UserDetails userDetails) {
+    public Room createRoom(@RequestBody CreateRoomRequestDto createRoomRequestDto,@AuthenticationPrincipal MemberUserDetails userDetails) {
         String roomId = UUID.randomUUID().toString();
         System.out.println("testests"+userDetails.getUsername());
         Room room = new Room(roomId, createRoomRequestDto.getName(), userDetails.getUsername());

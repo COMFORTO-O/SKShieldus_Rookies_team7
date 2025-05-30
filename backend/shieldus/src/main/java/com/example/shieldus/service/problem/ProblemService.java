@@ -1,6 +1,7 @@
 package com.example.shieldus.service.problem;
 
 import com.example.shieldus.controller.dto.ProblemResponseDto;
+import com.example.shieldus.entity.problem.Problem;
 import com.example.shieldus.exception.CustomException;
 import com.example.shieldus.exception.ErrorCode;
 import com.example.shieldus.repository.problem.ProblemRepository;
@@ -36,5 +37,12 @@ public class ProblemService {
             log.error("Unexpected error in getFilteredProblems", e);
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
         }
+    }
+
+
+    public ProblemResponseDto getProblem(Long id) {
+        Problem problem = problemRepository.findById(id).orElseThrow(()->new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+        return ProblemResponseDto.fromProblem(problem);
+
     }
 }

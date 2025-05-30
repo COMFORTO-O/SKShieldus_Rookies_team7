@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,8 +56,9 @@ public class MemberController {
 
     // 푼 문제 상세정보
     @GetMapping("/problem/solved/detail/{id}")
-    public ResponseDto<String> getSolvedProblemDetail(@AuthenticationPrincipal MemberUserDetails userDetails) {
-        return ResponseDto.success("ok");
+    public ResponseDto<ProblemResponseDto> getSolvedProblemDetail(@PathVariable Long id, @AuthenticationPrincipal MemberUserDetails userDetails) {
+        ProblemResponseDto problem = problemService.getProblem(id);
+        return ResponseDto.success(problem);
     }
 
     // 임시저장 확인

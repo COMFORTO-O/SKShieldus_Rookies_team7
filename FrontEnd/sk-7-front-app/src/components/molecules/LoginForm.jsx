@@ -1,15 +1,15 @@
-import AuthInput from "../atoms/AuthInput";
 import Button from "../atoms/Button";
 import useAuthStore from "../../store/useAuthStore";
 import Spinner from "../atoms/Spinner";
+import AuthInput from "../atoms/AuthInput";
 
 import { useCallback, useState, useEffect } from "react";
 import { encryptPassword } from "../../encrypt/encryptPassword";
 import { loginTask } from "../../api/loginTask";
 import { useNavigate } from "react-router-dom";
+import { getCookie } from "../../api/getCookie";
 
 // 로그인 페이지
-
 function LoginForm() {
     // 아이디, 비밀번호 상태 저장
     const [id, setId] = useState("");
@@ -55,15 +55,25 @@ function LoginForm() {
 
             // 로그인 시도
             try {
+                // { success: , data: }
                 const result = await loginTask({
                     email: id,
                     encryptedPassword: e_pwd,
                 });
-                // result = response.data
-                if (result && result.token) {
-                    setLogin(result.token); // 상태 저장
-                    // 페이지 이동
-                    navigate("/", { replace: true });
+                // result = { success: , data:response.data }
+                if (result.success) {
+                    // 로그인 성공
+                    const token = getCookie("Authorization");
+                    if (token) {
+                        alert("로그인 성공");
+                        // 토큰 정보 저장
+                        localStorage.setItem("accessToken", token);
+                        setLogin(token);
+                        // 페이지 이동
+                        navigate("/", { replace: true });
+                    } else {
+                        setError("로그인은 성공했으나 토큰이 없음.");
+                    }
                 } else {
                     setError(
                         result?.message ||
@@ -80,16 +90,6 @@ function LoginForm() {
             } finally {
                 setLoading(false);
             }
-
-            // // 테스트용 코드
-            // if (id === "test" && password === "test") {
-            //     alert("로그인 성공");
-            //     navigate("/", { replace: true });
-            //     setTimeout(() => {
-            //         setLogin({ isLoggedIn: true, user: "test user" });
-            //         console.log(isLoggedIn);
-            //     }, 1000);
-            // }
         },
         [id, password, setLogin, navigate]
     );
@@ -102,46 +102,54 @@ function LoginForm() {
     }, [isLoggedIn, navigate]);
 
     return (
-        <form className="w-full space-y-8" onSubmit={handleLogin}>
-            {/* 에러 메시지 표시 */}
-            {error && (
-                <div className="w-full text-center text-red-600 bg-red-50 border border-red-200 rounded p-2 mb-2">
-                    {error}
-                </div>
-            )}
-            <AuthInput
-                label="이메일"
-                placeholder="Email"
-                bottomMessage="이메일을 입력하세요."
-                onChange={handleIdChange}
-            />
-            <AuthInput
-                label="비밀번호"
-                placeholder="PW"
-                bottomMessage="비밀번호를 입력하세요."
-                type="password"
-                onChange={handlePasswordChange}
-            />
-
-            {/* 로그인 버튼 */}
-            <Button
-                className="w-full bg-primary text-white font-bold py-2 rounded hover:bg-gray-800"
-                type={"submit"}
-            >
-                {loading ? (
-                    <div className="flex items-center justify-center">
-                        <Spinner />
-                        로그인 중...
+        <div>
+            <form className="w-full space-y-8" onSubmit={handleLogin}>
+                {/* 에러 메시지 표시 */}
+                {error && (
+                    <div className="w-full text-center text-red-600 bg-red-50 border border-red-200 rounded p-2 mb-2">
+                        {error}
                     </div>
-                ) : (
-                    "로그인"
                 )}
-            </Button>
+                <AuthInput
+                    label="이메일"
+                    placeholder="Email"
+                    bottomMessage="이메일을 입력하세요."
+                    onChange={handleIdChange}
+                />
+                <AuthInput
+                    label="비밀번호"
+                    placeholder="PW"
+                    bottomMessage="비밀번호를 입력하세요."
+                    type="password"
+                    onChange={handlePasswordChange}
+                />
+
+                {/* 로그인 버튼 */}
+                <Button
+                    className="w-full bg-primary text-white font-bold py-2 rounded hover:bg-gray-800"
+                    type={"submit"}
+                >
+                    {loading ? (
+                        <div className="flex items-center justify-center">
+                            <Spinner />
+                            로그인 중...
+                        </div>
+                    ) : (
+                        "로그인"
+                    )}
+                </Button>
+            </form>
             {/* 회원가입 버튼 */}
-            <Button className="w-full bg-gray-300 text-black font-bold py-2 rounded hover:bg-gray-400">
+            <Button
+                className="w-full bg-gray-300 text-black font-bold py-2 rounded mt-8 hover:bg-gray-400"
+                onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/register");
+                }}
+            >
                 회원가입
             </Button>
-        </form>
+        </div>
     );
 }
 

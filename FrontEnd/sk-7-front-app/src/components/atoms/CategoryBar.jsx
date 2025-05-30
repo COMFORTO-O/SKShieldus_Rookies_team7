@@ -86,7 +86,10 @@ const CategoryBar = ({ onReset, onSearch }) => {
             <div>
                 <form
                     className="flex items-center gap-2 mt-2 w-full"
-                    onSubmit={onSearch}
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        onSearch();
+                    }}
                 >
                     <input
                         type="text"

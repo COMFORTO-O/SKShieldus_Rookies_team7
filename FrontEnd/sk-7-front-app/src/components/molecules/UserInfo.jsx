@@ -1,18 +1,35 @@
 import { Avatar, Button } from "@mui/material";
 import useAuthStore from "../../store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import getUserInfo from "../../api/getUserInfo";
+import { useEffect, useState } from "react";
 
 const UserInfoContainerStyle =
     "mx-14 h-36 flex flex-row border-solid border-2 rounded-lg xl:mx-0 xl:flex-col xl:h-full ";
 
 const UserInfo = () => {
     const { isLoggedIn, accessToken } = useAuthStore();
-
+    const [userInfo, setUserInfo] = useState(null);
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    if (isLoggedIn) {
-        // 유저 정보 가져오기
-    }
+    useEffect(() => {
+        if (isLoggedIn) {
+            // 유저 정보 가져오기
+            const fetchUserInfo = async () => {
+                try {
+                    const response = await getUserInfo();
+                    setUserInfo(response?.data || null);
+                } catch (e) {
+                    setError(
+                        e?.message || "사용자 정보를 불러오지 못했습니다."
+                    );
+                    setUserInfo(null);
+                }
+            };
+            fetchUserInfo();
+        }
+    }, [isLoggedIn]);
 
     return (
         <>
@@ -31,7 +48,7 @@ const UserInfo = () => {
                         <div className="flex-1 flex flex-col justify-center">
                             <ul className="flex flex-col gap-3">
                                 <li className="font-sourgummy font-semibold text-lg text-blue-700 xl:text-center">
-                                    이름
+                                    {userInfo?.name || "이름"}
                                 </li>
                                 <li>점수:</li>
                                 <li>관리자 or 사용자</li>

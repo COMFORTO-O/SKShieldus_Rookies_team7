@@ -8,24 +8,23 @@ export const getProblemList = async ({
     page,
 }) => {
     console.log(
-        `요청 : {\n${title}\n${category}\n${level}\n${status}\n${page}`
+        `요청\ntitle:${title}\ncategory:${category}\nlevel:${level}\nstatus:${status}\npage:${page}`
     );
     try {
-        const isSolved = status ? "solved" : "unsolved";
-
         const response = await axios.get(
             `${import.meta.env.VITE_API_URL}/api/problem/page`,
             {
-                title: title,
-                category: category,
-                level: level,
-                status: isSolved,
-                page: page,
-            },
-            {
+                params: {
+                    title: title,
+                    category: category,
+                    level: level,
+                    status: status,
+                    page: page,
+                },
                 headers: {
                     "Content-Type": "application/json",
                 },
+                withCredentials: true,
             }
         );
 

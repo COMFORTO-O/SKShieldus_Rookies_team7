@@ -1,18 +1,26 @@
 package com.example.shieldus.config.websocket;
 
 import com.example.shieldus.config.security.service.MemberUserDetails;
+import com.example.shieldus.entity.problem.Problem;
+import com.example.shieldus.repository.problem.ProblemRepository;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
 public class RoomController {
+    @Autowired
+    ProblemRepository problemRepository;
     private final Map<String, Room> roomMap = new ConcurrentHashMap<>();
 
     @GetMapping("/rooms")
@@ -22,19 +30,28 @@ public class RoomController {
     @Getter
     @Setter
     public static class CreateRoomRequestDto{
-        String name;
+        Long problemId;
     }
-    @PostMapping("/api/rooms")
+    @PostMapping("/api/rooms") // 방생성
     @ResponseBody
-    public Room createRoom(@RequestBody CreateRoomRequestDto createRoomRequestDto,@AuthenticationPrincipal MemberUserDetails userDetails) {
+    public Room createRoom(@RequestBody CreateRoomRequestDto createRoomRequestDto,
+                           @AuthenticationPrincipal MemberUserDetails userDetails) {
+
+        Long problemId = createRoomRequestDto.getProblemId();
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "문제를 찾을 수 없습니다."));
+
+        String username = userDetails.getUsername();
+        String title = problem.getTitle() + " : " + username;
+
         String roomId = UUID.randomUUID().toString();
-        System.out.println("testests"+userDetails.getUsername());
-        Room room = new Room(roomId, createRoomRequestDto.getName(), userDetails.getUsername());
+        Room room = new Room(roomId, title, username);
         roomMap.put(roomId, room);
+
         return room;
     }
 
-    @GetMapping("/api/rooms")
+    @GetMapping("/api/rooms") // 방 조회
     @ResponseBody
     public Collection<Room> getAllRooms() {
         return roomMap.values();

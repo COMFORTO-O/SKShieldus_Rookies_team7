@@ -1,0 +1,12 @@
+1. Docker와 Docker Compose 설치
+   - https://www.docker.com/products/docker-desktop
+
+2. Judge0 디렉토리 이동
+  
+3. Judge0 실행
+   docker compose up --build
+
+※ 오류 시
+   - judge0.conf 파일 확인 => CRLF일 시
+	CRLF => LF 로 변경
+   

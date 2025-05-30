@@ -1,8 +1,13 @@
-import React from "react";
-
-const Button = ({ children, onClick, disabled = false, className = "" }) => {
+const Button = ({
+    children,
+    type,
+    onClick,
+    disabled = false,
+    className = "",
+}) => {
     return (
         <button
+            type={type}
             onClick={onClick}
             disabled={disabled}
             className={`

@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RoomController {
     @Autowired
     ProblemRepository problemRepository;
-    private final Map<String, Room> roomMap = new ConcurrentHashMap<>();
+    public static final Map<String, Room> roomMap = new ConcurrentHashMap<>();
 
     @GetMapping("/rooms")
     public String roomListPage() {
@@ -47,7 +47,7 @@ public class RoomController {
         String roomId = UUID.randomUUID().toString();
         Room room = new Room(roomId, title, username);
         roomMap.put(roomId, room);
-
+        System.out.println("생성된 방의 권한 목록: " + room.getMemberRoles());
         return room;
     }
 

@@ -53,7 +53,21 @@
 </div>
 <script>
   const roomId = "[[${roomId}]]";
-  const socket = new WebSocket("ws://localhost:8080/ws/room/" + roomId);
+
+  // ✅ 쿠키에서 Authorization 토큰 추출
+  function getCookie(name) {
+    const value = document.cookie
+      .split("; ")
+      .find(row => row.startsWith(name + "="));
+    return value ? value.split("=")[1] : null;
+  }
+
+  // ✅ Authorization 쿠키에서 accessToken 가져오기
+  const rawToken = getCookie("Authorization");
+  const token = rawToken?.startsWith("Bearer ") ? rawToken.slice(7) : rawToken;
+
+  // ✅ 토큰 포함한 WebSocket 연결
+  const socket = new WebSocket("ws://localhost:8080/ws/room/" + roomId + "?token=" + token);
 
   socket.onmessage = (event) => {
     const data = JSON.parse(event.data);

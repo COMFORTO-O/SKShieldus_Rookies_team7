@@ -6,6 +6,7 @@ import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 
 
 @Data
@@ -35,4 +36,17 @@ public class Problem extends BaseEntity {
 
     private Integer level;
 
+    // 3. 소프트 삭제 관련 필드 추가
+    @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
+    private Boolean isDeleted = false;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    public void delete() {
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
+    }
 }
+
+

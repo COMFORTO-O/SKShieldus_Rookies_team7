@@ -1,6 +1,7 @@
 package com.example.shieldus.service.problem;
 
 import com.example.shieldus.controller.dto.ProblemResponseDto;
+import com.example.shieldus.entity.problem.Problem;
 import com.example.shieldus.exception.CustomException;
 import com.example.shieldus.exception.ErrorCode;
 import com.example.shieldus.repository.problem.ProblemRepository;
@@ -34,6 +35,28 @@ public class ProblemService {
             throw new CustomException(ErrorCode.DATABASE_ERROR, e);
         } catch (Exception e) {
             log.error("Unexpected error in getFilteredProblems", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
+    public void deleteProblem(Long problemId, Long memberId) {
+        try {
+            Problem problem = problemRepository.findById(problemId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+
+            // 문제 작성자만 삭제할 수 있도록 검증
+            if (!problem.getMember().getId().equals(memberId)) {
+                throw new CustomException(ErrorCode.FORBIDDEN, "문제 작성자만 삭제할 수 있습니다.");
+            }
+
+            problemRepository.delete(problem);
+        } catch (DataAccessException e) {
+            log.error("Database error in deleteProblem", e);
+            throw new CustomException(ErrorCode.DATABASE_ERROR, e);
+        } catch (CustomException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected error in deleteProblem", e);
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
         }
     }

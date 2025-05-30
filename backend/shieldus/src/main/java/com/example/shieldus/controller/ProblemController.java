@@ -41,10 +41,14 @@ public class ProblemController {
     }
 
     // 문제 삭제
-    @GetMapping("/delete/{id}")
-    public ResponseDto<String> deleteProblem(@AuthenticationPrincipal MemberUserDetails userDetails) {
-        return ResponseDto.success("ok");
+    @DeleteMapping("/delete/{id}")
+    public ResponseDto<String> deleteProblem(
+            @PathVariable Long id,
+            @AuthenticationPrincipal MemberUserDetails userDetails) {
+        problemService.deleteProblem(id, userDetails.getMemberId());
+        return ResponseDto.success("문제가 성공적으로 삭제되었습니다.");
     }
+
     // 문제 업데이트
     @GetMapping("/update{id}")
     public ResponseDto<String> updateProblem(@AuthenticationPrincipal MemberUserDetails userDetails) {

@@ -69,9 +69,9 @@ public class ServletSecurityConfig {
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-        // ↓↓↓ 테스트 중 JWT 필터 비활성화
-        // .addFilterBefore(new JwtRequestFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-        // .addFilterAt(new JwtAuthenticationFilter(authenticationManager, jwtTokenProvider, rsaUtil), UsernamePasswordAuthenticationFilter.class)
+
+                .addFilterBefore(new JwtRequestFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(new JwtAuthenticationFilter(authenticationManager, jwtTokenProvider, rsaUtil), UsernamePasswordAuthenticationFilter.class)
         ;
 
         return http.build();
@@ -83,7 +83,7 @@ public class ServletSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://127.0.0.1:8080"));
         // 허용할 HTTP 메서드 (GET, POST, PUT, DELETE, OPTIONS 등)
         configuration.setAllowedMethods(List.of("*"));
         // 허용할 헤더 (모든 헤더 허용)

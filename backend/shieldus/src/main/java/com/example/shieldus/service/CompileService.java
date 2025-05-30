@@ -7,8 +7,7 @@ import com.example.shieldus.entity.member.*;
 import com.example.shieldus.entity.member.enumration.MemberTempCodeStatusEnum;
 import com.example.shieldus.entity.problem.Problem;
 import com.example.shieldus.entity.problem.ProblemTestCase;
-import com.example.shieldus.exception.CustomException;
-import com.example.shieldus.exception.ErrorCode;
+
 import com.example.shieldus.repository.member.MemberRepository;
 import com.example.shieldus.repository.member.MemberSubmitProblemRepository;
 import com.example.shieldus.repository.member.MemberTempCodeRepository;

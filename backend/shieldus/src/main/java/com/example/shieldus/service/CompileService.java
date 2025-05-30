@@ -48,13 +48,13 @@ public class CompileService {
     private static final String JUDGE0_URL = "http://localhost:2358/submissions?base64_encoded=false&wait=true";
 
     //Test 3개만
-    public CompileResponseDto runTest(CompileRequestDto requestDto) {
+    public CompileResponseDto runTest(CompileRequestDto requestDto, Long memberId) {
         //문제 가져오기
         Problem problem = problemRepository.findById(requestDto.getProblemId())
                 .orElseThrow(() -> new RuntimeException("문제 없음"));
 
         //멤버 가져오기 인증 로직 추가
-        Member member = getCurrentMember();
+        Member member = getCurrentMember(memberId);
 
         //제출 내역 or Test 내역 있으면 가져오기
         MemberSubmitProblem submit = getOrCreateSubmit(member, problem);
@@ -87,12 +87,12 @@ public class CompileService {
                 .build();
     }
 
-    public CompileResponseDto runScore(CompileRequestDto requestDto) {
+    public CompileResponseDto runScore(CompileRequestDto requestDto, Long memberId) {
         // 문제 가져오기
         Problem problem = problemRepository.findById(requestDto.getProblemId())
                 .orElseThrow(() -> new RuntimeException("문제 없음"));
         // 멤버 가져오기 로직 추가
-        Member member = getCurrentMember();
+        Member member = getCurrentMember(memberId);
 
         //제출내역 없으면 넣기
         MemberSubmitProblem submit = getOrCreateSubmit(member, problem);
@@ -207,9 +207,9 @@ public class CompileService {
                                 .build()));
     }
 
-    private Member getCurrentMember() {
+    private Member getCurrentMember(Long id) {
 
-        return memberRepository.findById(1L).orElseThrow();
+        return memberRepository.findById(id).orElseThrow();
     }
 }
 

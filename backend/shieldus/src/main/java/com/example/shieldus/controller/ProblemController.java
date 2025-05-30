@@ -33,4 +33,32 @@ public class ProblemController {
 
         return ResponseDto.success(page);
     }
+
+    // 문제 만들기
+    @GetMapping("/create")
+    public ResponseDto<String> createProblem(@AuthenticationPrincipal MemberUserDetails userDetails) {
+        return ResponseDto.success("ok");
+    }
+
+    // 문제 삭제
+    @GetMapping("/delete/{id}")
+    public ResponseDto<String> deleteProblem(@AuthenticationPrincipal MemberUserDetails userDetails) {
+        return ResponseDto.success("ok");
+    }
+    // 문제 업데이트
+    @GetMapping("/update{id}")
+    public ResponseDto<String> updateProblem(@AuthenticationPrincipal MemberUserDetails userDetails) {
+        return ResponseDto.success("ok");
+    }
+    // 문제 상세정보
+    @GetMapping("/detail/{id}")
+    public ResponseDto<String> getProblemDetail(@AuthenticationPrincipal MemberUserDetails userDetails) {
+        return ResponseDto.success("ok");
+    }
+
+    // 문제 답변 리스트
+    @GetMapping("/detail/{id}/solved")
+    public ResponseDto<String> getProblemSolvedList(@AuthenticationPrincipal MemberUserDetails userDetails) {
+        return ResponseDto.success("ok");
+    }
 }

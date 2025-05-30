@@ -4,6 +4,7 @@ package com.example.shieldus.config.security;
 import com.example.shieldus.config.jwt.JwtTokenProvider;
 import com.example.shieldus.config.security.filter.JwtAuthenticationFilter;
 import com.example.shieldus.config.security.filter.JwtRequestFilter;
+import com.example.shieldus.config.security.service.MemberUserDetailsService;
 import com.example.shieldus.config.security.utils.RSAUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -40,6 +41,7 @@ public class ServletSecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RSAUtil rsaUtil;
+    private final MemberUserDetailsService memberUserDetailsService;
 
     public String WHITE_LIST = "";
     @Bean
@@ -70,7 +72,7 @@ public class ServletSecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
 
-                .addFilterBefore(new JwtRequestFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtRequestFilter(jwtTokenProvider, memberUserDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(new JwtAuthenticationFilter(authenticationManager, jwtTokenProvider, rsaUtil), UsernamePasswordAuthenticationFilter.class)
         ;
 
@@ -83,7 +85,7 @@ public class ServletSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://127.0.0.1:8080"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8081", "http://127.0.0.1:8081"));
         // 허용할 HTTP 메서드 (GET, POST, PUT, DELETE, OPTIONS 등)
         configuration.setAllowedMethods(List.of("*"));
         // 허용할 헤더 (모든 헤더 허용)

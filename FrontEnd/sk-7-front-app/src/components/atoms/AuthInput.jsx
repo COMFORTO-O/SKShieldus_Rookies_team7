@@ -5,12 +5,13 @@ const AuthInput = ({
     label,
     type = "text",
     placeholder = "",
-    bottomText = "",
+    bottomMessage = "",
     value,
-    onChange,
-    className = "",
     required = false,
     error = "",
+    onChange,
+    className = "",
+    ...rest
 }) => {
     // input 값 초기화 함수
     const inputClear = () => {
@@ -20,13 +21,17 @@ const AuthInput = ({
     return (
         <div className="relative w-full">
             {/* 라벨 */}
-            <Label
-                htmlFor={id}
-                className="absolute -top-2 left-3 px-1 bg-white text-xs text-gray-500"
-            >
-                {label}
-            </Label>
+            {label && (
+                <Label
+                    htmlFor={id}
+                    className="absolute -top-2 left-3 px-1 bg-white text-xs text-gray-500"
+                >
+                    {label}
+                    {required && <span className="text-red-500 ml-1">*</span>}
+                </Label>
+            )}
 
+            {/* 인풋 박스 */}
             <div className="flex items-center border border-black rounded px-4 py-3 focus-within:ring-2 focus-within:ring-primary">
                 <input
                     id={id}
@@ -35,13 +40,8 @@ const AuthInput = ({
                     value={value}
                     onChange={onChange}
                     required={required}
-                    className={`w-full outline-none bg-transparent
-                                ${
-                                    error
-                                        ? "border-red-500 focus:ring-red-300"
-                                        : "border-gray-300 focus:ring-blue-300"
-                                }
-                                ${className}`}
+                    {...rest}
+                    className={`w-full outline-none bg-transparent ${className}`}
                 />
                 <button
                     type="button"
@@ -53,7 +53,13 @@ const AuthInput = ({
             </div>
 
             {/* 하단 메시지 */}
-            <div className="ml-2 mt-1 text-xs text-gray-400">{bottomText}</div>
+            <div
+                className={`ml-2 mt-1 text-xs ${
+                    error ? " text-red-600" : " text-gray-400"
+                }`}
+            >
+                {bottomMessage}
+            </div>
         </div>
     );
 };

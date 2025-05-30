@@ -15,23 +15,27 @@ public class MemberUserDetails implements UserDetails {
     private String email;
     private String password;
     private List<GrantedAuthority> authorities;
-    private Member member;
+    private Long id;
+    private String name;
+    private String phone;
+    private Integer memberRank;
+
 
 
     public MemberUserDetails(Member member) {
-        this.member = member;
         this.email=member.getEmail();
         this.password=member.getPassword();
-
+        this.id = member.getId();
+        this.name=member.getName();
+        this.phone=member.getPhone();
+        this.memberRank=member.getMemberRank();
         // TODO : 05-27 : getRole 권한 넣기
-        this.authorities= Stream.of("ROLE_ADMIN")
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        this.authorities= member.getRole().getAuthorities();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return authorities;
     }
 
     @Override
@@ -42,6 +46,19 @@ public class MemberUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return this.email;
+    }
+
+    public Long getMemberId(){
+        return this.id;
+    }
+    public String getMemberName(){
+        return this.name;
+    }
+    public String getMemberPhone(){
+        return this.phone;
+    }
+    public Integer getMemberRank(){
+        return this.memberRank;
     }
 
     @Override

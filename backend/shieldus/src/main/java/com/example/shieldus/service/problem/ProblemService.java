@@ -1,33 +1,40 @@
 package com.example.shieldus.service.problem;
 
 import com.example.shieldus.controller.dto.ProblemResponseDto;
-import com.example.shieldus.entity.problem.Problem;
+import com.example.shieldus.exception.CustomException;
+import com.example.shieldus.exception.ErrorCode;
 import com.example.shieldus.repository.problem.ProblemRepository;
-
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProblemService {
 
     private final ProblemRepository problemRepository;
 
-    public List<ProblemResponseDto> getAllProblems() {
-        List<Problem> problems = problemRepository.findAll();
-
-        return problems.stream().map(problem ->
-                ProblemResponseDto.builder()
-                        .id(problem.getId())
-                        .title(problem.getTitle())
-                        .detail(problem.getDetail())
-                        .category(problem.getCategory())
-                        .level(problem.getLevel())
-                        .memberName(problem.getMember().getName())
-                        .build()
-        ).collect(Collectors.toList());
+    public Page<ProblemResponseDto> getFilteredProblems(
+            Long memberId,
+            String category,
+            Integer level,
+            String title,
+            String status,
+            Pageable pageable) {
+        try {
+            return problemRepository.findProblemsWithFilters(
+                    memberId, category, level, title, status, pageable
+            );
+        } catch (DataAccessException e) {
+            log.error("Database error in getFilteredProblems", e);
+            throw new CustomException(ErrorCode.DATABASE_ERROR, e);
+        } catch (Exception e) {
+            log.error("Unexpected error in getFilteredProblems", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
+        }
     }
 }

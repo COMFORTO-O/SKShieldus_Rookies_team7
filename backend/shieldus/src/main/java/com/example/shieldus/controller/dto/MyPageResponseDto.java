@@ -8,9 +8,9 @@ import java.util.List;
 @Getter
 @Builder
 public class MyPageResponseDto {
-    private String name;
-    private String email;
-    private List<SolvedProblem> solvedProblems; // 풀었던 문제 리스트
+    private String name; //이름
+    private String email; //이메일
+    private List<SolvedProblem> solvedProblems; // 맞춘문제 리스트
 
     // 풀었던 문제 내부 DTO
     @Getter

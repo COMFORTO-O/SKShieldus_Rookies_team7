@@ -47,10 +47,6 @@ public class MemberService {
                 .build();
     }
 
-
-
-
-
     // 회원가입
     @Transactional
     public void register(AccountRequestDto.Register dto) {

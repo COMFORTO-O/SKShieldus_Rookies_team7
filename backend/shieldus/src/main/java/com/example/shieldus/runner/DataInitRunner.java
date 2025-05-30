@@ -43,6 +43,16 @@ public class DataInitRunner implements CommandLineRunner {
                 .role(MemberRoleEnum.USER)
                 .build();
         memberRepository.save(member);
+        //
+        Member member2 = Member.builder()
+                .email("b@b.com")
+                .password(passwordEncoder.encode("123"))
+                .name("테스트유저")
+                .phone("01012345678")
+                .memberRank(0)
+                .role(MemberRoleEnum.USER)
+                .build();
+        memberRepository.save(member2);
 
         // 문제 1: 두 수 더하기
         Problem problem1 = Problem.builder()

@@ -35,7 +35,7 @@
       margin-bottom: 0.5rem;
       list-style: none;
     }
-    #chatInput {;
+    #chatInput {
       box-sizing: border-box;
     }
   </style>
@@ -53,28 +53,40 @@
 </div>
 <script>
   const roomId = "[[${roomId}]]";
-  const docSocket = new WebSocket("ws://localhost:8080/ws/room/" + roomId);
-  docSocket.onmessage = (event) => {
-    document.getElementById("editor").value = event.data;
+  const socket = new WebSocket("ws://localhost:8080/ws/room/" + roomId);
+
+  socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    const type = data.type;
+
+    if (type === "code_update") {
+      document.getElementById("editor").value = data.data.code;
+    } else if (type === "chat") {
+      const li = document.createElement("li");
+      li.textContent = data.data.message;
+      document.getElementById("chatLog").appendChild(li);
+    }
   };
+
   document.getElementById("editor").addEventListener("input", function () {
-    docSocket.send(this.value);
+    const message = {
+      type: "code_update",
+      code: this.value
+    };
+    socket.send(JSON.stringify(message));
   });
 
-  const chatSocket = new WebSocket("ws://localhost:8080/ws/chat/" + roomId);
-  chatSocket.onmessage = (event) => {
-    const li = document.createElement("li");
-    li.textContent = event.data;
-    document.getElementById("chatLog").appendChild(li);
-  };
   function sendChat() {
     const input = document.getElementById("chatInput");
     if (input.value.trim() !== "") {
-      chatSocket.send(input.value);
+      const message = {
+        type: "chat",
+        message: input.value
+      };
+      socket.send(JSON.stringify(message));
       input.value = "";
     }
   }
 </script>
 </body>
 </html>
-      width: 100%

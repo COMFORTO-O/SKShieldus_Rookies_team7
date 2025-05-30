@@ -28,7 +28,7 @@ public class SwaggerConfig {
 
         return new OpenAPI()
                 .info(info)
-                .components(new Components().addSecuritySchemes("bearerAuth", securityScheme)) // "bearerAuth"는 스키마의 논리적 이름
+                .components(new Components().addSecuritySchemes("Authorization", securityScheme)) // "bearerAuth"는 스키마의 논리적 이름
                 .addSecurityItem(securityRequirement); // 이 스키마를 모든 API에 기본적으로 적용
     }
 }

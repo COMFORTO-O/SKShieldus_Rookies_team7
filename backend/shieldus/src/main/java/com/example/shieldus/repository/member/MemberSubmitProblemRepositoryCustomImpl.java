@@ -1,7 +1,9 @@
 package com.example.shieldus.repository.member;
 
 
+import com.example.shieldus.controller.dto.ProblemResponseDto;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.example.shieldus.entity.member.QMemberSubmitProblem.memberSubmitProblem;
+import static com.example.shieldus.entity.problem.QProblem.problem;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,12 +24,21 @@ public class MemberSubmitProblemRepositoryCustomImpl implements MemberSubmitProb
     private final JPAQueryFactory queryFactory;
 
     /*
-    * 푼 문제 제목과, submit 의 컬럼을 가져와 dto 로 제작
-    * */
+     * 푼 문제 제목과, submit 의 컬럼을 가져와 dto 로 제작
+     * */
     @Override
-    public Page<MemberSubmitProblem> getMemberSubmitProblems(Long memberId, Pageable pageable) {
-        queryFactory.select()
+    public Page<ProblemResponseDto> getMemberSubmitProblems(Long memberId, Pageable pageable) {
+        List<ProblemResponseDto> result = queryFactory.select(Projections.constructor(ProblemResponseDto.class,
+                        problem.id,
+                        problem.title,
+                        problem.detail,
+                        problem.category,
+                        problem.level,
+                        memberSubmitProblem.id,
+                        memberSubmitProblem.pass,
+                        memberSubmitProblem.completeDate))
                 .from(memberSubmitProblem)
+                .leftJoin(memberSubmitProblem.problem, problem)
                 .where(memberSubmitProblem.member.id.eq(memberId).and(
                         memberSubmitProblem.pass.isTrue()
                 ))
@@ -40,11 +52,11 @@ public class MemberSubmitProblemRepositoryCustomImpl implements MemberSubmitProb
                 .from(memberSubmitProblem)
                 .where(
                         memberSubmitProblem.member.id.eq(memberId)
-                        .and(memberSubmitProblem.pass.isTrue())
+                                .and(memberSubmitProblem.pass.isTrue())
                 )
                 .fetchOne();
 
 
-        return new PageImpl<>(null, pageable, total != null ? total : 0L);
+        return new PageImpl<>(result, pageable, total != null ? total : 0L);
     }
 }

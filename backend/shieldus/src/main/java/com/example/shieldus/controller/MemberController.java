@@ -4,7 +4,6 @@ import com.example.shieldus.config.security.service.MemberUserDetails;
 import com.example.shieldus.controller.dto.MyPageResponseDto;
 import com.example.shieldus.controller.dto.ProblemResponseDto;
 import com.example.shieldus.controller.dto.ResponseDto;
-import com.example.shieldus.controller.dto.member.MemberSubmitProblemResponseDto;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
 import com.example.shieldus.service.member.MemberService;
 import com.example.shieldus.service.problem.ProblemService;
@@ -52,14 +51,14 @@ public class MemberController {
     // 푼 문제 가져오기
     @GetMapping("/problem/solved")
     public ResponseDto<Page<ProblemResponseDto>> getSolvedProblem(Pageable pageable, @AuthenticationPrincipal MemberUserDetails userDetails) {
-        Page<MemberSubmitProblem> problemList =  memberService.getMemberSubmitProblems(userDetails.getMemberId(), pageable);
-        return ResponseDto.success(null);
+        Page<ProblemResponseDto> submitProblemList =  memberService.getMemberSubmitProblems(userDetails.getMemberId(), pageable);
+        return ResponseDto.success(submitProblemList);
     }
 
     // 푼 문제 상세정보 / id = member_submit_problem_id;
     @GetMapping("/problem/solved/detail/{submitProblemId}")
-    public ResponseDto<MemberSubmitProblemResponseDto.SolvedProblem> getSolvedProblemDetail(@PathVariable Long submitProblemId, @AuthenticationPrincipal MemberUserDetails userDetails) {
-        MemberSubmitProblemResponseDto.SolvedProblem solvedProblem = memberService.getSolvedProblem(submitProblemId, userDetails.getMemberId());
+    public ResponseDto<ProblemResponseDto.SolvedProblem> getSolvedProblemDetail(@PathVariable Long submitProblemId, @AuthenticationPrincipal MemberUserDetails userDetails) {
+        ProblemResponseDto.SolvedProblem solvedProblem = memberService.getSolvedProblem(submitProblemId, userDetails.getMemberId());
         return ResponseDto.success(solvedProblem);
     }
 

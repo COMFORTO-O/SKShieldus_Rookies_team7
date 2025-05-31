@@ -2,11 +2,10 @@ package com.example.shieldus.service.member;
 
 import com.example.shieldus.controller.dto.AccountRequestDto;
 import com.example.shieldus.controller.dto.MyPageResponseDto;
-import com.example.shieldus.controller.dto.member.MemberSubmitProblemResponseDto;
+import com.example.shieldus.controller.dto.ProblemResponseDto;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
 import com.example.shieldus.entity.member.MemberTempCode;
-import com.example.shieldus.entity.member.enumration.MemberRoleEnum;
 import com.example.shieldus.exception.CustomException;
 import com.example.shieldus.exception.ErrorCode;
 import com.example.shieldus.repository.member.MemberRepository;
@@ -21,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -93,18 +91,19 @@ public class MemberService {
 
     }
 
-    public Page<MemberSubmitProblem> getMemberSubmitProblems(Long memberId, Pageable pageable) {
-        return null;
+    public Page<ProblemResponseDto> getMemberSubmitProblems(Long memberId, Pageable pageable) {
+        Page<ProblemResponseDto> submitProblemList = submitProblemRepository.getMemberSubmitProblems(memberId, pageable);
+        return submitProblemList;
     }
 
 
     /*
     *
     * */
-    public MemberSubmitProblemResponseDto.SolvedProblem getSolvedProblem(Long memberId, Long submitProblemId) {
+    public ProblemResponseDto.SolvedProblem getSolvedProblem(Long memberId, Long submitProblemId) {
         MemberTempCode memberSubmitProblem =  tempCodeRepository.findOneByMemberIdAndMemberSubmitProblemId(memberId, submitProblemId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
-        return new MemberSubmitProblemResponseDto.SolvedProblem(memberSubmitProblem);
+        return new ProblemResponseDto.SolvedProblem(memberSubmitProblem);
 
     }
 }

@@ -24,6 +24,7 @@ public enum ErrorCode {
     INVALID_REQUEST("REQ400", HttpStatus.BAD_REQUEST, "잘못된 요청입니다.", false),
     USER_NOT_FOUND("USR404", HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.", false),
     UNAUTHORIZED("AUTH401", HttpStatus.UNAUTHORIZED, "인증이 필요합니다.", false),
+    AUTHENTICATION_FAILED("AUTH401", HttpStatus.UNAUTHORIZED, "인증에 실패하였습니다..", false),
     FORBIDDEN("PERM403", HttpStatus.FORBIDDEN, "접근 권한이 없습니다.", false),
     DUPLICATE_RESOURCE("RES409", HttpStatus.CONFLICT, "이미 존재하는 리소스입니다.", false),
     VALIDATION_FAILED("VAL422", HttpStatus.UNPROCESSABLE_ENTITY, "요청 데이터의 유효성 검사에 실패했습니다.", false),

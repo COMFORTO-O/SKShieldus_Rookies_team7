@@ -4,6 +4,8 @@ import com.example.shieldus.config.security.service.MemberUserDetails;
 import com.example.shieldus.controller.dto.MyPageResponseDto;
 import com.example.shieldus.controller.dto.ProblemResponseDto;
 import com.example.shieldus.controller.dto.ResponseDto;
+import com.example.shieldus.controller.dto.member.MemberSubmitProblemResponseDto;
+import com.example.shieldus.entity.member.MemberSubmitProblem;
 import com.example.shieldus.service.member.MemberService;
 import com.example.shieldus.service.problem.ProblemService;
 import lombok.RequiredArgsConstructor;
@@ -50,15 +52,15 @@ public class MemberController {
     // 푼 문제 가져오기
     @GetMapping("/problem/solved")
     public ResponseDto<Page<ProblemResponseDto>> getSolvedProblem(Pageable pageable, @AuthenticationPrincipal MemberUserDetails userDetails) {
-        Page<ProblemResponseDto> problemList =  problemService.getFilteredProblems(userDetails.getMemberId(), null, null, null, "solved", pageable);
-        return ResponseDto.success(problemList);
+        Page<MemberSubmitProblem> problemList =  memberService.getMemberSubmitProblems(userDetails.getMemberId(), pageable);
+        return ResponseDto.success(null);
     }
 
-    // 푼 문제 상세정보
-    @GetMapping("/problem/solved/detail/{id}")
-    public ResponseDto<ProblemResponseDto> getSolvedProblemDetail(@PathVariable Long id, @AuthenticationPrincipal MemberUserDetails userDetails) {
-        ProblemResponseDto problem = problemService.getProblem(id);
-        return ResponseDto.success(problem);
+    // 푼 문제 상세정보 / id = member_submit_problem_id;
+    @GetMapping("/problem/solved/detail/{submitProblemId}")
+    public ResponseDto<MemberSubmitProblemResponseDto.SolvedProblem> getSolvedProblemDetail(@PathVariable Long submitProblemId, @AuthenticationPrincipal MemberUserDetails userDetails) {
+        MemberSubmitProblemResponseDto.SolvedProblem solvedProblem = memberService.getSolvedProblem(submitProblemId, userDetails.getMemberId());
+        return ResponseDto.success(solvedProblem);
     }
 
     // 임시저장 확인

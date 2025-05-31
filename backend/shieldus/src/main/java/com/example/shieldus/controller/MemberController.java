@@ -31,12 +31,6 @@ public class MemberController {
         return ResponseDto.success(myPageData);
     }
 
-    // 사용자 정보 리스트, pagenation
-    @GetMapping("/list")
-    public ResponseDto<String> getMemberList(@AuthenticationPrincipal MemberUserDetails userDetails) {
-
-        return ResponseDto.success("ok");
-    }
 
     // 사용자 삭제 ( soft ), 진짜 삭제가 아닌 컬럼 붙여서 삭제
     @DeleteMapping("/delete")
@@ -65,4 +59,15 @@ public class MemberController {
         return ResponseDto.success("ok");
     }
 
+
+    /*
+    * Admin 기능
+    * */
+
+    // 사용자 정보 리스트, pagenation
+    @GetMapping("/list")
+    public ResponseDto<String> getMemberList(@AuthenticationPrincipal MemberUserDetails userDetails) {
+
+        return ResponseDto.success("ok");
+    }
 }

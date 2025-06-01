@@ -177,6 +177,5 @@ public class ProblemService {
         return ProblemResponseDto.Detail.fromProblem(problem);
     }
 
-    public Problem
 }
 

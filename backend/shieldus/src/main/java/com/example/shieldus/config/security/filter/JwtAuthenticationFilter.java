@@ -46,8 +46,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // 로그인 object 추출
             LoginRequestDto loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
             // password 디코딩
-            String password = rsaUtil.decryptRsaBase64(loginRequest.getPassword());
-//            String password = loginRequest.getPassword();
+//            String password = rsaUtil.decryptRsaBase64(loginRequest.getPassword());
+            String password = loginRequest.getPassword();
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), password);
 

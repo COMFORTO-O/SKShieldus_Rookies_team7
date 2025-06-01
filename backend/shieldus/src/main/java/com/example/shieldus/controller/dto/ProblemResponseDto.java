@@ -4,6 +4,7 @@ import com.example.shieldus.controller.dto.member.MemberTempCodeResponseDto;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
 import com.example.shieldus.entity.member.MemberTempCode;
 import com.example.shieldus.entity.problem.Problem;
+import com.example.shieldus.entity.problem.ProblemTestCase;
 import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -30,6 +32,7 @@ public class ProblemResponseDto {
     private LocalDateTime completeDate;
 
 
+
     // 문제 상세
     public static ProblemResponseDto fromProblem(Problem problem) {
         return ProblemResponseDto.builder()
@@ -41,6 +44,8 @@ public class ProblemResponseDto {
                 .memberName(problem.getMember().getName())
                 .build();
     }
+
+
 
     // 사용자 푼 문제 조회용 dto
     public ProblemResponseDto(Long id, String title, String detail, ProblemCategoryEnum category, Integer level,
@@ -55,6 +60,20 @@ public class ProblemResponseDto {
         this.completeDate = completeDate;
     }
 
+    // 문제 상세. ( test case 포함 )
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class Detail {
+        public ProblemResponseDto detail;
+        public List<ProblemTestCaseResponseDto.Detail> testCase;
+
+        public static Detail fromProblem(Problem problem) {
+            return new Detail(
+                    ProblemResponseDto.fromProblem(problem),
+                    problem.getTestCases().stream().map(ProblemTestCaseResponseDto.Detail::fromEntity).toList());
+        }
+    }
 
     @Getter
     @Setter
@@ -78,6 +97,7 @@ public class ProblemResponseDto {
             this.tempCode = MemberTempCodeResponseDto.fromEntity(code);
         }
     }
+
 
 
 }

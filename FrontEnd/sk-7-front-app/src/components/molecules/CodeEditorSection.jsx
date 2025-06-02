@@ -38,7 +38,7 @@ function CodeEditorSection() {
                     language={selectedLanguage}
                     value={code}
                     onChange={(value) => setCode(value)}
-                    theme="tomorrow"
+                    theme="vs-dark"
                 />
             </section>
 

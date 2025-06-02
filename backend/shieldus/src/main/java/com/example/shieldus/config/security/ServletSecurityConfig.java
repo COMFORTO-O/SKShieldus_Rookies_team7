@@ -75,6 +75,7 @@ public class ServletSecurityConfig {
                         .requestMatchers("/api/account/register").permitAll()
                         .requestMatchers("/api/compile/**").permitAll()
                         .requestMatchers("/api/problem/**").permitAll()
+                        .requestMatchers("/ws-stomp/**").permitAll()
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated()
@@ -128,4 +129,5 @@ public class ServletSecurityConfig {
                 .anyMessage().authenticated();
         return messages.build();
     }
+
 }

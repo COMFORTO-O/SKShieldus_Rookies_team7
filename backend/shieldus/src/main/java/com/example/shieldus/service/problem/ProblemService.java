@@ -1,15 +1,36 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 변경 요약 (S7-32 → S7-33)
+// 1) getFilteredProblems: 기존 그대로 사용 (memberId null 허용 로직 내부 처리 완료)
+// 2) getProblemDetail: 시그니처 및 반환 타입 ProblemDetailDto로 변경
+// 3) createProblem: 반환 타입 CreateProblemResponseDto 추가, DTO 타입 CreateProblemRequestDto 사용
+// 4) updateProblem: 반환 타입 UpdateProblemResponseDto, DTO 타입 UpdateProblemRequestDto
+// 5) deleteProblem: 파라미터 순서 (memberId, problemId)로 변경
+// 6) getProblemSolvedList: 반환 타입 List<ProblemDetailDto.SolutionInfoDto>로 구현
+// 7) getTestCasesOfProblem: 반환 타입 List<ProblemDetailDto.TestCaseInfoDto>로 구현
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 package com.example.shieldus.service.problem;
 
-import com.example.shieldus.controller.dto.ProblemResponseDto;
+import com.example.shieldus.controller.dto.*;
+import com.example.shieldus.entity.member.Member;
+import com.example.shieldus.entity.member.MemberSubmitProblem;
+import com.example.shieldus.entity.problem.Problem;
+import com.example.shieldus.entity.problem.ProblemTestCase;
 import com.example.shieldus.exception.CustomException;
 import com.example.shieldus.exception.ErrorCode;
+import com.example.shieldus.repository.member.MemberRepository;
+import com.example.shieldus.repository.member.MemberSubmitProblemRepository;
 import com.example.shieldus.repository.problem.ProblemRepository;
+import com.example.shieldus.repository.problem.ProblemTestCaseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -17,24 +38,173 @@ import org.springframework.stereotype.Service;
 public class ProblemService {
 
     private final ProblemRepository problemRepository;
+    private final ProblemTestCaseRepository testCaseRepository;
+    private final MemberSubmitProblemRepository submitProblemRepository;
+    private final MemberRepository memberRepository;
+    private final MemberSubmitProblemRepository memberSubmitProblemRepository; // 추가
 
+
+    /**
+     * 1) 조건별 문제 목록 조회. 
+     *    memberId가 null인 경우 solved/unsolved 상태 필터는 항상 false 처리됨.
+     */
     public Page<ProblemResponseDto> getFilteredProblems(
-            Long memberId,
-            String category,
-            Integer level,
-            String title,
-            String status,
-            Pageable pageable) {
+            Long memberId, String category, Integer level, String title, String status, Pageable pageable) {
         try {
-            return problemRepository.findProblemsWithFilters(
-                    memberId, category, level, title, status, pageable
-            );
+            return problemRepository.findProblemsWithFilters(memberId, category, level, title, status, pageable);
         } catch (DataAccessException e) {
             log.error("Database error in getFilteredProblems", e);
             throw new CustomException(ErrorCode.DATABASE_ERROR, e);
-        } catch (Exception e) {
-            log.error("Unexpected error in getFilteredProblems", e);
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
         }
+    }
+
+    /**
+     * 2) 문제 상세 조회 (테스트케이스 포함 + solved 여부 포함)
+     */
+    @Transactional(readOnly = true)
+    public ProblemDetailDto getProblemDetail(Long memberId, Long problemId) {
+        // 2-1) 문제 존재 여부 확인
+        Problem problem = problemRepository.findById(problemId).orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+
+        // 2-2) 테스트케이스 목록 조회
+        List<ProblemTestCase> testCases = testCaseRepository.findByProblem(problem);
+        List<ProblemDetailDto.TestCaseInfoDto> testCaseDtoList = testCases.stream().map(ProblemDetailDto.TestCaseInfoDto::fromEntity).toList();
+
+        // 2-3) 로그인 유저가 해당 문제를 풀었는지 확인
+        boolean solved = false;
+        if (memberId != null) {
+            Optional<MemberSubmitProblem> mspOpt = submitProblemRepository.findByMemberIdAndProblemId(memberId, problemId);
+            solved = mspOpt.map(MemberSubmitProblem::getPass).orElse(false);
+        }
+
+        // 2-4) 문제 작성자 이름 조회
+        String writerName = problem.getMember().getName();
+
+        // 2-5) DTO 빌드 후 반환
+        return ProblemDetailDto.builder()
+                .id(problem.getId())
+                .title(problem.getTitle())
+                .detail(problem.getDetail())
+                .category(problem.getCategory().name())
+                .level(problem.getLevel())
+                .memberName(writerName)
+                .solved(solved)
+                .createdAt(problem.getCreatedAt())
+                .updatedAt(problem.getUpdatedAt())
+                .testCase(testCaseDtoList)
+                .build();
+    }
+
+    /**
+     * 3) 문제 생성 (Problem + TestCase를 함께 저장)
+     */
+    @Transactional
+    public CreateProblemResponseDto createProblem(Long memberId, CreateProblemRequestDto dto) {
+        // 3-1) 회원 존재 여부 체크
+        Member writer = memberRepository.findByIdAndIsDeletedIsFalse(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 3-2) Problem 엔티티 생성 및 저장
+        Problem problem = Problem.builder()
+                .member(writer)
+                .title(dto.getTitle())
+                .detail(dto.getDetail())
+                .category(dto.getCategory())
+                .level(dto.getLevel())
+                .build();
+        problemRepository.save(problem);
+
+        // 3-3) TestCase 엔티티 목록 생성 및 저장
+        List<ProblemTestCase> toSave = dto.getTestCase().stream().map(testCase -> testCase.toEntity(problem)).toList();
+        testCaseRepository.saveAll(toSave);
+
+        return new CreateProblemResponseDto(problem.getId());
+    }
+
+    /**
+     * 4) 문제 수정 (Problem + TestCase CRUD 포함)
+     */
+    @Transactional
+    public UpdateProblemResponseDto updateProblem(UpdateProblemRequestDto dto) {
+        // 4-1) 문제 존재 여부 및 소유권 검사
+        Problem problem = problemRepository.findByIdAndIsDeletedIsFalse(dto.getProblemId()).orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+
+        // 4-2) 문제 본문 필드 업데이트
+        problem.update(dto);
+
+        // 4-3) 기존 TestCase 모두 조회 후 Map으로 관리
+        List<ProblemTestCase> existTestCases = problem.getTestCases();
+        Map<Long, ProblemTestCase> existTestCaseMap = existTestCases.stream().collect(Collectors.toMap(ProblemTestCase::getId, tc -> tc));
+        List<ProblemTestCase> addTestCases = new ArrayList<>();
+
+        for(UpdateProblemRequestDto.TestCaseDto testCaseDto : dto.getTestCase()) {
+            // (a) 새 케이스 추가
+            if(testCaseDto.isNullId()){
+                addTestCases.add(new ProblemTestCase(problem, testCaseDto.getInput(), testCaseDto.getOutput()));
+            }
+            // (b) 기존 케이스 수정
+            else{
+                ProblemTestCase toUpdate = existTestCaseMap.get(testCaseDto.getTestCaseId());
+                if(toUpdate == null){ throw new CustomException(ErrorCode.PROBLEM_NOT_FOUND); }
+                toUpdate.update(testCaseDto);
+            }
+
+        }
+        // 새 테스트케이스 추가
+        testCaseRepository.saveAll(addTestCases);
+        return new UpdateProblemResponseDto(problem.getId());
+    }
+
+    /**
+     * 5) 문제 삭제 ( 실제 삭제 x, delete 변수 삭제 o )
+     */
+    @Transactional
+    public void deleteProblem(Long memberId, Long problemId) {
+        Problem problem = problemRepository.findById(problemId).orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+        if (!Objects.equals(problem.getMember().getId(), memberId)) {throw new CustomException(ErrorCode.FORBIDDEN);}
+        problem.delete();
+
+    }
+
+    /**
+     * 6) 해당 문제에 대한 풀이(Submission) 리스트 조회
+     */
+    @Transactional(readOnly = true)
+    public List<ProblemDetailDto.SolutionInfoDto> getProblemSolvedList(Long problemId) {
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+
+        List<MemberSubmitProblem> solvedList = submitProblemRepository.findByProblemAndPassTrue(problem);
+
+        List<ProblemDetailDto.SolutionInfoDto> result = new ArrayList<>();
+        for (MemberSubmitProblem sub : solvedList) {
+            result.add(ProblemDetailDto.SolutionInfoDto.builder()
+                    .memberName(sub.getMember().getName())
+                    .completeDate(sub.getCompleteDate())
+                    .build());
+        }
+        return result;
+    }
+
+    /**
+     * 7) 해당 문제의 테스트 케이스만 따로 조회
+     */
+    @Transactional(readOnly = true)
+    public List<ProblemDetailDto.TestCaseInfoDto> getTestCasesOfProblem(Long problemId) {
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new CustomException(
+                        ErrorCode.PROBLEM_NOT_FOUND,
+                        "Problem (id=" + problemId + ") not found"
+                ));
+
+        List<ProblemTestCase> tcs = testCaseRepository.findByProblem(problem);
+        List<ProblemDetailDto.TestCaseInfoDto> dtoList = new ArrayList<>();
+        for (ProblemTestCase tc : tcs) {
+            dtoList.add(ProblemDetailDto.TestCaseInfoDto.builder()
+                    .id(tc.getId())
+                    .input(tc.getInput())
+                    .output(tc.getOutput())
+                    .build());
+        }
+        return dtoList;
     }
 }

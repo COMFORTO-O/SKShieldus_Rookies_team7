@@ -7,7 +7,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,4 +34,8 @@ public class MemberSubmitProblem {
 
     @OneToMany(mappedBy = "memberSubmitProblem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberTempCode> MemberTempCodes;
+
+    private Boolean isCorrect; // 정답 여부 필드
+    private LocalDateTime createdAt; // 제출 시간 필드
+
 }

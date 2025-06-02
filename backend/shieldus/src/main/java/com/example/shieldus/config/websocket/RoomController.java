@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -42,5 +43,10 @@ public class RoomController {
     @Getter @Setter
     public static class CreateRoomRequestDto {
         private String name;
+    }
+    @GetMapping("/room/{roomId}")
+    public String enterRoomPage(@PathVariable String roomId, Model model) {
+        model.addAttribute("roomId", roomId);
+        return "room"; // templates/room.html
     }
 }

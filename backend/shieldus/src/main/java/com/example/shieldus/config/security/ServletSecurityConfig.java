@@ -5,11 +5,14 @@ import com.example.shieldus.config.jwt.JwtTokenProvider;
 import com.example.shieldus.config.security.filter.JwtAuthenticationFilter;
 import com.example.shieldus.config.security.filter.JwtRequestFilter;
 import com.example.shieldus.config.security.service.MemberUserDetailsService;
+import com.example.shieldus.config.security.utils.CustomPermissionEvaluator;
 import com.example.shieldus.config.security.utils.RSAUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -103,5 +106,15 @@ public class ServletSecurityConfig {
         // 모든 경로("/**")에 이 CORS 설정을 적용
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    /*
+    * PermissionEvaluator 설정
+    * */
+    @Bean
+    public MethodSecurityExpressionHandler methodSecurityExpressionHandler() {
+        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+        expressionHandler.setPermissionEvaluator(new CustomPermissionEvaluator()); // 커스텀 PermissionEvaluator 등록
+        return expressionHandler;
     }
 }

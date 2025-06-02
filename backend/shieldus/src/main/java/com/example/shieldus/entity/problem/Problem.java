@@ -2,6 +2,7 @@ package com.example.shieldus.entity.problem;
 
 
 import com.example.shieldus.controller.dto.ProblemRequestDto;
+import com.example.shieldus.controller.dto.UpdateProblemRequestDto;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
 import jakarta.persistence.*;
@@ -58,6 +59,14 @@ public class Problem extends BaseEntity {
 
 
     public void update(ProblemRequestDto.Update dto){
+        this.title = dto.getTitle();
+        this.detail = dto.getDetail();
+        this.category = dto.getCategory();
+        this.level = dto.getLevel();
+        this.isDeleted = false;
+
+    }
+    public void update(UpdateProblemRequestDto dto){
         this.title = dto.getTitle();
         this.detail = dto.getDetail();
         this.category = dto.getCategory();

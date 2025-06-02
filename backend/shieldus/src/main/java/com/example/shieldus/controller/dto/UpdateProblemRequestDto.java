@@ -6,9 +6,11 @@
 
 package com.example.shieldus.controller.dto;
 
+import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
 import lombok.*;
 import jakarta.validation.constraints.*;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -26,7 +28,7 @@ public class UpdateProblemRequestDto {
     private String detail;
 
     @NotBlank(message = "카테고리를 입력하세요.")
-    private String category;
+    private ProblemCategoryEnum category;
 
     @NotNull(message = "난이도를 입력하세요.")
     private Integer level;
@@ -50,5 +52,10 @@ public class UpdateProblemRequestDto {
 
         @NotBlank(message = "출력 예시는 필수입니다.")
         private String output;
+
+
+        public Boolean isNullId(){
+            return Objects.isNull(this.testCaseId) || this.testCaseId == 0L;
+        }
     }
 }

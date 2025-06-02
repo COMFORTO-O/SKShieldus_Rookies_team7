@@ -5,6 +5,7 @@
 
 package com.example.shieldus.controller.dto;
 
+import com.example.shieldus.entity.problem.ProblemTestCase;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,6 +32,14 @@ public class ProblemDetailDto {
         private Long id;
         private String input;
         private String output;
+
+        public static TestCaseInfoDto fromEntity(ProblemTestCase testCase){
+            return ProblemDetailDto.TestCaseInfoDto.builder()
+                    .id(testCase.getId())
+                    .input(testCase.getInput())
+                    .output(testCase.getOutput())
+                    .build();
+        }
     }
 
     @Getter

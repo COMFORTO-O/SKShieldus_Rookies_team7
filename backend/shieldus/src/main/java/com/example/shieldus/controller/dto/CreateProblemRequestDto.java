@@ -6,6 +6,9 @@
 
 package com.example.shieldus.controller.dto;
 
+import com.example.shieldus.entity.problem.Problem;
+import com.example.shieldus.entity.problem.ProblemTestCase;
+import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
 import lombok.*;
 import jakarta.validation.constraints.*;
 import java.util.List;
@@ -23,7 +26,7 @@ public class CreateProblemRequestDto {
     private String detail;      // 마크다운 문자열
 
     @NotBlank(message = "카테고리를 입력하세요.")
-    private String category;    // “JAVA”, “PYTHON”, …
+    private ProblemCategoryEnum category;    // “JAVA”, “PYTHON”, …
 
     @NotNull(message = "난이도를 입력하세요.")
     private Integer level;
@@ -41,5 +44,14 @@ public class CreateProblemRequestDto {
 
         @NotBlank(message = "테스트 출력값은 필수입니다.")
         private String output;
+
+        public ProblemTestCase toEntity(Problem problem) {
+            return ProblemTestCase.builder()
+                    .problem(problem)
+                    .isTestCase(true)
+                    .input(this.input)
+                    .output(this.output)
+                    .build();
+        }
     }
 }

@@ -1,6 +1,5 @@
 package com.example.shieldus.config.websocket;
 
-import com.example.shieldus.dto.MessageDto;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.stereotype.Controller;
 

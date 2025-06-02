@@ -30,5 +30,15 @@ public class ProblemResponseDto {
                 .build();
     }
 
+    public static ProblemResponseDto fromEntity(Problem problem) {
+        return ProblemResponseDto.builder()
+                .id(problem.getId())
+                .title(problem.getTitle())
+                .detail(problem.getDetail())
+                .category(problem.getCategory())
+                .level(problem.getLevel())
+                .build();
+    }
+
 
 }

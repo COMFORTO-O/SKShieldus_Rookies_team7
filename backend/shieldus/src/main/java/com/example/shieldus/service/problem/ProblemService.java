@@ -1,7 +1,9 @@
 package com.example.shieldus.service.problem;
 
 import com.example.shieldus.controller.dto.ProblemResponseDto;
+import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.problem.Problem;
+import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
 import com.example.shieldus.exception.CustomException;
 import com.example.shieldus.exception.ErrorCode;
 import com.example.shieldus.repository.problem.ProblemRepository;
@@ -39,7 +41,20 @@ public class ProblemService {
         }
     }
 
-<<<<<<< HEAD
+    public ProblemResponseDto getProblem(Long id) {
+        try {
+            Problem problem = problemRepository.findById(id)
+                    .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+            return ProblemResponseDto.fromEntity(problem); // 엔티티를 DTO로 변환
+        } catch (DataAccessException e) {
+            log.error("Database error in getProblem", e);
+            throw new CustomException(ErrorCode.DATABASE_ERROR, e);
+        } catch (Exception e) {
+            log.error("Unexpected error in getProblem", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
     public void deleteProblem(Long problemId, Long memberId) {
         try {
             Problem problem = problemRepository.findById(problemId)
@@ -60,12 +75,26 @@ public class ProblemService {
             log.error("Unexpected error in deleteProblem", e);
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
         }
-=======
+    }
 
-    public ProblemResponseDto getProblem(Long id) {
-        Problem problem = problemRepository.findById(id).orElseThrow(()->new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
-        return ProblemResponseDto.fromProblem(problem);
+    // ProblemService.java에 다음 메서드 추가
+    public Problem createProblem(Long memberId, String title, String detail, ProblemCategoryEnum category, Integer level) {
+        try {
+            Problem problem = Problem.builder()
+                    .member(Member.builder().id(memberId).build()) // Member는 간단히 ID만 설정
+                    .title(title)
+                    .detail(detail)
+                    .category(category)
+                    .level(level)
+                    .build();
 
->>>>>>> 98dbc1b039a5671c9abf82022e942bbd96788bfc
+            return problemRepository.save(problem);
+        } catch (DataAccessException e) {
+            log.error("Database error in createProblem", e);
+            throw new CustomException(ErrorCode.DATABASE_ERROR, e);
+        } catch (Exception e) {
+            log.error("Unexpected error in createProblem", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
+        }
     }
 }

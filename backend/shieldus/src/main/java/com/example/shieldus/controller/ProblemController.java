@@ -3,13 +3,16 @@ package com.example.shieldus.controller;
 import com.example.shieldus.config.security.service.MemberUserDetails;
 import com.example.shieldus.controller.dto.ProblemResponseDto;
 import com.example.shieldus.controller.dto.ResponseDto;
+import com.example.shieldus.entity.problem.Problem;
+import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
 import com.example.shieldus.service.problem.ProblemService;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api/problem")
@@ -34,10 +37,34 @@ public class ProblemController {
         return ResponseDto.success(page);
     }
 
-    // 문제 만들기
-    @GetMapping("/create")
-    public ResponseDto<String> createProblem(@AuthenticationPrincipal MemberUserDetails userDetails) {
-        return ResponseDto.success("ok");
+    // 문제 생성
+
+    @Getter // 이 어노테이션이 있어야 getTitle() 등이 자동 생성됨
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ProblemCreateRequest {
+        private String title;
+        private String detail;
+        private ProblemCategoryEnum category;
+        private Integer level;
+    }
+
+    @PostMapping("/create")
+    public ResponseDto<Problem> createProblem(
+            @RequestBody ProblemCreateRequest request,
+            @AuthenticationPrincipal MemberUserDetails userDetails) {
+
+        Problem createdProblem = problemService.createProblem(
+                userDetails.getMemberId(),
+                request.getTitle(),
+                request.getDetail(),
+                request.getCategory(),
+                request.getLevel()
+        );
+
+        return ResponseDto.success(createdProblem);
     }
 
     // 문제 삭제

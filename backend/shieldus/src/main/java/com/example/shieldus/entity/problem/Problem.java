@@ -43,10 +43,14 @@ public class Problem extends BaseEntity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    // delete() 메서드
     public void delete() {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
+
+
     }
+
 }
 
 

@@ -2,6 +2,7 @@ package com.example.shieldus.entity.problem;
 
 
 import com.example.shieldus.controller.dto.ProblemTestCaseRequestDto;
+import com.example.shieldus.controller.dto.UpdateProblemRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,7 +33,19 @@ public class ProblemTestCase extends BaseEntity {
     @Column(nullable = false)
     private String output;
 
+    public ProblemTestCase(Problem problem, String input, String output) {
+        this.input = input;
+        this.output = output;
+        this.problem = problem;
+        this.isTestCase = true;
+    }
+
     public void update(ProblemTestCaseRequestDto.Update testCaseDto) {
+        this.input = testCaseDto.getInput();
+        this.output = testCaseDto.getOutput();
+    }
+
+    public void update(UpdateProblemRequestDto.TestCaseDto testCaseDto) {
         this.input = testCaseDto.getInput();
         this.output = testCaseDto.getOutput();
     }

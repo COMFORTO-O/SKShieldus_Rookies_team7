@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,20 +21,19 @@ public enum MemberRoleEnum {
     ));
 
     private final Set<Permission> permissions;
+    @Getter
+    private final List<GrantedAuthority> authorities;
 
     MemberRoleEnum(Set<Permission> permissions) {
         this.permissions = permissions;
-    }
-
-
-    public List<GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = this.getPermissions().stream()
+        // 각 Permission을 SimpleGrantedAuthority로 변환하여 authorities 필드 초기화
+        List<GrantedAuthority> grantedPermissions = permissions.stream()
                 .map(permission -> new SimpleGrantedAuthority(permission.name()))
-                .collect(Collectors.toList());
-        // Optionally, if you also want to add the role itself as a GrantedAuthority (e.g., for hasRole('ADMIN'))
-        // Spring Security often prefixes roles with "ROLE_".
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
-        return authorities;
+                .collect(Collectors.toUnmodifiableList());
+        List<GrantedAuthority> combinedAuthorities = new ArrayList<>(grantedPermissions);
+        combinedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
+        this.authorities = combinedAuthorities;
     }
+
 
 }

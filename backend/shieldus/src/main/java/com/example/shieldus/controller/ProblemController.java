@@ -34,6 +34,7 @@ import com.example.shieldus.service.problem.ProblemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,7 +69,6 @@ public class ProblemController {
     ) {
         // 변경: userDetails가 null인 경우 memberId도 null로 넘겨서 “solved/unsolved” 필터링 시 항상 false 처리
         Long memberId = (userDetails != null) ? userDetails.getMemberId() : null;
-
         Page<ProblemResponseDto> page = problemService.getFilteredProblems(
                 memberId, category, level, title, status, pageable
         );
@@ -81,13 +81,13 @@ public class ProblemController {
      *    • RequestBody: CreateProblemRequestDto(JSON)
      *    • Response: CreateProblemResponseDto { id: 생성된 문제 ID }
      */
+    @PreAuthorize("hasPermission(null, 'PROBLEM_CREATE')")
     @PostMapping("/create")
     public ResponseDto<CreateProblemResponseDto> createProblem(
             @RequestBody CreateProblemRequestDto dto,
             @AuthenticationPrincipal MemberUserDetails userDetails
     ) {
-        Long memberId = userDetails.getMemberId();
-        CreateProblemResponseDto result = problemService.createProblem(memberId, dto);
+        CreateProblemResponseDto result = problemService.createProblem(userDetails.getMemberId(), dto);
         return ResponseDto.success(result);
     }
 
@@ -98,6 +98,7 @@ public class ProblemController {
      *    • RequestBody: UpdateProblemRequestDto(JSON)
      *    • Response: UpdateProblemResponseDto { id: 수정된 문제 ID }
      */
+    @PreAuthorize("hasPermission(null, 'PROBLEM_UPDATE')")
     @PutMapping("/update/{id}")
     public ResponseDto<UpdateProblemResponseDto> updateProblem(
             @PathVariable Long id,
@@ -112,8 +113,7 @@ public class ProblemController {
                     "PathVariable ID와 RequestBody.problemId가 불일치합니다."
             );
         }
-        Long memberId = userDetails.getMemberId();
-        UpdateProblemResponseDto result = problemService.updateProblem(memberId, dto);
+        UpdateProblemResponseDto result = problemService.updateProblem(dto);
         return ResponseDto.success(result);
     }
 
@@ -121,14 +121,13 @@ public class ProblemController {
      * 4) 문제 삭제 (인증 + 작성자만 가능)
      *    • DELETE /api/problem/delete/{id}
      */
+    @PreAuthorize("hasPermission(null, 'PROBLEM_DELETE')")
     @DeleteMapping("/delete/{id}")
     public ResponseDto<Void> deleteProblem(
             @PathVariable Long id,
             @AuthenticationPrincipal MemberUserDetails userDetails
     ) {
-        Long memberId = userDetails.getMemberId();
-        // 변경: service 호출 순서를 (memberId, problemId)로 맞춤
-        problemService.deleteProblem(memberId, id);
+        problemService.deleteProblem(userDetails.getMemberId(), id);
         return ResponseDto.success(null);
     }
 

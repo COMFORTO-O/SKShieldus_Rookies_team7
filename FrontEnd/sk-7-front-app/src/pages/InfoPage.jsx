@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import useAuthStore from "../store/useAuthStore";
-import ProfileTap from "../components/molecules/ProfileTap";
 import ProfileAccount from "../components/molecules/ProfileAccount";
 import ProfileActivity from "../components/molecules/ProfileActivity";
 
@@ -9,18 +8,21 @@ const InfoPage = () => {
     const { isLoggedIn, accessToken } = useAuthStore();
     const [loading, setLoading] = useState(false);
 
-    // 계정 관리, 나의 활동  [ account, activity ]
-    const [activeTab, setActiveTab] = useState("account");
-
     return (
-        <div className="h-full w-full overflow-auto p-6 bg-gray-50">
-            {/* 탭버튼 */}
-            <ProfileTap activeTab={activeTab} setActiveTab={setActiveTab} />
+        <div className="h-full w-full overflow-auto px-[20%] py-[5%] bg-slate-100 ">
+            <div className="h-[1000px] rounded-2xl overflow-hidden bg-white">
+                {/* 헤더 */}
+                <div className="p-7 font-bold text-2xl">프로필 </div>
 
-            {/* 탭 내용 */}
-            <div className="border-solid border-2 border-black w-full h-full">
-                {activeTab === "account" && <ProfileAccount />}
-                {activeTab === "activity" && <ProfileActivity />}
+                {/* 콘텐츠 */}
+                <div className="w-full h-full flex flex-col justify-center">
+                    <div className="w-full h-full">
+                        <ProfileAccount />
+                    </div>
+                    <div className="w-full h-full">
+                        <ProfileActivity />
+                    </div>
+                </div>
             </div>
         </div>
     );

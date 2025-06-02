@@ -27,25 +27,39 @@ export const getProblemList = async ({
     console.log("size:", size);
     console.log("sort:", sort);
     console.log("===========================");
+
+    // URLSearchParams 객체 생성
+    const params = new URLSearchParams();
+
+    if (title !== undefined && title !== null && title !== "")
+        params.append("title", title);
+    if (level !== undefined && level !== null) params.append("level", level);
+    if (status !== undefined && status !== null && status !== "")
+        params.append("status", status);
+    if (page !== undefined && page !== null) params.append("page", page);
+    if (size !== undefined && size !== null) params.append("size", size); // size 파라미터 추가
+    if (sort !== undefined && sort !== null && sort !== "")
+        params.append("sort", sort);
+
+    // category 처리 (,로 연결해 String으로 구성)
+    if (category) {
+        if (Array.isArray(category)) {
+            // 빈 배열이 아니면 콤마로 join해서 하나의 문자열로 전달
+            if (category.length > 0) {
+                params.append("category", category.join(","));
+            }
+        } else if (typeof category === "string" && category !== "") {
+            params.append("category", category);
+        }
+    }
+
     try {
         const response = await axios.get(
             `${import.meta.env.VITE_API_URL}/api/problem`,
             {
-                params: {
-                    title: title,
-                    category: category,
-                    level: level,
-                    status: status,
-                    page: page,
-                    sort: sort,
-                },
+                params: params,
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem(
-                        "accessToken"
-                    )}`,
                     "Content-Type": "application/json",
-                    // Access-Control-Allow-Origin: "*" 추가
-                    "Access-Control-Allow-Origin": "*",
                 },
                 withCredentials: true,
             }

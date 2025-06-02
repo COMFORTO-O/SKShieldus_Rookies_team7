@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/problem")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000", methods = RequestMethod.GET)
 public class ProblemController {
 
     private final ProblemService problemService;
 
     @GetMapping
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseDto<Page<ProblemResponseDto>> getProblems(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Integer level,

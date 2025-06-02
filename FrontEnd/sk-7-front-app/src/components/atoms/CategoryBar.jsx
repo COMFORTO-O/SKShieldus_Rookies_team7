@@ -161,7 +161,7 @@ const CategoryBar = ({ onReset, onSearch, title, setTitle }) => {
                         value={title}
                         onChange={(e) => {
                             setTitle(e.target.value);
-                            console.log(`title: ${title}`);
+                            // console.log(`title: ${title}`);
                         }}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {

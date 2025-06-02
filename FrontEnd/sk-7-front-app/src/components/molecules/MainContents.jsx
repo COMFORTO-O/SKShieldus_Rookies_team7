@@ -6,6 +6,7 @@ import useCategoryStore from "../../store/useCategoryStore";
 import CategoryBar from "../atoms/CategoryBar";
 import ProblemItem from "../atoms/ProblemItem";
 import { getProblemList } from "../../api/getProblemList";
+import { Link } from "react-router-dom";
 
 // - title: String (제목 키워드 포함)
 // - category: String (JAVA, PYTHON, …)
@@ -17,15 +18,31 @@ import { getProblemList } from "../../api/getProblemList";
 
 export default function MainContents() {
     // 전역 상태 가져오기
-    const { sort, status, level, category } = useCategoryStore();
+    const {
+        sort,
+        status,
+        level,
+        category,
+        setSort,
+        setStatus,
+        setCategory,
+        setLevel,
+    } = useCategoryStore();
 
+    // 검색 타이틀
     const [title, setTitle] = useState("");
 
+    // 페이지 넘버
     const [pageNumber, setPageNumber] = useState(1);
+    // 문제들 (전역 관리할지 변수에 저장할지 아직 결정 못함)
     const [problems, setProblems] = useState([]);
 
+    // 로딩 상태
     const [loading, setLoading] = useState(false);
+    // 에러 메세지 상태
     const [error, setError] = useState("");
+    // 카테고리 초기화 상태 플래그
+    const [isResetting, setIsResetting] = useState(false);
 
     // 문제 리스트 요청 함수
     const fetchProblems = useCallback(async () => {
@@ -50,14 +67,33 @@ export default function MainContents() {
 
     // 카테고리 변경될 시 리스트 다시 받아오기
     useEffect(() => {
-        fetchProblems();
-    }, [sort, status, level, category]);
+        if (isResetting) {
+            const timeout = setTimeout(() => {
+                fetchProblems();
+                // 초기화 플래그 OFF
+                setIsResetting(false);
+            }, 0);
+            return () => clearTimeout(timeout);
+        }
 
-    // 새로고침
+        if (!isResetting) {
+            fetchProblems();
+        }
+    }, [sort, status, level, category, pageNumber, isResetting]);
+
+    // 카테고리 초기화
     const onRefresh = useCallback(() => {
-        console.log("새로고침");
-        fetchProblems();
-    }, [fetchProblems]);
+        console.log("======초기화 시작======");
+        // 초기화 플래그 ON
+        setIsResetting(true);
+        setSort("recent"); // 정렬 기본값
+        setStatus("unsolved"); // 상태 기본값
+        setCategory([]); // 카테고리(언어) 기본값
+        setLevel(0); // 레벨 기본값
+        setTitle(""); // 검색어 기본값
+        setPageNumber(1); // 페이지도 1로 초기화
+        console.log("======초기화 끝======");
+    }, [setSort, setStatus, setCategory, setLevel, setTitle, setPageNumber]);
 
     // 검색
     const onSearch = useCallback(() => {
@@ -106,6 +142,8 @@ export default function MainContents() {
                         problems.map((item) => (
                             <ProblemItem key={item.id} {...item} />
                         ))}
+
+                    <Link to="/solve">문제 풀이 페이지로</Link>
                 </div>
             </div>
         </div>

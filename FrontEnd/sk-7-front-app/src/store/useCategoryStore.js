@@ -12,7 +12,7 @@ const useCategoryStore = create((set) => ({
     sort: getStorage("sort", "recent"),
     status: getStorage("status", "unsolved"),
     category: getStorage("category", []),
-    level: getStorage("level", null),
+    level: getStorage("level", 0),
     setSort: (val) => {
         localStorage.setItem("sort", JSON.stringify(val));
         set({ sort: val });

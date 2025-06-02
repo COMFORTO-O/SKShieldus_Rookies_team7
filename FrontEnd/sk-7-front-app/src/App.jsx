@@ -1,15 +1,17 @@
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import React, { Suspense, useEffect } from "react"; // Suspense, useEffect 추가
-// import MainPage from "./pages/MainPage"; // 주석 처리 또는 삭제
-// import LoginPage from "./pages/LoginPage";
-// import SignupPage from "./pages/SignupPage";
-// import SolvePage from "./pages/SolvePage";
-// import InfoPage from "./pages/InfoPage";
+import {
+    Routes,
+    Route,
+    useLocation,
+    useNavigate,
+    Link,
+} from "react-router-dom";
+import React, { Suspense, useEffect } from "react";
 import Navbar from "./components/molecules/Navbar";
 import useAuthStore from "./store/useAuthStore";
 import LoadingSpinner from "./components/atoms/LoadingSpinner";
 import useModalStore from "./store/useModalStore";
 import { Avatar } from "@mui/material";
+import InfoModal from "./components/modals/InfoModal";
 
 // React.lazy를 사용하여 페이지 컴포넌트 동적 임포트
 const MainPage = React.lazy(() => import("./pages/MainPage"));
@@ -18,47 +20,13 @@ const SignupPage = React.lazy(() => import("./pages/SignupPage"));
 const SolvePage = React.lazy(() => import("./pages/SolvePage"));
 const InfoPage = React.lazy(() => import("./pages/InfoPage"));
 
-// 유저 정보 Modal
-const InfoModal = () => (
-    <div
-        className="fixed mt-2 mr-5 right-0 z-50 flex bg-secondary h-[300px] w-[250px] rounded-lg border-solid border-2"
-        style={{
-            animation: "modalDropFade 0.4s cubic-bezier(0.4,0,0.2,1)",
-        }}
-    >
-        <div className="flex flex-col w-full h-full bg-white ">
-            <p className="ml-5 mt-5 font-sourgummy font-bold">내 정보</p>
-            <Avatar
-                alt="Upload new avatar"
-                src={"../../../public/image.png"}
-                sx={{ width: "30%", height: "30%" }}
-                className="ml-5 h-full w-auto"
-            />
-            <div className="flex-1">
-                <h1>이름</h1>
-            </div>
-            <button className="bg-white h-12 border-t-2">마이 페이지</button>
-            <button
-                className="h-12 text-center text-red-600 bg-white border-t-2"
-                onClick={() => {
-                    // 로그아웃 처리 (예: 토큰 삭제, 상태 변경)
-                    localStorage.removeItem("accessToken");
-                    window.location.reload();
-                }}
-            >
-                로그아웃
-            </button>
-        </div>
-    </div>
-);
-
 /*앱 컨테이너*/
 function App() {
     const { setLogin, user } = useAuthStore(); // Zustand에서 상태와 액션을 가져옵니다.
     const navigate = useNavigate();
 
     // Modal 상태 가져오기
-    const { modalOpen } = useModalStore();
+    const { infoModalOpen } = useModalStore();
 
     // 앱이 처음 마운트될 때 한 번만 실행되어 accessToken을 확인하고 상태를 업데이트합니다.
     useEffect(() => {
@@ -103,14 +71,14 @@ function App() {
     }, [user, location.pathname, navigate]);
 
     return (
-        <div className="h-screen flex flex-col">
+        <div className="h-screen flex flex-col min-w-[780px]">
             {showNavbar && (
                 <header className="flex-none sticky top-0 z-50 shadow-sm">
                     <Navbar />
                 </header>
             )}
             <main className="flex-auto h-full min-h-0 overflow-auto">
-                {modalOpen && <InfoModal />}
+                {infoModalOpen && <InfoModal />}
                 {/* Suspense로 Routes를 감싸고, fallback UI를 지정합니다. */}
                 <Suspense fallback={<LoadingSpinner />}>
                     {/* 로딩 중에 보여줄 컴포넌트 */}

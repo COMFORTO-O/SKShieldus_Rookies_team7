@@ -7,8 +7,37 @@ import { useEffect, useState } from "react";
 const UserInfoContainerStyle =
     "mx-14 h-36 flex flex-row border-solid border-2 rounded-lg xl:mx-0 xl:flex-col xl:h-full ";
 
+// {
+//   "status": 0,
+//   "code": "string",
+//   "message": "string",
+//   "data": {
+//     "name": "string",
+//     "email": "string",
+//     "solvedProblems": [
+//       {
+//         "problemTitle": "string",
+//         "completeDate": "2025-06-02T00:19:53.290Z"
+//       }
+//     ]
+//   }
+// 임시 데이터
+const memberInfo = {
+    message: "success",
+    data: {
+        name: "홍길동",
+        email: "tester@test.com",
+        solvedProblems: [
+            {
+                problemTitle: "string",
+                completeDate: "2025-06-02T00:19:53.290Z",
+            },
+        ],
+    },
+};
+
 const UserInfo = () => {
-    const { isLoggedIn, accessToken } = useAuthStore();
+    const { isLoggedIn } = useAuthStore();
     const [userInfo, setUserInfo] = useState(null);
     const [error, setError] = useState("");
     const navigate = useNavigate();
@@ -44,11 +73,11 @@ const UserInfo = () => {
                             className="h-full w-auto"
                         />
                     </div>
-                    <div className="flex flex-row ml-4 w-full xl:ml-0 xl:flex-col">
+                    <div className="flex flex-row ml-8 w-full xl:ml-0 xl:flex-col">
                         <div className="flex-1 flex flex-col justify-center">
                             <ul className="flex flex-col gap-3">
                                 <li className="font-sourgummy font-semibold text-lg text-blue-700 xl:text-center">
-                                    {userInfo?.name || "이름"}
+                                    {memberInfo?.data?.name || "이름"}
                                 </li>
                                 <li>점수:</li>
                                 <li>관리자 or 사용자</li>

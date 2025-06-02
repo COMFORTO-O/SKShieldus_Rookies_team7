@@ -2,6 +2,9 @@ package com.example.shieldus.controller.dto;
 
 import java.time.LocalDateTime;
 
+import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
+
+import lombok.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

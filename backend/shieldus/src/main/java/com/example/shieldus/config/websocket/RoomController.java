@@ -1,48 +1,46 @@
 package com.example.shieldus.config.websocket;
 
+
 import com.example.shieldus.config.security.service.MemberUserDetails;
+import lombok.Data;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
+@RequiredArgsConstructor
 public class RoomController {
-    private final Map<String, Room> roomMap = new ConcurrentHashMap<>();
+
+    public static final Map<String, Room> roomMap = new ConcurrentHashMap<>();
 
     @GetMapping("/rooms")
     public String roomListPage() {
         return "rooms";
     }
-    @Getter
-    @Setter
-    public static class CreateRoomRequestDto{
-        String name;
+
+    @GetMapping("/api/rooms")
+    @ResponseBody
+    public List<Room> roomList() {
+        return new ArrayList<>(roomMap.values());
     }
+
     @PostMapping("/api/rooms")
     @ResponseBody
-    public Room createRoom(@RequestBody CreateRoomRequestDto createRoomRequestDto,@AuthenticationPrincipal MemberUserDetails userDetails) {
+    public Room createRoom(@RequestBody CreateRoomRequestDto dto, @AuthenticationPrincipal MemberUserDetails userDetails) {
         String roomId = UUID.randomUUID().toString();
-        System.out.println("testests"+userDetails.getUsername());
-        Room room = new Room(roomId, createRoomRequestDto.getName(), userDetails.getUsername());
+        Room room = new Room(roomId, dto.getName(), userDetails.getUsername());
         roomMap.put(roomId, room);
         return room;
     }
 
-    @GetMapping("/api/rooms")
-    @ResponseBody
-    public Collection<Room> getAllRooms() {
-        return roomMap.values();
-    }
-
-    @GetMapping("/room/{roomId}")
-    public String roomView(@PathVariable String roomId, Model model) {
-        model.addAttribute("roomId", roomId);
-        return "room";
+    @Getter @Setter
+    public static class CreateRoomRequestDto {
+        private String name;
     }
 }

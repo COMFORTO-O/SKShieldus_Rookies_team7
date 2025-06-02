@@ -65,18 +65,19 @@ public class RoomWebSocketHandler extends TextWebSocketHandler {
         }
 
         String username = userDetails.getUsername();
+        System.out.println(username+"asdfsdf");
         Room room = RoomController.roomMap.get(roomId);
         if (room == null) return;
 
         RoomRole role = room.getMemberRoles().getOrDefault(username, RoomRole.CHAT_ONLY);
 
-        // ✅ 권한 확인
+        //  권한 확인
         if (type.equals("code_update") && role != RoomRole.CHAT_AND_EDIT) {
             System.out.println("[" + roomId + "] " + username + "는 코드 수정 권한이 없습니다.");
             return;
         }
 
-        // ✅ 브로드캐스트
+        //  브로드캐스트
         for (WebSocketSession s : roomSessions.getOrDefault(roomId, List.of())) {
             if (s.isOpen()) {
                 ObjectNode outbound = objectMapper.createObjectNode();

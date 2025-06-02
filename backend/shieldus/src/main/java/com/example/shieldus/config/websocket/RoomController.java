@@ -48,7 +48,7 @@ public class RoomController {
 
         String username = userDetails.getUsername();
         String title = problem.getTitle() + " : " + username;
-
+        System.out.println(title+"asdsad");
         String roomId = UUID.randomUUID().toString();
         Room room = new Room(roomId, title,problemId, username);
         roomMap.put(roomId, room);

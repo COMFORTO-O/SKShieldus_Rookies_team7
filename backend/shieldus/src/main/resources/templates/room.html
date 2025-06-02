@@ -2,46 +2,72 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>방 목록</title>
+  <title>방 입장</title>
+  <style>
+    body { display: flex; font-family: sans-serif; margin: 0; padding: 0; }
+    .editor { flex: 2; padding: 1rem; }
+    .chat { flex: 1; border-left: 1px solid #ccc; padding: 1rem; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; }
+    #editor { width: 100%; height: 90vh; }
+    #chatLog { flex: 1; overflow-y: auto; border: 1px solid #ccc; padding: 0.5rem; margin-bottom: 0.5rem; list-style: none; }
+    #chatInput { box-sizing: border-box; }
+  </style>
 </head>
 <body>
-<h2>도움방 목록</h2>
-<form id="createForm">
-  <input type="text" id="roomName" placeholder="방 이름 입력" required>
-  <button type="submit">방 만들기</button>
-</form>
-<ul id="roomList"></ul>
-
+<div class="editor">
+  <h2>방 ID: <span id="roomId">[[${roomId}]]</span></h2>
+  <textarea id="editor"></textarea>
+</div>
+<div class="chat">
+  <h3>채팅</h3>
+  <ul id="chatLog"></ul>
+  <input type="text" id="chatInput" placeholder="메시지를 입력하세요">
+  <button onclick="sendChat()">전송</button>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <script>
-  async function fetchRooms() {
-      const res = await fetch('/api/rooms');
-      const rooms = await res.json();
-      const list = document.getElementById('roomList');
-      list.innerHTML = '';
-      rooms.forEach(room => {
-          const li = document.createElement('li');
-          const link = document.createElement('a');
-          link.href = `/room/${room.roomId}`;
-          link.innerText = room.name;
-          li.appendChild(link);
-          list.appendChild(li);
-      });
+  const roomId = document.getElementById("roomId").innerText;
+  function getCookie(name) {
+    const value = document.cookie.split("; ").find(row => row.startsWith(name + "="));
+    return value ? value.split("=")[1] : null;
   }
+  const rawToken = getCookie("Authorization");
+  const token = rawToken?.startsWith("Bearer ") ? rawToken : "Bearer " + rawToken;
 
-  document.getElementById('createForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('roomName').value;
-      await fetch('/api/rooms', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({name:name})
-      });
-      document.getElementById('roomName').value = '';
-      fetchRooms();
+  const socket = new SockJS('/ws-stomp');
+  const stompClient = Stomp.over(socket);
+
+  stompClient.connect({ Authorization: token }, function () {
+    // 하나의 토픽에서 chat + code 메시지 수신
+    stompClient.subscribe(`/topic/room/${roomId}/message`, function (msg) {
+      const data = JSON.parse(msg.body);
+      if (data.type === 'chat') {
+        const li = document.createElement("li");
+        li.textContent = data.sender + ": " + data.message;
+        document.getElementById("chatLog").appendChild(li);
+      } else if (data.type === 'code') {
+        document.getElementById("editor").value = data.code;
+      }
+    });
+
+    document.getElementById("editor").addEventListener("input", function () {
+      stompClient.send(`/room/${roomId}/message`, {}, JSON.stringify({
+        type: 'code',
+        code: this.value
+      }));
+    });
   });
 
-  fetchRooms();
+  function sendChat() {
+    const input = document.getElementById("chatInput");
+    if (input.value.trim() !== "") {
+      stompClient.send(`/room/${roomId}/message`, {}, JSON.stringify({
+        type: 'chat',
+        message: input.value
+      }));
+      input.value = "";
+    }
+  }
 </script>
 </body>
 </html>

@@ -1,37 +1,47 @@
-<!-- public/room.html or templates depending on setup -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>STOMP 채팅</title>
+  <title>방 목록</title>
 </head>
 <body>
-<h2>채팅</h2>
-<input type="text" id="msgInput" placeholder="메시지를 입력하세요">
-<button onclick="sendMessage()">보내기</button>
-<ul id="chat"></ul>
+<h2>도움방 목록</h2>
+<form id="createForm">
+  <input type="text" id="roomName" placeholder="방 이름 입력" required>
+  <button type="submit">방 만들기</button>
+</form>
+<ul id="roomList"></ul>
 
-<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <script>
-  const socket = new SockJS('/ws-stomp');
-  const stompClient = Stomp.over(socket);
-  const token = 'Bearer {jwt_token}'; // 실제 토큰으로 교체
-
-  stompClient.connect({ Authorization: token }, function () {
-      stompClient.subscribe('/topic/room/123', function (message) {
-          const msg = JSON.parse(message.body);
-          const chat = document.getElementById('chat');
-          const item = document.createElement('li');
-          item.innerText = msg.sender + ': ' + msg.content;
-          chat.appendChild(item);
+  async function fetchRooms() {
+      const res = await fetch('/api/rooms');
+      const rooms = await res.json();
+      const list = document.getElementById('roomList');
+      list.innerHTML = '';
+      rooms.forEach(room => {
+          const li = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = `/room/${room.roomId}`;
+          link.innerText = room.name;
+          li.appendChild(link);
+          list.appendChild(li);
       });
+  }
+
+  document.getElementById('createForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('roomName').value;
+      await fetch('/api/rooms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({name:name})
+      });
+      document.getElementById('roomName').value = '';
+      fetchRooms();
   });
 
-  function sendMessage() {
-      const content = document.getElementById('msgInput').value;
-      stompClient.send('/app/room/123/message', {}, JSON.stringify({ content }));
-  }
+  fetchRooms();
 </script>
 </body>
 </html>

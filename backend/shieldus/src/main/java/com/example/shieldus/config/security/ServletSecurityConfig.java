@@ -95,7 +95,7 @@ public class ServletSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://127.0.0.1:8080"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://127.0.0.1:8080", "http://127.0.0.1:3000", "http://localhost:3000"));
         // 허용할 HTTP 메서드 (GET, POST, PUT, DELETE, OPTIONS 등)
         configuration.setAllowedMethods(List.of("*"));
         // 허용할 헤더 (모든 헤더 허용)

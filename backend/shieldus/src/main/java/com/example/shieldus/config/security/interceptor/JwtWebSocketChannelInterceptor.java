@@ -31,7 +31,6 @@ public class JwtWebSocketChannelInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-
         // STOMP CONNECT 메시지 처리 (연결 시 인증)
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             // 1. HTTP 핸드셰이크에서 이미 인증된 경우 (예: 세션 기반 인증 또는 Spring Security 필터 체인에서 처리된 경우)

@@ -31,7 +31,32 @@ public class ProblemResponseDto {
     private Boolean solved;
     private LocalDateTime completeDate;
 
+    // QueryDSL에서 사용할 생성자 추가
+    public ProblemResponseDto(Long id, String title, String detail,
+                              ProblemCategoryEnum category, Integer level,
+                              String memberName, Boolean solved) {
+        this.id = id;
+        this.title = title;
+        this.detail = detail;
+        this.category = category;
+        this.level = level;
+        this.memberName = memberName;
+        this.solved = solved;
+    }
 
+    // 사용자 푼 문제 조회용 생성자
+    public ProblemResponseDto(Long id, String title, String detail,
+                              ProblemCategoryEnum category, Integer level,
+                              Long submitProblemId, Boolean solved, LocalDateTime completeDate) {
+        this.id = id;
+        this.title = title;
+        this.detail = detail;
+        this.category = category;
+        this.level = level;
+        this.submitProblemId = submitProblemId;
+        this.solved = solved;
+        this.completeDate = completeDate;
+    }
 
     // 문제 상세
     public static ProblemResponseDto fromProblem(Problem problem) {
@@ -45,22 +70,7 @@ public class ProblemResponseDto {
                 .build();
     }
 
-
-
-    // 사용자 푼 문제 조회용 dto
-    public ProblemResponseDto(Long id, String title, String detail, ProblemCategoryEnum category, Integer level,
-                              Long submitProblemId, Boolean solved, LocalDateTime completeDate) {
-        this.id = id;
-        this.title = title;
-        this.detail = detail;
-        this.category = category;
-        this.level = level;
-        this.submitProblemId = submitProblemId;
-        this.solved = solved;
-        this.completeDate = completeDate;
-    }
-
-    // 문제 상세. ( test case 포함 )
+    // 문제 + 테스트케이스 포함된 상세 DTO
     @Getter
     @Setter
     @AllArgsConstructor
@@ -75,6 +85,7 @@ public class ProblemResponseDto {
         }
     }
 
+    // 사용자가 푼 문제 DTO
     @Getter
     @Setter
     public static class SolvedProblem {
@@ -97,7 +108,4 @@ public class ProblemResponseDto {
             this.tempCode = MemberTempCodeResponseDto.fromEntity(code);
         }
     }
-
-
-
 }

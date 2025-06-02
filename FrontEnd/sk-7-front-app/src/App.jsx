@@ -8,6 +8,8 @@ import React, { Suspense, useEffect } from "react"; // Suspense, useEffect 추�
 import Navbar from "./components/molecules/Navbar";
 import useAuthStore from "./store/useAuthStore";
 import LoadingSpinner from "./components/atoms/LoadingSpinner";
+import useModalStore from "./store/useModalStore";
+import { Avatar } from "@mui/material";
 
 // React.lazy를 사용하여 페이지 컴포넌트 동적 임포트
 const MainPage = React.lazy(() => import("./pages/MainPage"));
@@ -16,29 +18,65 @@ const SignupPage = React.lazy(() => import("./pages/SignupPage"));
 const SolvePage = React.lazy(() => import("./pages/SolvePage"));
 const InfoPage = React.lazy(() => import("./pages/InfoPage"));
 
-/*
-    앱 컨테이너
-*/
+// 유저 정보 Modal
+const InfoModal = () => (
+    <div
+        className="fixed mt-2 mr-5 right-0 z-50 flex bg-secondary h-[300px] w-[250px] rounded-lg border-solid border-2"
+        style={{
+            animation: "modalDropFade 0.4s cubic-bezier(0.4,0,0.2,1)",
+        }}
+    >
+        <div className="flex flex-col w-full h-full bg-white ">
+            <p className="ml-5 mt-5 font-sourgummy font-bold">내 정보</p>
+            <Avatar
+                alt="Upload new avatar"
+                src={"../../../public/image.png"}
+                sx={{ width: "30%", height: "30%" }}
+                className="ml-5 h-full w-auto"
+            />
+            <div className="flex-1">
+                <h1>이름</h1>
+            </div>
+            <button className="bg-white h-12 border-t-2">마이 페이지</button>
+            <button
+                className="h-12 text-center text-red-600 bg-white border-t-2"
+                onClick={() => {
+                    // 로그아웃 처리 (예: 토큰 삭제, 상태 변경)
+                    localStorage.removeItem("accessToken");
+                    window.location.reload();
+                }}
+            >
+                로그아웃
+            </button>
+        </div>
+    </div>
+);
 
+/*앱 컨테이너*/
 function App() {
     const { setLogin, user } = useAuthStore(); // Zustand에서 상태와 액션을 가져옵니다.
     const navigate = useNavigate();
+
+    // Modal 상태 가져오기
+    const { modalOpen } = useModalStore();
 
     // 앱이 처음 마운트될 때 한 번만 실행되어 accessToken을 확인하고 상태를 업데이트합니다.
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
         if (token) {
+            // 토큰이 만료된 상태라면
+
             console.log("현재 로그인 상태입니다.\nAccess Token:", token);
             setLogin(token); // Zustand 상태 업데이트
         }
-    }, [setLogin]); // setLogin은 일반적으로 안정적이므로 의존성 배열에 추가해도 문제 없습니다.
+    }, [setLogin]);
 
     const location = useLocation();
     // Navbar 표시 조건은 그대로 유지
     const showNavbar =
         location.pathname !== "/login" && location.pathname !== "/register";
 
-    // 로그인 상태 감지하여 리다이렉션 (선택적 개선)
+    // 로그인 상태 감지하여 리다이렉션
     // 이 로직은 user 상태가 변경될 때마다 실행됩니다.
     useEffect(() => {
         const publicPaths = ["/login", "/register"];
@@ -49,8 +87,6 @@ function App() {
             location.pathname !== "/" &&
             location.pathname !== "/info"
         ) {
-            // 이 조건은 프로젝트의 인증 정책에 따라 달라질 수 있습니다.
-            // 예를 들어, SolvePage는 로그인이 필요하다고 가정합니다.
             if (location.pathname === "/solve") {
                 // alert("로그인이 필요한 서비스입니다."); // 사용자에게 알림
                 // navigate("/login");
@@ -74,9 +110,9 @@ function App() {
                 </header>
             )}
             <main className="flex-auto h-full min-h-0 overflow-auto">
+                {modalOpen && <InfoModal />}
                 {/* Suspense로 Routes를 감싸고, fallback UI를 지정합니다. */}
                 <Suspense fallback={<LoadingSpinner />}>
-                    {" "}
                     {/* 로딩 중에 보여줄 컴포넌트 */}
                     <Routes>
                         <Route path="/" element={<MainPage />} />

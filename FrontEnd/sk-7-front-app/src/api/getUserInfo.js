@@ -4,8 +4,8 @@ import axios from "axios";
 
 export default async function getUserInfo() {
     try {
-        const response = await axios.get(
-            `${import.meta.env.VITE_API_URL}/api/account/info`,
+        const response = await axios.post(
+            `${import.meta.env.VITE_API_URL}/api/account`,
             {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem(
@@ -13,10 +13,11 @@ export default async function getUserInfo() {
                     )}`,
                     "Content-Type": "application/json",
                 },
-                // withCredentials: true,
+                withCredentials: true,
             }
         );
 
+        console.log("응답 결과 : ", response.data);
         if (response.ok) {
             console.log("사용자 정보 가져오기 성공");
             console.log(response.data);

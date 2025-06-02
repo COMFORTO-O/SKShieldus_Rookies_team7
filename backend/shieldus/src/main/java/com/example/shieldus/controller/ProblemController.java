@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/problem")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000", methods = RequestMethod.GET)
 public class ProblemController {
 
     private final ProblemService problemService;

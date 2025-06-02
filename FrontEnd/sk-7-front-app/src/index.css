@@ -1,6 +1,24 @@
 :root {
     --color-primary: #58666e;
     --color-secondary: #d8dde0;
+    --font-main: "SourGummy", "Noto Sans KR", Arial, sans-serif;
+}
+
+html,
+body,
+#root {
+    font-family: var(--font-main);
+}
+
+@keyframes modalDropFade {
+    0% {
+        opacity: 0;
+        transform: translateY(-5%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @tailwind base;

@@ -26,17 +26,18 @@ function SignupForm() {
         if (hasError) return alert("정보를 다시 확인해주세요.");
 
         const { password, name, phone, emailId, emailDomain } = inputs;
-        const e_pwd = encryptPassword(password);
+        // const e_pwd = encryptPassword(password);
 
         try {
             const result = await RegisterTask({
                 email: `${emailId}@${emailDomain}`,
-                encryptedPassword: e_pwd,
+                encryptedPassword: password,
                 name,
                 phone,
             });
 
-            if (result && result.token) {
+            if (result.message === "success") {
+                alert("회원가입 성공!");
                 navigate("/login", { replace: true });
             }
         } catch (err) {

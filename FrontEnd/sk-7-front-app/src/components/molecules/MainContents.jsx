@@ -7,11 +7,23 @@ import CategoryBar from "../atoms/CategoryBar";
 import ProblemItem from "../atoms/ProblemItem";
 import { getProblemList } from "../../api/getProblemList";
 
+// - title: String (제목 키워드 포함)
+// - category: String (JAVA, PYTHON, …)
+// - level: Integer (난이도)
+// - status: String (solved / unsolved)
+// - page: Integer (페이지 번호)
+// - size: Integer (페이지 크기)
+// - sort: String (id,desc 등)
+
 export default function MainContents() {
     // 전역 상태 가져오기
-    const { sort, status, searchKeyword, level } = useCategoryStore();
+    const { sort, status, level, category } = useCategoryStore();
+
+    const [title, setTitle] = useState("");
+
     const [pageNumber, setPageNumber] = useState(1);
     const [problems, setProblems] = useState([]);
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -21,11 +33,12 @@ export default function MainContents() {
         setError("");
         try {
             const data = await getProblemList({
-                title: searchKeyword,
-                category: sort,
+                title: title,
+                category: category,
                 level: level,
                 status: status,
                 page: pageNumber,
+                sort: sort,
             });
             setProblems(data.problems || []);
         } catch (err) {
@@ -33,12 +46,12 @@ export default function MainContents() {
         } finally {
             setLoading(false);
         }
-    }, [searchKeyword, sort, status, pageNumber, level]);
+    }, [sort, status, pageNumber, level, category, title]);
 
     // 카테고리 변경될 시 리스트 다시 받아오기
     useEffect(() => {
         fetchProblems();
-    }, [sort, status, level]);
+    }, [sort, status, level, category]);
 
     // 새로고침
     const onRefresh = useCallback(() => {
@@ -49,14 +62,19 @@ export default function MainContents() {
     // 검색
     const onSearch = useCallback(() => {
         console.log("검색");
-        // setPageNumber(1);
+        setPageNumber(1);
         fetchProblems();
     }, [fetchProblems]);
 
     return (
         <div className="mx-14">
             <div className="mt-5">
-                <CategoryBar onReset={onRefresh} onSearch={onSearch} />
+                <CategoryBar
+                    onReset={onRefresh}
+                    onSearch={onSearch}
+                    title={title}
+                    setTitle={setTitle}
+                />
             </div>
             <div className="border-solid border-2 mt-5">
                 <div className="flex px-4 w-full text-center mb-1">

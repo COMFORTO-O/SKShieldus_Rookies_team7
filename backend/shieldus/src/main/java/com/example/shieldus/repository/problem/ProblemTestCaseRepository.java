@@ -9,4 +9,10 @@ import java.util.List;
 public interface ProblemTestCaseRepository extends JpaRepository<ProblemTestCase, Long> {
 
     List<ProblemTestCase> findByProblem(Problem problem);
+
+    boolean existsByIdAndProblem_id(Long id, Long problem_id);
+
+    List<ProblemTestCase> findByProblem_Id(Long problemId);
+
+    List<ProblemTestCase> findByProblem_IdAndIsTestCaseIsTrue(Long problemId);
 }

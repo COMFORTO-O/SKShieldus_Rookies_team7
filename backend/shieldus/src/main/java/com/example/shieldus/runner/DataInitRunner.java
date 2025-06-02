@@ -11,6 +11,7 @@ import com.example.shieldus.repository.problem.ProblemTestCaseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ import java.util.List;
 @Order(1)
 @RequiredArgsConstructor
 @Slf4j
+@ConditionalOnProperty(name = "runner.data-init.enabled", havingValue = "true", matchIfMissing = false)
 public class DataInitRunner implements CommandLineRunner {
 
     private final MemberRepository memberRepository;

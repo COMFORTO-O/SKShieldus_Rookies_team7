@@ -1,5 +1,6 @@
 package com.example.shieldus.controller.dto;
 
+import com.example.shieldus.exception.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -26,6 +27,15 @@ public class ResponseDto<T> {
                 .status(status)
                 .code(code)
                 .message(message)
+                .data(null)
+                .build();
+    }
+
+    public static <T> ResponseDto<T> error(ErrorCode errorCode) {
+        return ResponseDto.<T>builder()
+                .status(errorCode.getStatus())
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
                 .data(null)
                 .build();
     }

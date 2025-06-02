@@ -1,12 +1,15 @@
 package com.example.shieldus.entity.problem;
 
 
+import com.example.shieldus.controller.dto.ProblemRequestDto;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Data
@@ -18,7 +21,6 @@ import java.time.LocalDateTime;
 @Table(name = "problem")
 public class Problem extends BaseEntity {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,7 +30,6 @@ public class Problem extends BaseEntity {
     private Member member;
 
     private String title;
-
     private String detail;
 
     @Enumerated(EnumType.STRING)
@@ -37,20 +38,33 @@ public class Problem extends BaseEntity {
     private Integer level;
 
     // 3. 소프트 삭제 관련 필드 추가
+    @Builder.Default
     @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
     private Boolean isDeleted = false;
 
+    @Builder.Default
     @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+    private LocalDateTime deletedAt = null;
 
-    // delete() 메서드
+    @Builder.Default
+    @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProblemTestCase> testCases = new ArrayList<>();
+
+
     public void delete() {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
-
-
     }
 
+
+    public void update(ProblemRequestDto.Update dto){
+        this.title = dto.getTitle();
+        this.detail = dto.getDetail();
+        this.category = dto.getCategory();
+        this.level = dto.getLevel();
+        this.isDeleted = false;
+
+    }
 }
 
 

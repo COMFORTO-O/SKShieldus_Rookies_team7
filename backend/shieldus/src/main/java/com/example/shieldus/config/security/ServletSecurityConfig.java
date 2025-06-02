@@ -115,42 +115,6 @@ public class ServletSecurityConfig {
         return source;
     }
 
-    @Bean
-    public ChannelInterceptor jwtWebSocketChannelInterceptor() {
-        return new ChannelInterceptor() {
-            @Override
-            public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-                // STOMP CONNECT 메시지 처리 (연결 시 인증)
-                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    // 1. HTTP 핸드셰이크에서 이미 인증된 경우 (JWT 쿠키 사용 시)
-                    //    SecurityContextHolder에서 Authentication 객체를 가져와 WebSocket 세션에 연결
-                    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                    if (authentication != null && authentication.isAuthenticated() && accessor.getUser() == null) {
-                        accessor.setUser(authentication);
-                        System.out.println("WebSocket authenticated via HTTP handshake: " + authentication.getName());
-                    }
-
-                    // 2. STOMP CONNECT 헤더에 JWT를 포함하는 경우 (Authorization: Bearer <token>)
-                    //    만약 JWT를 쿠키로 보내지 않고 Authorization 헤더로 보낸다면 이 로직을 활성화해야 합니다.
-                    String authorizationHeader = accessor.getFirstNativeHeader("Authorization");
-                    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                        String jwt = authorizationHeader.substring(7);
-                        try {
-                            // TODO: JwtRequestFilter와 같은 로직 구현
-                        } catch (Exception e) {
-                            System.err.println("Invalid JWT for WebSocket connection in STOMP header: " + e.getMessage());
-                        }
-                    } else if (accessor.getUser() == null) {
-                        // 쿠키로도, 헤더로도 인증 정보가 없는 경우 (필요에 따라 연결 거부)
-                        System.err.println("WebSocket connection denied: No authentication info found.");
-                    }
-                }
-                return message;
-            }
-        };
-    }
-
     /*
     * STOMP 용 RequestMatcher
     * */

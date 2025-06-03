@@ -18,7 +18,7 @@ public class RoomController {
     private final MemberRepository memberRepository;
 
     public static final Map<String, Room> roomMap = new ConcurrentHashMap<>();
-
+    public static final Map<String, String> userToRoomId = new ConcurrentHashMap<>();
     @PostMapping
     public Room createRoom(@RequestBody Map<String, String> body ,@AuthenticationPrincipal MemberUserDetails userDetails) {
         String title = body.get("name");
@@ -26,7 +26,7 @@ public class RoomController {
         Room room = new Room(roomId, title);
         Optional<Member> member = memberRepository.findByEmail(userDetails.getUsername());
         room.setOwner(member.get());
-        System.out.println(member.get().getEmail()+"고양이는 지은이~~");
+
         roomMap.put(roomId, room);
         return room;
     }

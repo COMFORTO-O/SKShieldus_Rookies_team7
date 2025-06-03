@@ -8,7 +8,9 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
@@ -67,6 +69,8 @@ public class ChatController {
             return;
         }
 
+        RoomController.userToRoomId.put(username, roomId);
+
         // owner이면 아무것도 안함 (또는 CHAT_AND_EDIT 부여)
         if (room.getOwner().getEmail().equals(username)) {
             room.getMemberRoles().put(username, RoomRole.CHAT_AND_EDIT);
@@ -78,10 +82,40 @@ public class ChatController {
         }
 
         // ✅ 유저 목록 + 권한 정보 전송
-        messagingTemplate.convertAndSend(
-                "/topic/members." + roomId,
-                room.getMemberRoles()); // Map<String, RoomRole>
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("members", room.getMemberRoles());
+        payload.put("owner", room.getOwner().getEmail());
+        messagingTemplate.convertAndSend("/topic/members." + roomId, payload);
     }
 
+    @MessageMapping("/room.changeRole.{roomId}")
+    public void changeRole(@DestinationVariable String roomId,
+                           @Payload RoleChangeRequest request,
+                           Principal principal) {
+        String requester = principal.getName();
+        Room room = RoomController.roomMap.get(roomId);
+        if (room == null) return;
 
+        // ✅ 방장만 변경 가능
+        if (!room.getOwner().getEmail().equals(requester)) {
+            System.out.println("권한 변경 시도 실패 (방장 아님): " + requester);
+            return;
+        }
+
+        // ✅ 대상 유저가 존재해야 함
+        if (!room.getMemberRoles().containsKey(request.getTargetUsername())) {
+            System.out.println("대상 유저가 존재하지 않음: " + request.getTargetUsername());
+            return;
+        }
+
+        // ✅ 권한 변경
+        room.getMemberRoles().put(request.getTargetUsername(), request.getNewRole());
+        System.out.println("권한 변경됨: " + request.getTargetUsername() + " → " + request.getNewRole());
+
+        // ✅ 전체 유저에게 권한 목록 broadcast
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("members", room.getMemberRoles());
+        payload.put("owner", room.getOwner().getEmail());
+        messagingTemplate.convertAndSend("/topic/members." + roomId, payload);
+    }
 }

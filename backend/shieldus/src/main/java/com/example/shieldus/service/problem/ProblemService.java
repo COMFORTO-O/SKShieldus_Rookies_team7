@@ -46,6 +46,9 @@ public class ProblemService {
     private final MemberSubmitProblemRepository memberSubmitProblemRepository; // 추가
     private final ProblemCodeRepository problemCodeRepository;
 
+    public List<ProblemCode> getProblemCodes() {
+        return problemCodeRepository.findAll();
+    }
     /**
      * 1) 조건별 문제 목록 조회. 
      *    memberId가 null인 경우 solved/unsolved 상태 필터는 항상 false 처리됨.

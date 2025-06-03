@@ -30,6 +30,7 @@ package com.example.shieldus.controller;
 
 import com.example.shieldus.config.security.service.MemberUserDetails;
 import com.example.shieldus.controller.dto.*;
+import com.example.shieldus.entity.problem.ProblemCode;
 import com.example.shieldus.service.problem.ProblemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -46,6 +47,12 @@ import java.util.List;
 public class ProblemController {
 
     private final ProblemService problemService;
+
+    // 카테고리 목록 조회
+    @GetMapping("/category")
+    public ResponseDto<List<ProblemCode>> getCategory(){
+        return ResponseDto.success(problemService.getProblemCodes());
+    }
 
     /**
      * 1) 문제 목록 조회 (필터링 + 페이징)

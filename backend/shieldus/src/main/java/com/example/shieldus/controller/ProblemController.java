@@ -63,14 +63,14 @@ public class ProblemController {
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Integer level,
             @RequestParam(required = false) String title,
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Boolean solved,
             @PageableDefault(size = 10, sort = "id,desc") Pageable pageable,
             @AuthenticationPrincipal MemberUserDetails userDetails
     ) {
         // 변경: userDetails가 null인 경우 memberId도 null로 넘겨서 “solved/unsolved” 필터링 시 항상 false 처리
         Long memberId = (userDetails != null) ? userDetails.getMemberId() : null;
         Page<ProblemResponseDto> page = problemService.getFilteredProblems(
-                memberId, category, level, title, status, pageable
+                memberId, category, level, title, solved, pageable
         );
         return ResponseDto.success(page);
     }

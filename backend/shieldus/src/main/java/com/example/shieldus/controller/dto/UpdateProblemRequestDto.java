@@ -28,7 +28,7 @@ public class UpdateProblemRequestDto {
     private String detail;
 
     @NotBlank(message = "카테고리를 입력하세요.")
-    private ProblemCategoryEnum category;
+    private String category;
 
     @NotNull(message = "난이도를 입력하세요.")
     private Integer level;

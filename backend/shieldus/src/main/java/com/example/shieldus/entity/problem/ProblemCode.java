@@ -19,5 +19,4 @@ public class ProblemCode {
 
     private String description;
 
-    // 필요시 추가 필드
 }

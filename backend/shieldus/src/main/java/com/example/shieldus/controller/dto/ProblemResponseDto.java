@@ -24,13 +24,15 @@ public class ProblemResponseDto {
     private String detail;
     private ProblemCodeDto category;
     private Integer level;
+    private LocalDateTime createdAt;
+
     // member
     private String memberName;
 
     // memberSubmitProblem
     private Long submitProblemId;
     private Boolean solved;
-    private LocalDateTime completeDate;
+    private LocalDateTime completedAt;
 
     // QueryDSL에서 사용할 생성자 추가
     public ProblemResponseDto(Long id, String title, String detail,
@@ -48,7 +50,7 @@ public class ProblemResponseDto {
     // 사용자 푼 문제 조회용 생성자
     public ProblemResponseDto(Long id, String title, String detail,
                               ProblemCode problemCode, Integer level,
-                              Long submitProblemId, Boolean solved, LocalDateTime completeDate) {
+                              Long submitProblemId, Boolean solved, LocalDateTime completedAt) {
         this.id = id;
         this.title = title;
         this.detail = detail;
@@ -56,7 +58,24 @@ public class ProblemResponseDto {
         this.level = level;
         this.submitProblemId = submitProblemId;
         this.solved = solved;
-        this.completeDate = completeDate;
+        this.completedAt = completedAt;
+    }
+
+
+    public ProblemResponseDto(Long id, String title, String detail, Integer level, LocalDateTime createdAt,
+                              Long problemCodeId, String problemCode, String problemDescription,
+                              Boolean solved, LocalDateTime completedAt) {
+        this.id = id;
+        this.title = title;
+        this.detail = detail;
+        this.level = level;
+        this.createdAt = createdAt;
+        this.category = new ProblemCodeDto(problemCodeId, problemCode, problemDescription);
+        this.solved = solved;
+        this.completedAt = completedAt;
+
+
+
     }
 
     // 문제 상세
@@ -65,7 +84,7 @@ public class ProblemResponseDto {
                 .id(problem.getId())
                 .title(problem.getTitle())
                 .detail(problem.getDetail())
-                .category(ProblemCodeDto.fromEntity(problem.getProblemCode())) // ProblemCategoryEnum → ProblemCodeDto로 변경
+                .category(ProblemCodeDto.fromEntity(problem.getCategory())) // ProblemCategoryEnum → ProblemCodeDto로 변경
                 .level(problem.getLevel())
                 .memberName(problem.getMember().getName())
                 .build();
@@ -100,11 +119,11 @@ public class ProblemResponseDto {
                     .id(problem.getId())
                     .title(problem.getTitle())
                     .detail(problem.getDetail())
-                    .category(ProblemCodeDto.fromEntity(problem.getProblemCode())) // ProblemCategoryEnum → ProblemCodeDto로 변경
+                    .category(ProblemCodeDto.fromEntity(problem.getCategory())) // ProblemCategoryEnum → ProblemCodeDto로 변경
                     .level(problem.getLevel())
                     .submitProblemId(submitProblem.getId())
                     .solved(submitProblem.getPass())
-                    .completeDate(submitProblem.getCompleteDate())
+                    .completedAt(submitProblem.getCompletedAt())
                     .build();
             this.tempCode = MemberTempCodeResponseDto.fromEntity(code);
         }

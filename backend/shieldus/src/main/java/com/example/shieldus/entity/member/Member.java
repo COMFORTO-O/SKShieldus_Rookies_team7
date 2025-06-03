@@ -34,12 +34,12 @@ public class Member {
     @Column(nullable = false)
     private Boolean isDeleted =false;
 
-    private LocalDateTime deletedOn;
+    private LocalDateTime deletedAt;
 
 
     public void delete(){
         this.isDeleted = true;
-        this.deletedOn = LocalDateTime.now();
+        this.deletedAt = LocalDateTime.now();
     }
 
 }

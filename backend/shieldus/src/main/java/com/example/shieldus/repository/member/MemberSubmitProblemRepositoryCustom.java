@@ -7,5 +7,5 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface MemberSubmitProblemRepositoryCustom{
-    Page<ProblemResponseDto> getMemberSubmitProblems(Long memberId, Pageable pageable);
+//    Page<ProblemResponseDto> getMemberSubmitProblems(Long memberId, Pageable pageable);
 }

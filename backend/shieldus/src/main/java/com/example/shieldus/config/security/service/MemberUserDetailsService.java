@@ -2,6 +2,8 @@ package com.example.shieldus.config.security.service;
 
 
 import com.example.shieldus.entity.member.Member;
+import com.example.shieldus.exception.CustomException;
+import com.example.shieldus.exception.ErrorCode;
 import com.example.shieldus.repository.member.MemberRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,8 +23,7 @@ public class MemberUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Member> optionalAppUser = memberRepository.findByEmail(username);
-        return optionalAppUser.map(MemberUserDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException("user not found " + username));
+        Member optionalMember = memberRepository.findByEmail(username).orElseThrow(()-> new CustomException(ErrorCode.AUTHENTICATION_FAILED));
+        return new MemberUserDetails(optionalMember);
     }
 }

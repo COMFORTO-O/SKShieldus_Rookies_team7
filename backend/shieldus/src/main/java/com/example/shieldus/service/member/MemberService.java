@@ -48,7 +48,7 @@ public class MemberService {
                             solvedProblems.stream()
                                     .map(sub -> MyPageResponseDto.SolvedProblem.builder()
                                             .problemTitle(sub.getProblem().getTitle())
-                                            .completeDate(sub.getCompleteDate())
+                                            .completedAt(sub.getCompletedAt())
                                             .build())
                                     .collect(Collectors.toList())
                     )
@@ -92,10 +92,10 @@ public class MemberService {
 
     }
 
-    public Page<ProblemResponseDto> getMemberSubmitProblems(Long memberId, Pageable pageable) {
-        Page<ProblemResponseDto> submitProblemList = submitProblemRepository.getMemberSubmitProblems(memberId, pageable);
-        return submitProblemList;
-    }
+//    public Page<ProblemResponseDto> getMemberSubmitProblems(Long memberId, Pageable pageable) {
+//        Page<ProblemResponseDto> submitProblemList = submitProblemRepository.getMemberSubmitProblems(memberId, pageable);
+//        return submitProblemList;
+//    }
 
     /*
     *
@@ -105,56 +105,6 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
         return new ProblemResponseDto.SolvedProblem(memberSubmitProblem);
 
-    }
-
-    // 회원 목록 조회 메서드 수정
-    public Page<MemberListResponseDto> getMemberList(Pageable pageable, String searchKeyword) {
-        try {
-            return memberRepository.findMembers(pageable, searchKeyword)
-                    .map(member -> MemberListResponseDto.builder()
-                            .memberId(member.getId())
-                            .email(member.getEmail())
-                            .name(member.getName())
-                            .role(member.getRole().name())
-                            .isDeleted(member.isDeleted())
-                            .build());
-        } catch (DataAccessException e) {
-            log.error("Database error in getMemberList", e);
-            throw new CustomException(ErrorCode.DATABASE_ERROR, e);
-        } catch (Exception e) {
-            log.error("Unexpected error in getMemberList", e);
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
-        }
-    }
-
-    // 회원 정보 수정 메서드 수정
-    @Transactional
-    public void updateMember(Long memberId, MemberUpdateRequestDto updateDto) {
-        try {
-            Member member = memberRepository.findById(memberId)
-                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
-            // 업데이트 로직
-            if (updateDto.getName() != null) {
-                member.setName(updateDto.getName());
-            }
-            if (updateDto.getEmail() != null) {
-                member.setEmail(updateDto.getEmail());
-            }
-            if (updateDto.getRole() != null) {
-                member.setRole(MemberRole.valueOf(updateDto.getRole()));
-            }
-
-            memberRepository.save(member);
-        } catch (DataAccessException e) {
-            log.error("Database error in updateMember", e);
-            throw new CustomException(ErrorCode.DATABASE_ERROR, e);
-        } catch (IllegalArgumentException e) {
-            throw new CustomException(ErrorCode.INVALID_REQUEST, e);
-        } catch (Exception e) {
-            log.error("Unexpected error in updateMember", e);
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
-        }
     }
 
 }

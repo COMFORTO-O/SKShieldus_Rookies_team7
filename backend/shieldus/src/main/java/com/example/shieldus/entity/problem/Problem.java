@@ -38,7 +38,7 @@ public class Problem extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_code_id")
-    private ProblemCode problemCode;
+    private ProblemCode category;
 
     private Integer level;
 
@@ -62,18 +62,18 @@ public class Problem extends BaseEntity {
     }
 
 
-    public void update(ProblemRequestDto.Update dto){
+    public void update(ProblemRequestDto.Update dto, ProblemCode category){
         this.title = dto.getTitle();
         this.detail = dto.getDetail();
-        //this.category = dto.getCategory();
+        this.category = category;
         this.level = dto.getLevel();
         this.isDeleted = false;
 
     }
-    public void update(UpdateProblemRequestDto dto){
+    public void update(UpdateProblemRequestDto dto, ProblemCode category){
         this.title = dto.getTitle();
         this.detail = dto.getDetail();
-        //this.category = dto.getCategory();
+        this.category = category;
         this.level = dto.getLevel();
         this.isDeleted = false;
 

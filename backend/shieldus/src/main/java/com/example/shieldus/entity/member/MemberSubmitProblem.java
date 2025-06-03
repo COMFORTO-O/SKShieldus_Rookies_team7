@@ -30,7 +30,7 @@ public class MemberSubmitProblem {
 
     private Boolean pass;  // true or false
 
-    private LocalDateTime completeDate;
+    private LocalDateTime completedAt;
 
     @OneToMany(mappedBy = "memberSubmitProblem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberTempCode> MemberTempCodes;

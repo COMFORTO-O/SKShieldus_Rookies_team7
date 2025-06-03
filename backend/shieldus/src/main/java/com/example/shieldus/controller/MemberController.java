@@ -34,11 +34,11 @@ public class MemberController {
         return ResponseDto.success("ok");
     }
 
-    @GetMapping("/problem/solved") // 푼 문제 가져오기
-    public ResponseDto<Page<ProblemResponseDto>> getSolvedProblem(Pageable pageable, @AuthenticationPrincipal MemberUserDetails userDetails) {
-        Page<ProblemResponseDto> submitProblemList = memberService.getMemberSubmitProblems(userDetails.getMemberId(), pageable);
-        return ResponseDto.success(submitProblemList);
-    }
+//    @GetMapping("/problem/solved") // 푼 문제 가져오기
+//    public ResponseDto<Page<ProblemResponseDto>> getSolvedProblem(Pageable pageable, @AuthenticationPrincipal MemberUserDetails userDetails) {
+//        Page<ProblemResponseDto> submitProblemList = memberService.getMemberSubmitProblems(userDetails.getMemberId(), pageable);
+//        return ResponseDto.success(submitProblemList);
+//    }
 
     @GetMapping("/problem/solved/detail/{submitProblemId}") // 푼 문제 상세정보 / id = member_submit_problem_id;
     public ResponseDto<ProblemResponseDto.SolvedProblem> getSolvedProblemDetail(
@@ -58,40 +58,6 @@ public class MemberController {
      * Admin 기능
      * */
 
-    // 사용자 정보 검색, pagenation
-    @GetMapping("/list")
-    public ResponseDto<Page<MemberListResponseDto>> getMemberList(
-            Pageable pageable,
-            @AuthenticationPrincipal MemberUserDetails userDetails,
-            @RequestParam(required = false) String searchKeyword) {
 
-        // 관리자 권한 확인 로직 추가 (예시)
-        if (!userDetails.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new AccessDeniedException("관리자 권한이 필요합니다.");
-        }
-
-        Page<MemberListResponseDto> memberList = memberService.getMemberList(pageable, searchKeyword);
-        return ResponseDto.success(memberList);
-    }
-
-    // 사용자 정보 수정 (관리자용)
-    @PutMapping("/update/{memberId}")
-    public ResponseDto<String> updateMember(
-            @PathVariable Long memberId,
-            @RequestBody MemberUpdateRequestDto updateDto,
-            @AuthenticationPrincipal MemberUserDetails userDetails) {
-
-        // 관리자 권한 확인
-        if (!userDetails.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new AccessDeniedException("관리자 권한이 필요합니다.");
-        }
-
-        memberService.updateMember(memberId, updateDto);
-        return ResponseDto.success("사용자 정보가 수정되었습니다.");
-    }
-
-    // Problem 카테고리 Enum대신 Problem 코드를 join Mapping 할수있게끔 변경
 
 }

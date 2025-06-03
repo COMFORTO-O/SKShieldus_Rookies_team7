@@ -26,37 +26,37 @@ public class MemberSubmitProblemRepositoryCustomImpl implements MemberSubmitProb
     /*
      * 푼 문제 제목과, submit 의 컬럼을 가져와 dto 로 제작
      * */
-    @Override
-    public Page<ProblemResponseDto> getMemberSubmitProblems(Long memberId, Pageable pageable) {
-        List<ProblemResponseDto> result = queryFactory.select(Projections.constructor(ProblemResponseDto.class,
-                        problem.id,
-                        problem.title,
-                        problem.detail,
-                        problem.category,
-                        problem.level,
-                        memberSubmitProblem.id,
-                        memberSubmitProblem.pass,
-                        memberSubmitProblem.completeDate))
-                .from(memberSubmitProblem)
-                .leftJoin(memberSubmitProblem.problem, problem)
-                .where(memberSubmitProblem.member.id.eq(memberId).and(
-                        memberSubmitProblem.pass.isTrue()
-                ))
-                .orderBy(memberSubmitProblem.id.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        Long total = queryFactory
-                .select(memberSubmitProblem.count())
-                .from(memberSubmitProblem)
-                .where(
-                        memberSubmitProblem.member.id.eq(memberId)
-                                .and(memberSubmitProblem.pass.isTrue())
-                )
-                .fetchOne();
-
-
-        return new PageImpl<>(result, pageable, total != null ? total : 0L);
-    }
+//    @Override
+//    public Page<ProblemResponseDto> getMemberSubmitProblems(Long memberId, Pageable pageable) {
+//        List<ProblemResponseDto> result = queryFactory.select(Projections.constructor(ProblemResponseDto.class,
+//                        problem.id,
+//                        problem.title,
+//                        problem.detail,
+//                        problem.category,
+//                        problem.level,
+//                        memberSubmitProblem.id,
+//                        memberSubmitProblem.pass,
+//                        memberSubmitProblem.completedAt)
+//                .from(memberSubmitProblem)
+//                .leftJoin(memberSubmitProblem.problem, problem)
+//                .where(memberSubmitProblem.member.id.eq(memberId).and(
+//                        memberSubmitProblem.pass.isTrue()
+//                ))
+//                .orderBy(memberSubmitProblem.id.desc())
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .fetch();
+//
+//        Long total = queryFactory
+//                .select(memberSubmitProblem.count())
+//                .from(memberSubmitProblem)
+//                .where(
+//                        memberSubmitProblem.member.id.eq(memberId)
+//                                .and(memberSubmitProblem.pass.isTrue())
+//                )
+//                .fetchOne();
+//
+//
+//        return new PageImpl<>(result, pageable, total != null ? total : 0L);
+//    }
 }

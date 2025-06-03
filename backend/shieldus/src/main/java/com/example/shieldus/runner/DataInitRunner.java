@@ -33,69 +33,69 @@ public class DataInitRunner implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        log.info("Initializing test data...");
-
-        // 회원 생성
-        Member member = Member.builder()
-                .email("a@a.com")
-                .password(passwordEncoder.encode("123"))
-                .name("테스트유저")
-                .phone("01012345678")
-                .memberRank(0)
-                .role(MemberRoleEnum.USER)
-                .build();
-        memberRepository.save(member);
-
-        // 문제 1: 두 수 더하기
-        Problem problem1 = Problem.builder()
-                .member(member)
-                .title("두 수 더하기")
-                .detail("두 정수를 입력받아 합을 출력하세요")
-                .category(ProblemCategoryEnum.PYTHON)
-                .level(1)
-                .build();
-        problemRepository.save(problem1);
-
-        List.of(
-                new String[]{"1 2", "3"},
-                new String[]{"5 7", "12"},
-                new String[]{"10 20", "30"},
-                new String[]{"0 0", "0"},
-                new String[]{"100 200", "300"}
-        ).forEach(pair -> testCaseRepository.save(
-                ProblemTestCase.builder()
-                        .problem(problem1)
-                        .isTestCase(true)
-                        .input(pair[0])
-                        .output(pair[1])
-                        .build()
-        ));
-
-        // 문제 2: 세 수 곱하기
-        Problem problem2 = Problem.builder()
-                .member(member)
-                .title("세 수 곱하기")
-                .detail("세 정수를 입력받아 곱을 출력하세요")
-                .category(ProblemCategoryEnum.PYTHON)
-                .level(2)
-                .build();
-        problemRepository.save(problem2);
-
-        List.of(
-                new String[]{"1 2 3", "6"},
-                new String[]{"2 3 4", "24"},
-                new String[]{"0 1 100", "0"},
-                new String[]{"-1 2 3", "-6"},
-                new String[]{"5 5 5", "125"}
-        ).forEach(pair -> testCaseRepository.save(
-                ProblemTestCase.builder()
-                        .problem(problem2)
-                        .isTestCase(true)
-                        .input(pair[0])
-                        .output(pair[1])
-                        .build()
-        ));
-
-        log.info("Test data initialization complete.");
+//        log.info("Initializing test data...");
+//
+//        // 회원 생성
+//        Member member = Member.builder()
+//                .email("a@a.com")
+//                .password(passwordEncoder.encode("123"))
+//                .name("테스트유저")
+//                .phone("01012345678")
+//                .memberRank(0)
+//                .role(MemberRoleEnum.USER)
+//                .build();
+//        memberRepository.save(member);
+//
+//        // 문제 1: 두 수 더하기
+//        Problem problem1 = Problem.builder()
+//                .member(member)
+//                .title("두 수 더하기")
+//                .detail("두 정수를 입력받아 합을 출력하세요")
+//                .category(ProblemCategoryEnum.PYTHON)
+//                .level(1)
+//                .build();
+//        problemRepository.save(problem1);
+//
+//        List.of(
+//                new String[]{"1 2", "3"},
+//                new String[]{"5 7", "12"},
+//                new String[]{"10 20", "30"},
+//                new String[]{"0 0", "0"},
+//                new String[]{"100 200", "300"}
+//        ).forEach(pair -> testCaseRepository.save(
+//                ProblemTestCase.builder()
+//                        .problem(problem1)
+//                        .isTestCase(true)
+//                        .input(pair[0])
+//                        .output(pair[1])
+//                        .build()
+//        ));
+//
+//        // 문제 2: 세 수 곱하기
+//        Problem problem2 = Problem.builder()
+//                .member(member)
+//                .title("세 수 곱하기")
+//                .detail("세 정수를 입력받아 곱을 출력하세요")
+//                .category(ProblemCategoryEnum.PYTHON)
+//                .level(2)
+//                .build();
+//        problemRepository.save(problem2);
+//
+//        List.of(
+//                new String[]{"1 2 3", "6"},
+//                new String[]{"2 3 4", "24"},
+//                new String[]{"0 1 100", "0"},
+//                new String[]{"-1 2 3", "-6"},
+//                new String[]{"5 5 5", "125"}
+//        ).forEach(pair -> testCaseRepository.save(
+//                ProblemTestCase.builder()
+//                        .problem(problem2)
+//                        .isTestCase(true)
+//                        .input(pair[0])
+//                        .output(pair[1])
+//                        .build()
+//        ));
+//
+//        log.info("Test data initialization complete.");
     }
 }

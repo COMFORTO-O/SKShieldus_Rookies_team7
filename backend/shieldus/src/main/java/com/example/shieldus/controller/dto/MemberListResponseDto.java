@@ -1,10 +1,12 @@
 package com.example.shieldus.controller.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 public class MemberListResponseDto {
     private Long memberId;
     private String email;

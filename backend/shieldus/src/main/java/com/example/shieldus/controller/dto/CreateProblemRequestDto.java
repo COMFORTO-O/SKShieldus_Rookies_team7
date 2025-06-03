@@ -7,6 +7,7 @@
 package com.example.shieldus.controller.dto;
 
 import com.example.shieldus.entity.problem.Problem;
+import com.example.shieldus.entity.problem.ProblemCode;
 import com.example.shieldus.entity.problem.ProblemTestCase;
 import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
 import lombok.*;
@@ -26,7 +27,7 @@ public class CreateProblemRequestDto {
     private String detail;      // 마크다운 문자열
 
     @NotBlank(message = "카테고리를 입력하세요.")
-    private ProblemCategoryEnum category;    // “JAVA”, “PYTHON”, …
+    private String category;    // “JAVA”, “PYTHON”, …
 
     @NotNull(message = "난이도를 입력하세요.")
     private Integer level;

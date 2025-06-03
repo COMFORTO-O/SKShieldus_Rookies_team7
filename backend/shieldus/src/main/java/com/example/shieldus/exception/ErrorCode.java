@@ -22,6 +22,8 @@ public enum ErrorCode {
 //    DB	DB 오류	500 Internal Server Error	DB500	쿼리 실패, DB 연결 문제 등
 
     INVALID_REQUEST("REQ400", HttpStatus.BAD_REQUEST, "잘못된 요청입니다.", false),
+
+    // USER
     USER_NOT_FOUND("USR404", HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.", false),
     UNAUTHORIZED("AUTH401", HttpStatus.UNAUTHORIZED, "인증이 필요합니다.", false),
     AUTHENTICATION_FAILED("AUTH401", HttpStatus.UNAUTHORIZED, "인증에 실패하였습니다..", false),
@@ -30,12 +32,17 @@ public enum ErrorCode {
     VALIDATION_FAILED("VAL422", HttpStatus.UNPROCESSABLE_ENTITY, "요청 데이터의 유효성 검사에 실패했습니다.", false),
     DATABASE_ERROR("DB500", HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 처리 중 오류가 발생했습니다.", true),
     INTERNAL_SERVER_ERROR("SYS500", HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.", true),
+
+    //PROBLEM
     PROBLEM_NOT_FOUND("PRB404", HttpStatus.NOT_FOUND, "문제를 찾을 수 없습니다.", false),
     PROBLEM_TEST_CASE_NOT_FOUND("PRB405", HttpStatus.NOT_FOUND, "테스트 케이스를 찾을 수 없습니다.", false),
+    PROBLEM_CODE_NOT_FOUND("PRB406", HttpStatus.NOT_FOUND, "해당 문제 코드를 찾을 수 없습니다", false),
+
+
+    // JUDGE
     JUDGE_SERVER_ERROR("JUD502", HttpStatus.BAD_GATEWAY, "채점 서버 연결에 실패했습니다.", true),
     JSON_PARSING_ERROR("JSON400", HttpStatus.BAD_REQUEST, "JSON 처리 중 오류가 발생했습니다.", false),
-    UNSUPPORTED_LANGUAGE("LANG400", HttpStatus.BAD_REQUEST, "지원하지 않는 프로그래밍 언어입니다.", false),
-    PROBLEM_CODE_NOT_FOUND("PRBCODE404", HttpStatus.NOT_FOUND, "해당 문제 코드를 찾을 수 없습니다", false);
+    UNSUPPORTED_LANGUAGE("LANG400", HttpStatus.BAD_REQUEST, "지원하지 않는 프로그래밍 언어입니다.", false);
 
 
     private final String code;

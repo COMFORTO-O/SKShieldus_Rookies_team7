@@ -57,9 +57,14 @@ public class MemberController {
      * Admin 기능
      * */
 
-    // 사용자 정보 리스트, pagenation
+    // 사용자 정보 검색, pagenation
     @GetMapping("/list")
     public ResponseDto<String> getMemberList(@AuthenticationPrincipal MemberUserDetails userDetails) {
         return ResponseDto.success("ok");
     }
+
+    // 사용자 정보 수정(전체정보받아서 전체수정할수있게(hold)
+
+    // Problem 카테고리 Enum대신 Problem 코드를 join Mapping 할수있게끔 변경
+
 }

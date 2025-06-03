@@ -46,9 +46,38 @@ public class ProblemService {
     private final MemberSubmitProblemRepository memberSubmitProblemRepository; // 추가
     private final ProblemCodeRepository problemCodeRepository;
 
+    /*
+    * 카테고리 조회
+    * */
     public List<ProblemCode> getProblemCodes() {
         return problemCodeRepository.findAll();
     }
+
+    /*
+    * 카테고리 생성
+    * */
+    @Transactional
+    public ProblemCodeResponseDto createProblemCode(ProblemCodeRequestDto dto) {
+        ProblemCode problemCode = new ProblemCode(dto.getCode(), dto.getDescription());
+        problemCodeRepository.save(problemCode);
+        return new ProblemCodeResponseDto(problemCode.getId(), problemCode.getCode(), problemCode.getDescription());
+    }
+
+    /*
+     * 카테고리 생성
+     * */
+    @Transactional
+    public ProblemCodeResponseDto updateProblemCode(ProblemCodeRequestDto dto) {
+        ProblemCode problemCode = problemCodeRepository.findById(dto.getId()).orElseThrow(()-> new CustomException(ErrorCode.PROBLEM_CODE_NOT_FOUND));
+        problemCode.setCode(dto.getCode());
+        problemCode.setDescription(dto.getDescription());
+        return new ProblemCodeResponseDto(problemCode.getId(), problemCode.getCode(), problemCode.getDescription());
+    }
+
+
+
+
+
     /**
      * 1) 조건별 문제 목록 조회. 
      *    memberId가 null인 경우 solved/unsolved 상태 필터는 항상 false 처리됨.

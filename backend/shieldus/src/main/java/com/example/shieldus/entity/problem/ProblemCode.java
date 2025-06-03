@@ -6,6 +6,7 @@ import lombok.*;
 @Entity
 @Table(name = "problem_code")
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,5 +19,11 @@ public class ProblemCode {
     private String code; // 예: "ERROR", "WARNING", "CRITICAL"
 
     private String description;
+
+    public ProblemCode(String code, String description) {
+        this.code = code;
+        this.description = description;
+
+    }
 
 }

@@ -48,11 +48,7 @@ public class ProblemController {
 
     private final ProblemService problemService;
 
-    // 카테고리 목록 조회
-    @GetMapping("/category")
-    public ResponseDto<List<ProblemCode>> getCategory(){
-        return ResponseDto.success(problemService.getProblemCodes());
-    }
+
 
     /**
      * 1) 문제 목록 조회 (필터링 + 페이징)
@@ -175,4 +171,28 @@ public class ProblemController {
         List<ProblemDetailDto.SolutionInfoDto> solvedEntries = problemService.getProblemSolvedList(id);
         return ResponseDto.success(solvedEntries);
     }
+
+
+    // 카테고리 목록 조회
+    @GetMapping("/category")
+    public ResponseDto<List<ProblemCode>> getCategory(){
+        return ResponseDto.success(problemService.getProblemCodes());
+    }
+
+    // 카테고리 목록 만들기
+    @PreAuthorize("hasPermission(null, 'PROBLEM_CREATE')")
+    @PostMapping("/category/create")
+    public ResponseDto<ProblemCodeResponseDto> createCategory(
+            @RequestBody ProblemCodeRequestDto dto,
+            @AuthenticationPrincipal MemberUserDetails userDetails){
+        return ResponseDto.success(problemService.createProblemCode(dto));
+    }
+    // 카테고리 목록 업데이트
+    @PreAuthorize("hasPermission(null, 'PROBLEM_UPDATE')")
+    @PutMapping("/category/update/{id}")
+    public ResponseDto<ProblemCodeResponseDto> updateCategory(
+            @RequestBody ProblemCodeRequestDto dto){
+        return ResponseDto.success(problemService.updateProblemCode(dto));
+    }
+
 }

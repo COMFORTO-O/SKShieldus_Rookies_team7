@@ -20,6 +20,7 @@ import com.example.shieldus.exception.CustomException;
 import com.example.shieldus.exception.ErrorCode;
 import com.example.shieldus.repository.member.MemberRepository;
 import com.example.shieldus.repository.member.MemberSubmitProblemRepository;
+import com.example.shieldus.repository.problem.ProblemCodeRepository;
 import com.example.shieldus.repository.problem.ProblemRepository;
 import com.example.shieldus.repository.problem.ProblemTestCaseRepository;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class ProblemService {
     private final MemberSubmitProblemRepository submitProblemRepository;
     private final MemberRepository memberRepository;
     private final MemberSubmitProblemRepository memberSubmitProblemRepository; // 추가
-
+    private final ProblemCodeRepository problemCodeRepository;
 
     /**
      * 1) 조건별 문제 목록 조회. 

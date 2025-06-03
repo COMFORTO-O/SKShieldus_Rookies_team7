@@ -4,6 +4,7 @@ import com.example.shieldus.controller.dto.member.MemberTempCodeResponseDto;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
 import com.example.shieldus.entity.member.MemberTempCode;
 import com.example.shieldus.entity.problem.Problem;
+import com.example.shieldus.entity.problem.ProblemCode;
 import com.example.shieldus.entity.problem.ProblemTestCase;
 import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,7 @@ public class ProblemResponseDto {
     private Long id;
     private String title;
     private String detail;
-    private ProblemCategoryEnum category;
+    private ProblemCodeDto category;
     private Integer level;
     // member
     private String memberName;
@@ -33,12 +34,12 @@ public class ProblemResponseDto {
 
     // QueryDSL에서 사용할 생성자 추가
     public ProblemResponseDto(Long id, String title, String detail,
-                              ProblemCategoryEnum category, Integer level,
+                              ProblemCode problemCode, Integer level,
                               String memberName, Boolean solved) {
         this.id = id;
         this.title = title;
         this.detail = detail;
-        this.category = category;
+        this.category = ProblemCodeDto.fromEntity(problemCode); // ProblemCategoryEnum → ProblemCodeDto로 변경
         this.level = level;
         this.memberName = memberName;
         this.solved = solved;
@@ -46,12 +47,12 @@ public class ProblemResponseDto {
 
     // 사용자 푼 문제 조회용 생성자
     public ProblemResponseDto(Long id, String title, String detail,
-                              ProblemCategoryEnum category, Integer level,
+                              ProblemCode problemCode, Integer level,
                               Long submitProblemId, Boolean solved, LocalDateTime completeDate) {
         this.id = id;
         this.title = title;
         this.detail = detail;
-        this.category = category;
+        this.category = ProblemCodeDto.fromEntity(problemCode); // ProblemCategoryEnum → ProblemCodeDto로 변경
         this.level = level;
         this.submitProblemId = submitProblemId;
         this.solved = solved;
@@ -64,7 +65,7 @@ public class ProblemResponseDto {
                 .id(problem.getId())
                 .title(problem.getTitle())
                 .detail(problem.getDetail())
-                .category(problem.getCategory())
+                .category(ProblemCodeDto.fromEntity(problem.getProblemCode())) // ProblemCategoryEnum → ProblemCodeDto로 변경
                 .level(problem.getLevel())
                 .memberName(problem.getMember().getName())
                 .build();
@@ -99,13 +100,31 @@ public class ProblemResponseDto {
                     .id(problem.getId())
                     .title(problem.getTitle())
                     .detail(problem.getDetail())
-                    .category(problem.getCategory())
+                    .category(ProblemCodeDto.fromEntity(problem.getProblemCode())) // ProblemCategoryEnum → ProblemCodeDto로 변경
                     .level(problem.getLevel())
                     .submitProblemId(submitProblem.getId())
                     .solved(submitProblem.getPass())
                     .completeDate(submitProblem.getCompleteDate())
                     .build();
             this.tempCode = MemberTempCodeResponseDto.fromEntity(code);
+        }
+    }
+
+    // DTO 내부에 ProblemCodeDto 추가
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class ProblemCodeDto {
+        private Long id;
+        private String code;
+        private String description;
+
+        public static ProblemCodeDto fromEntity(ProblemCode problemCode) {
+            return ProblemCodeDto.builder()
+                    .id(problemCode.getId())
+                    .code(problemCode.getCode())
+                    .description(problemCode.getDescription())
+                    .build();
         }
     }
 }

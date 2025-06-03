@@ -33,8 +33,12 @@ public class Problem extends BaseEntity {
     private String title;
     private String detail;
 
-    @Enumerated(EnumType.STRING)
-    private ProblemCategoryEnum category;
+    //@Enumerated(EnumType.STRING)
+    //private ProblemCategoryEnum category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "problem_code_id")
+    private ProblemCode problemCode;
 
     private Integer level;
 
@@ -61,7 +65,7 @@ public class Problem extends BaseEntity {
     public void update(ProblemRequestDto.Update dto){
         this.title = dto.getTitle();
         this.detail = dto.getDetail();
-        this.category = dto.getCategory();
+        //this.category = dto.getCategory();
         this.level = dto.getLevel();
         this.isDeleted = false;
 
@@ -69,7 +73,7 @@ public class Problem extends BaseEntity {
     public void update(UpdateProblemRequestDto dto){
         this.title = dto.getTitle();
         this.detail = dto.getDetail();
-        this.category = dto.getCategory();
+        //this.category = dto.getCategory();
         this.level = dto.getLevel();
         this.isDeleted = false;
 

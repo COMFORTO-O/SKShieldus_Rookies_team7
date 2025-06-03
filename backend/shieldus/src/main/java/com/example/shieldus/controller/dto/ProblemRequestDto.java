@@ -22,7 +22,7 @@ public class ProblemRequestDto {
     public static class Create{
         private String title;
         private String detail;
-        private ProblemCategoryEnum category;
+        private Long problemCodeId;
         private Integer level;
         private List<ProblemTestCaseRequestDto.Create> testCase;
     }
@@ -35,7 +35,7 @@ public class ProblemRequestDto {
         private Long problemId;
         private String title;
         private String detail;
-        private ProblemCategoryEnum category;
+        private Long problemCodeId;
         private Integer level;
         private List<ProblemTestCaseRequestDto.Update> testCase;
     }

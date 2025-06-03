@@ -34,7 +34,9 @@ public enum ErrorCode {
     PROBLEM_TEST_CASE_NOT_FOUND("PRB405", HttpStatus.NOT_FOUND, "테스트 케이스를 찾을 수 없습니다.", false),
     JUDGE_SERVER_ERROR("JUD502", HttpStatus.BAD_GATEWAY, "채점 서버 연결에 실패했습니다.", true),
     JSON_PARSING_ERROR("JSON400", HttpStatus.BAD_REQUEST, "JSON 처리 중 오류가 발생했습니다.", false),
-    UNSUPPORTED_LANGUAGE("LANG400", HttpStatus.BAD_REQUEST, "지원하지 않는 프로그래밍 언어입니다.", false);
+    UNSUPPORTED_LANGUAGE("LANG400", HttpStatus.BAD_REQUEST, "지원하지 않는 프로그래밍 언어입니다.", false),
+    PROBLEM_CODE_NOT_FOUND("PRBCODE404", HttpStatus.NOT_FOUND, "해당 문제 코드를 찾을 수 없습니다", false);
+
 
     private final String code;
     private final HttpStatus httpStatus;

@@ -67,13 +67,12 @@ public class ProblemService {
     public ProblemDetailDto getProblemDetail(Long memberId, Long problemId) {
         // 사용자일 경우
         if(memberId != null && memberId > 0) {
-            MemberSubmitProblem submitProblem = submitProblemRepository.findByMemberIdAndProblemId(memberId, problemId).orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
+            MemberSubmitProblem submitProblem = submitProblemRepository.findByMemberIdAndProblem_Id(memberId, problemId).orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
             try{
                 return new ProblemDetailDto(submitProblem);
             }catch (Exception e){
                 throw new CustomException(ErrorCode.DATABASE_ERROR, e);
             }
-
         }
         // 사용자가 아닐 경우
         else{
@@ -181,21 +180,8 @@ public class ProblemService {
      */
     @Transactional(readOnly = true)
     public List<ProblemDetailDto.TestCaseInfoDto> getTestCasesOfProblem(Long problemId) {
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new CustomException(
-                        ErrorCode.PROBLEM_NOT_FOUND,
-                        "Problem (id=" + problemId + ") not found"
-                ));
-
-        List<ProblemTestCase> tcs = testCaseRepository.findByProblem(problem);
-        List<ProblemDetailDto.TestCaseInfoDto> dtoList = new ArrayList<>();
-        for (ProblemTestCase tc : tcs) {
-            dtoList.add(ProblemDetailDto.TestCaseInfoDto.builder()
-                    .id(tc.getId())
-                    .input(tc.getInput())
-                    .output(tc.getOutput())
-                    .build());
-        }
-        return dtoList;
+        problemRepository.findById(problemId).orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+        List<ProblemTestCase> tcs = testCaseRepository.findByProblem_Id(problemId);
+        return tcs.stream().map(ProblemDetailDto.TestCaseInfoDto::fromEntity).collect(Collectors.toList());
     }
 }

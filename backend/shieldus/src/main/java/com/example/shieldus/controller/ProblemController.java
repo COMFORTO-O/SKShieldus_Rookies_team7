@@ -152,9 +152,7 @@ public class ProblemController {
      *    • GET /api/problem/detail/{id}/test-case
      */
     @GetMapping("/detail/{id}/test-case")
-    public ResponseDto<List<ProblemDetailDto.TestCaseInfoDto>> getProblemTestCases(
-            @PathVariable Long id
-    ) {
+    public ResponseDto<List<ProblemDetailDto.TestCaseInfoDto>> getProblemTestCases(@PathVariable Long id) {
         List<ProblemDetailDto.TestCaseInfoDto> list = problemService.getTestCasesOfProblem(id);
         return ResponseDto.success(list);
     }

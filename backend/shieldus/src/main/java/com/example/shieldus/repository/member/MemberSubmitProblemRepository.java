@@ -13,7 +13,8 @@ public interface MemberSubmitProblemRepository extends JpaRepository<MemberSubmi
     
     Optional<MemberSubmitProblem> findByMemberAndProblem(Member member, Problem problem);
     
-    Optional<MemberSubmitProblem> findByMemberIdAndProblemId(Long memberId, Long problemId);
+    Optional<MemberSubmitProblem> findByMemberIdAndProblem_Id(Long memberId, Long problemId);
 
     List<MemberSubmitProblem> findByProblemAndPassTrue(Problem problem);
+
 }

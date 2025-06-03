@@ -8,6 +8,7 @@ import com.example.shieldus.service.problem.ProblemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,11 +60,37 @@ public class MemberController {
 
     // 사용자 정보 검색, pagenation
     @GetMapping("/list")
-    public ResponseDto<String> getMemberList(@AuthenticationPrincipal MemberUserDetails userDetails) {
-        return ResponseDto.success("ok");
+    public ResponseDto<Page<MemberListResponseDto>> getMemberList(
+            Pageable pageable,
+            @AuthenticationPrincipal MemberUserDetails userDetails,
+            @RequestParam(required = false) String searchKeyword) {
+
+        // 관리자 권한 확인 로직 추가 (예시)
+        if (!userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new AccessDeniedException("관리자 권한이 필요합니다.");
+        }
+
+        Page<MemberListResponseDto> memberList = memberService.getMemberList(pageable, searchKeyword);
+        return ResponseDto.success(memberList);
     }
 
-    // 사용자 정보 수정(전체정보받아서 전체수정할수있게(hold)
+    // 사용자 정보 수정 (관리자용)
+    @PutMapping("/update/{memberId}")
+    public ResponseDto<String> updateMember(
+            @PathVariable Long memberId,
+            @RequestBody MemberUpdateRequestDto updateDto,
+            @AuthenticationPrincipal MemberUserDetails userDetails) {
+
+        // 관리자 권한 확인
+        if (!userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new AccessDeniedException("관리자 권한이 필요합니다.");
+        }
+
+        memberService.updateMember(memberId, updateDto);
+        return ResponseDto.success("사용자 정보가 수정되었습니다.");
+    }
 
     // Problem 카테고리 Enum대신 Problem 코드를 join Mapping 할수있게끔 변경
 

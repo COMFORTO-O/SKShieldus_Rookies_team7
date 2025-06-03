@@ -1,8 +1,7 @@
 package com.example.shieldus.service.member;
 
-import com.example.shieldus.controller.dto.AccountRequestDto;
-import com.example.shieldus.controller.dto.MyPageResponseDto;
-import com.example.shieldus.controller.dto.ProblemResponseDto;
+import com.example.shieldus.controller.dto.*;
+import com.example.shieldus.controller.dto.MemberUpdateRequestDto;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
 import com.example.shieldus.entity.member.MemberTempCode;
@@ -11,6 +10,7 @@ import com.example.shieldus.exception.ErrorCode;
 import com.example.shieldus.repository.member.MemberRepository;
 import com.example.shieldus.repository.member.MemberSubmitProblemRepository;
 import com.example.shieldus.repository.member.MemberTempCodeRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Slf4j
 @Service
@@ -105,4 +106,55 @@ public class MemberService {
         return new ProblemResponseDto.SolvedProblem(memberSubmitProblem);
 
     }
+
+    // 회원 목록 조회 메서드 수정
+    public Page<MemberListResponseDto> getMemberList(Pageable pageable, String searchKeyword) {
+        try {
+            return memberRepository.findMembers(pageable, searchKeyword)
+                    .map(member -> MemberListResponseDto.builder()
+                            .memberId(member.getId())
+                            .email(member.getEmail())
+                            .name(member.getName())
+                            .role(member.getRole().name())
+                            .isDeleted(member.isDeleted())
+                            .build());
+        } catch (DataAccessException e) {
+            log.error("Database error in getMemberList", e);
+            throw new CustomException(ErrorCode.DATABASE_ERROR, e);
+        } catch (Exception e) {
+            log.error("Unexpected error in getMemberList", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
+    // 회원 정보 수정 메서드 수정
+    @Transactional
+    public void updateMember(Long memberId, MemberUpdateRequestDto updateDto) {
+        try {
+            Member member = memberRepository.findById(memberId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+            // 업데이트 로직
+            if (updateDto.getName() != null) {
+                member.setName(updateDto.getName());
+            }
+            if (updateDto.getEmail() != null) {
+                member.setEmail(updateDto.getEmail());
+            }
+            if (updateDto.getRole() != null) {
+                member.setRole(MemberRole.valueOf(updateDto.getRole()));
+            }
+
+            memberRepository.save(member);
+        } catch (DataAccessException e) {
+            log.error("Database error in updateMember", e);
+            throw new CustomException(ErrorCode.DATABASE_ERROR, e);
+        } catch (IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.INVALID_REQUEST, e);
+        } catch (Exception e) {
+            log.error("Unexpected error in updateMember", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
 }

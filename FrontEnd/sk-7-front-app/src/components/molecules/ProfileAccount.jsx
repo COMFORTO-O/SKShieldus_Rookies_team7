@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FaCamera } from "react-icons/fa";
 
 import getUserInfo from "../../api/getUserInfo";
@@ -20,6 +20,21 @@ export default function ProfileAccount() {
         email: "",
         password: "",
     });
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const data = await getUserInfo();
+                setProfile(data);
+            } catch (err) {
+                console.log(err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchUser();
+    }, []);
 
     // Input Box 입력값 갱신
     const handleChange = (e) => {

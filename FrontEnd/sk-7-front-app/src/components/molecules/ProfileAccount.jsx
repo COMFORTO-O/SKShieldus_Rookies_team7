@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
 import { FaCamera } from "react-icons/fa";
 
+import getUserInfo from "../../api/getUserInfo";
+
 import image from "../../../public/image.png";
 
 import Input from "../atoms/Input";
@@ -35,33 +37,13 @@ export default function ProfileAccount() {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true); // 로딩 시작
-
-        try {
-            const response = await fetch("/api/profile", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
-            });
-
-            const result = await response.json();
-            console.log("서버 응답:", result);
-        } catch (error) {
-            console.error("에러 발생:", error);
-        } finally {
-            setIsLoading(false); // 로딩 종료
-        }
-    };
-
     return (
         <div className="w-full h-full flex">
             <div className="w-[30%] pl-7">계정 정보</div>
 
             {/* 계정 정보 영역 */}
             <div className="w-[70%] space-y-4">
-                <form onSubmit={handleSubmit}>
+                <form>
                     <div className="flex flex-row items-center">
                         {/* 프로필 이미지와 아이콘 오버레이 */}
                         <div className="relative">
@@ -91,18 +73,19 @@ export default function ProfileAccount() {
                             Coding Test Name
                         </div>
                     </div>
-                    <div className="w-[70%] mt-5">
+                    <div className="w-[90%] mt-5">
                         <Label className="block mb-1 text-sm font-medium text-gray-700">
                             이름
                         </Label>
                         <Input
                             name="name"
+                            type="text"
                             value={profile.name}
                             onChange={handleChange}
-                            placeholder="홍길동"
+                            placeholder="이름"
                         />
                     </div>
-                    <div className="w-[70%]">
+                    <div className="w-[90%]">
                         <Label className="block mb-1 text-sm font-medium text-gray-700">
                             이메일
                         </Label>
@@ -114,7 +97,7 @@ export default function ProfileAccount() {
                             placeholder="example@email.com"
                         />
                     </div>
-                    <div className="w-[70%]">
+                    <div className="w-[90%]">
                         <Label className="block mb-1 text-sm font-medium text-gray-700">
                             비밀번호
                         </Label>
@@ -127,7 +110,7 @@ export default function ProfileAccount() {
                         />
                     </div>
 
-                    <div className="flex justify-end mr-5">
+                    <div className="flex justify-end mr-10">
                         <Button
                             type="submit"
                             disabled={isLoading}

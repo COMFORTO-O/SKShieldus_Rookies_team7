@@ -9,8 +9,8 @@ const InfoPage = () => {
     const [loading, setLoading] = useState(false);
 
     return (
-        <div className="h-full w-full overflow-auto px-[20%] py-[5%] bg-slate-100 ">
-            <div className="h-[1000px] rounded-2xl overflow-hidden bg-white">
+        <div className="flex justify-center h-full w-full overflow-auto px-[20%] py-[5%] bg-slate-100 ">
+            <div className="w-[1000px] h-[1000px] rounded-2xl overflow-hidden bg-white">
                 {/* 헤더 */}
                 <div className="p-7 font-bold text-2xl">프로필 </div>
 

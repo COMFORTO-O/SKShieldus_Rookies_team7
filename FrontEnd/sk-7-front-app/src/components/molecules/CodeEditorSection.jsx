@@ -1,24 +1,26 @@
 import { useState, useEffect } from "react";
+import Editor, { useMonaco } from "@monaco-editor/react";
 
 import LanguageSelect from "../atoms/LanguageSelect";
 import Button from "../atoms/Button";
 
-import Editor, { useMonaco } from "@monaco-editor/react";
+import Dawn from "monaco-themes/themes/Dawn.json";
 
 function CodeEditorSection() {
     const [selectedLanguage, setSelectedLanguage] = useState("");
     const [code, setCode] = useState("// 코드를 입력하세요.");
 
-    const monaco = useMonaco();
-    // 내가 사용할 모나코 인스턴스를 생성한다.
+    // const monaco = useMonaco();
+    // // 내가 사용할 모나코 인스턴스를 생성한다.
 
-    useEffect(() => {
-        if (!monaco) return;
-        // 모나코 인스턴스가 null이면 early return을 해준다.
+    // useEffect(() => {
+    //     if (!monaco) return;
 
-        monaco.editor.setTheme("tomorrow");
-        // 내가 사용하는 모나코 에디터에 테마를 적용해준다.
-    }, [monaco]);
+    //     setTimeout(() => {
+    //         monaco.editor.defineTheme("my-Dawn", Dawn);
+    //         monaco.editor.setTheme("my-Dawn");
+    //     }, 0);
+    // }, [monaco]);
 
     return (
         <div className="p-3 overflow-auto bg-gray-700 border-y border-gray-600">

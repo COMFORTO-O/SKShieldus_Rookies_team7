@@ -1,22 +1,20 @@
 package com.example.shieldus.service.member;
 
 import com.example.shieldus.controller.dto.*;
-import com.example.shieldus.controller.dto.MemberUpdateRequestDto;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
 import com.example.shieldus.entity.member.MemberTempCode;
+import com.example.shieldus.entity.member.TempProblem;
 import com.example.shieldus.exception.CustomException;
 import com.example.shieldus.exception.ErrorCode;
 import com.example.shieldus.repository.member.MemberRepository;
 import com.example.shieldus.repository.member.MemberSubmitProblemRepository;
 import com.example.shieldus.repository.member.MemberTempCodeRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.example.shieldus.repository.member.TempProblemRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -32,6 +30,7 @@ public class MemberService {
     private final MemberSubmitProblemRepository submitProblemRepository;
     private final MemberTempCodeRepository tempCodeRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TempProblemRepository tempProblemRepository;
 
     public MyPageResponseDto getMyPageInfo(Long memberId) {
         try {
@@ -106,5 +105,42 @@ public class MemberService {
         return new ProblemResponseDto.SolvedProblem(memberSubmitProblem);
 
     }
+
+    @Transactional // 임시 저장 생성/수정
+    public Long saveTempProblem(Long memberId, TempProblemRequestDto requestDto) {
+        try {
+            Member member = memberRepository.findById(memberId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+            TempProblem tempProblem = TempProblem.builder()
+                    .member(member)
+                    .title(requestDto.getTitle())
+                    .content(requestDto.getContent())
+                    .build();
+
+            return tempProblemRepository.save(tempProblem).getId();
+        } catch (DataAccessException e) {
+            log.error("Database error in saveTempProblem", e);
+            throw new CustomException(ErrorCode.DATABASE_ERROR, e);
+        } catch (Exception e) {
+            log.error("Unexpected error in saveTempProblem", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
+        }
+    }
+    // 임시 저장 목록 조회
+    @Transactional  // 기본값: readOnly = false
+    public List<TempProblemResponseDto> getTempProblems(Long memberId) {
+        return tempProblemRepository.findByMemberId(memberId).stream()
+                .map(t -> TempProblemResponseDto.builder()
+                        .id(t.getId())
+                        .title(t.getTitle())
+                        .savedAt(t.getSavedAt())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+
+
+
 
 }

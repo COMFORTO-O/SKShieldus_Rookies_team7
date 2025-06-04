@@ -12,6 +12,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/member") // 공통 URL prefix 설정
 @RequiredArgsConstructor
@@ -49,10 +51,30 @@ public class MemberController {
     }
 
     // 임시저장 확인(수정중)
-    @GetMapping("/problem/temp/{id}")
-    public ResponseDto<String> getProblemTemp(@AuthenticationPrincipal MemberUserDetails userDetails) {
-        return ResponseDto.success("ok");
+//    @GetMapping("/problem/temp/{id}")
+//    public ResponseDto<String> getProblemTemp(@AuthenticationPrincipal MemberUserDetails userDetails) {
+//        return ResponseDto.success("ok");
+//    }
+
+    // 임시 저장 생성 API
+    @PostMapping("/temp")
+    public ResponseDto<Long> saveTempProblem(
+            @RequestBody TempProblemRequestDto requestDto,
+            @AuthenticationPrincipal MemberUserDetails userDetails) {
+        Long savedId = memberService.saveTempProblem(userDetails.getMemberId(), requestDto);
+        return ResponseDto.success(savedId);
     }
+
+    // 임시 저장 목록 조회 API
+    @GetMapping("/temp")
+    public ResponseDto<List<TempProblemResponseDto>> getTempProblems(
+            @AuthenticationPrincipal MemberUserDetails userDetails) {
+        List<TempProblemResponseDto> response = memberService.getTempProblems(userDetails.getMemberId());
+        return ResponseDto.success(response);
+    }
+
+
+
 
     /*
      * Admin 기능

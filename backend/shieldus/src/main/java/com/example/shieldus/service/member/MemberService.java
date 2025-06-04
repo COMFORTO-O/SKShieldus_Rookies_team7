@@ -2,6 +2,7 @@ package com.example.shieldus.service.member;
 
 import com.example.shieldus.controller.dto.*;
 import com.example.shieldus.controller.dto.MemberUpdateRequestDto;
+import com.example.shieldus.controller.dto.member.MemberTempCodeResponseDto;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
 import com.example.shieldus.entity.member.MemberTempCode;
@@ -105,6 +106,13 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
         return new ProblemResponseDto.SolvedProblem(memberSubmitProblem);
 
+    }
+
+    public MemberTempCodeResponseDto getMemberTempCode(Long memberId, Long problemId){
+        MemberTempCode memberTempCode = tempCodeRepository.findTopByProblemIdAndMemberIdOrderBySubmitDateDesc(memberId,problemId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+        MemberTempCodeResponseDto responseDto = MemberTempCodeResponseDto.fromEntity(memberTempCode);
+        return responseDto;
     }
 
 }

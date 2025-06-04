@@ -60,12 +60,12 @@ public class CompileService {
         //제출 내역 or Test 내역 있으면 가져오기
         MemberSubmitProblem submit = getOrCreateSubmit(member, problem);
 
-        List<ProblemTestCase> testCases = problemTestCaseRepository.findByProblem(problem);
+        List<ProblemTestCase> testCases = problemTestCaseRepository.findByProblem_IdAndIsTestCaseIsTrue(problem.getId());
 
         List<TestCaseResult> results = new ArrayList<>();
 
         int passed = 0;
-        int total = Math.min(testCases.size(), 3); // 3개 이하 오류 처리 + 3개까지
+        int total = testCases.size();
 
         for (int i = 0; i < total; i++) {
             ProblemTestCase testCase = testCases.get(i);

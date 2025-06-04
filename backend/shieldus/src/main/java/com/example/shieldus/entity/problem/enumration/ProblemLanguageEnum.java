@@ -6,16 +6,18 @@ import lombok.Getter;
 public enum ProblemLanguageEnum {
 
 
-    JAVA("Java"),
-    PYTHON("Python"),
-    JAVASCRIPT("JavaScript"),
-    C("C");
+    JAVA("Java",62),
+    PYTHON("Python",71),
+    //JAVASCRIPT("JavaScript"),
+    C("C",50);
 
     private final String displayName;
+    private final Integer judgeNumber;
 
 
-    ProblemLanguageEnum(String displayName) {
+    ProblemLanguageEnum(String displayName, Integer judgeNumber ) {
         this.displayName = displayName;
+        this.judgeNumber = judgeNumber;
     }
 
 

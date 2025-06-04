@@ -1,5 +1,6 @@
-package com.example.shieldus.config.security.interceptor;
+package com.example.shieldus.controller.socket.dto;
 
+import com.example.shieldus.entity.socket.enumration.RoomRole;
 import lombok.Getter;
 import lombok.Setter;
 

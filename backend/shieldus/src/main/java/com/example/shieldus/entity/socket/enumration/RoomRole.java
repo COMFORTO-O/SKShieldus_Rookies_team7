@@ -1,4 +1,4 @@
-package com.example.shieldus.config.security.interceptor;
+package com.example.shieldus.entity.socket.enumration;
 
 public enum RoomRole {
     CHAT_ONLY,

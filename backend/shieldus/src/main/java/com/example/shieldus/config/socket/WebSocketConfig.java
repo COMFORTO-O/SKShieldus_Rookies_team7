@@ -1,12 +1,9 @@
-package com.example.shieldus.config.security.interceptor;
+package com.example.shieldus.config.socket;
 
-import org.springframework.context.annotation.Bean;
+import com.example.shieldus.config.security.interceptor.JwtWebSocketChannelInterceptor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.security.authorization.AuthorizationManager;
-import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;

@@ -1,4 +1,4 @@
-package com.example.shieldus.config.security.interceptor;
+package com.example.shieldus.controller.socket.dto;
 
 import lombok.Getter;
 import lombok.Setter;

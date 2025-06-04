@@ -1,10 +1,15 @@
-package com.example.shieldus.config.security.interceptor;
+package com.example.shieldus.controller.socket;
 
+import com.example.shieldus.controller.socket.dto.ChatMessage;
+import com.example.shieldus.controller.socket.dto.CodeMessage;
+import com.example.shieldus.controller.socket.dto.RoleChangeRequest;
+import com.example.shieldus.entity.socket.Room;
+import com.example.shieldus.entity.socket.enumration.RoomRole;
+import com.example.shieldus.service.socket.ChatStorageService;
+import com.example.shieldus.service.socket.CodeStorageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
@@ -81,7 +86,7 @@ public class ChatController {
             System.out.println("참여자 입장: " + username + " → CHAT_ONLY");
         }
 
-        // ✅ 유저 목록 + 권한 정보 전송
+        // 유저 목록 + 권한 정보 전송
         Map<String, Object> payload = new HashMap<>();
         payload.put("members", room.getMemberRoles());
         payload.put("owner", room.getOwner().getEmail());
@@ -96,23 +101,23 @@ public class ChatController {
         Room room = RoomController.roomMap.get(roomId);
         if (room == null) return;
 
-        // ✅ 방장만 변경 가능
+        // 방장만 변경 가능
         if (!room.getOwner().getEmail().equals(requester)) {
             System.out.println("권한 변경 시도 실패 (방장 아님): " + requester);
             return;
         }
 
-        // ✅ 대상 유저가 존재해야 함
+        // 대상 유저가 존재해야 함
         if (!room.getMemberRoles().containsKey(request.getTargetUsername())) {
             System.out.println("대상 유저가 존재하지 않음: " + request.getTargetUsername());
             return;
         }
 
-        // ✅ 권한 변경
+        // 권한 변경
         room.getMemberRoles().put(request.getTargetUsername(), request.getNewRole());
         System.out.println("권한 변경됨: " + request.getTargetUsername() + " → " + request.getNewRole());
 
-        // ✅ 전체 유저에게 권한 목록 broadcast
+        // 전체 유저에게 권한 목록 broadcast
         Map<String, Object> payload = new HashMap<>();
         payload.put("members", room.getMemberRoles());
         payload.put("owner", room.getOwner().getEmail());

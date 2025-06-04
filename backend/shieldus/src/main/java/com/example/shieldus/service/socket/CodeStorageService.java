@@ -1,4 +1,4 @@
-package com.example.shieldus.config.security.interceptor;
+package com.example.shieldus.service.socket;
 
 import org.springframework.stereotype.Service;
 

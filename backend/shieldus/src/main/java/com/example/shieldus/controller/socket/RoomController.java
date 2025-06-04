@@ -1,10 +1,10 @@
-package com.example.shieldus.config.security.interceptor;
+package com.example.shieldus.controller.socket;
 
+import com.example.shieldus.entity.socket.Room;
 import com.example.shieldus.config.security.service.MemberUserDetails;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +29,7 @@ public class RoomController {
 
         roomMap.put(roomId, room);
         return room;
+
     }
 
     @GetMapping

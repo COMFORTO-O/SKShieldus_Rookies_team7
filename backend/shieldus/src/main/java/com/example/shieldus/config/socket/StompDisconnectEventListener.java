@@ -1,5 +1,7 @@
-package com.example.shieldus.config.security.interceptor;
+package com.example.shieldus.config.socket;
 
+import com.example.shieldus.controller.socket.RoomController;
+import com.example.shieldus.entity.socket.Room;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -30,12 +32,12 @@ public class StompDisconnectEventListener {
         Room room = RoomController.roomMap.get(roomId);
         if (room == null) return;
 
-        // ✅ 방장일 경우: 방 자체 삭제
+        // 방장일 경우: 방 자체 삭제
         if (room.getOwner().getEmail().equals(username)) {
             RoomController.roomMap.remove(roomId);
             System.out.println("방장이 나가서 방 삭제됨: " + roomId);
 
-            // ✅ (선택) 남아 있는 유저들에게 알림
+            //  남아 있는 유저들에게 알림
             messagingTemplate.convertAndSend(
                     "/topic/roomDeleted." + roomId,
                     "이 방은 방장이 퇴장하여 종료되었습니다."
@@ -44,7 +46,7 @@ public class StompDisconnectEventListener {
             return;
         }
 
-        // ✅ 일반 유저일 경우: 유저만 제거
+        // 일반 유저일 경우: 유저만 제거
         room.getMemberRoles().remove(username);
         Map<String, Object> payload = new HashMap<>();
         payload.put("members", room.getMemberRoles());

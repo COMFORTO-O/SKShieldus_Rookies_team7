@@ -1,5 +1,6 @@
-package com.example.shieldus.config.security.interceptor;
+package com.example.shieldus.service.socket;
 
+import com.example.shieldus.controller.socket.dto.ChatMessage;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

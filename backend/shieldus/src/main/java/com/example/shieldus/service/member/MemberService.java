@@ -109,10 +109,9 @@ public class MemberService {
     }
 
     public MemberTempCodeResponseDto getMemberTempCode(Long memberId, Long problemId){
-        MemberTempCode memberTempCode = tempCodeRepository.findTopByProblemIdAndMemberIdOrderBySubmitDateDesc(memberId,problemId)
-                .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
-        MemberTempCodeResponseDto responseDto = MemberTempCodeResponseDto.fromEntity(memberTempCode);
-        return responseDto;
+        return tempCodeRepository.findTopByProblemIdAndMemberIdOrderBySubmitDateDesc(memberId, problemId)
+                .map(MemberTempCodeResponseDto::fromEntity)
+                .orElse(null); // 없으면 null 반환
     }
 
 }

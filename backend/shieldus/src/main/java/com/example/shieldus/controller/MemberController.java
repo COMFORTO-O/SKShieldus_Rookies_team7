@@ -49,11 +49,19 @@ public class MemberController {
         return ResponseDto.success(solvedProblem);
     }
 
-    // 임시저장 확인
-    @GetMapping("/problem/temp/{id}")
-    public ResponseDto<MemberTempCodeResponseDto> getProblemTemp( @PathVariable Long problemId, @AuthenticationPrincipal MemberUserDetails userDetails) {
-        MemberTempCodeResponseDto tempCodeResponseDto = memberService.getMemberTempCode(userDetails.getMemberId(),problemId);
-        return ResponseDto.success(tempCodeResponseDto);
+    @GetMapping("/problem/temp/{problemId}")
+    public ResponseDto<MemberTempCodeResponseDto> getProblemTemp(
+            @PathVariable Long problemId,
+            @AuthenticationPrincipal MemberUserDetails userDetails) {
+
+        MemberTempCodeResponseDto tempCode = memberService.getMemberTempCode(userDetails.getMemberId(), problemId);
+
+        // 필요하다면 메시지도 따로 설정 가능
+        if (tempCode == null) {
+            return ResponseDto.success(null);
+        }
+
+        return ResponseDto.success(tempCode);
     }
 
     /*

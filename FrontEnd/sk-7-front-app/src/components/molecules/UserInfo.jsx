@@ -8,7 +8,7 @@ const UserInfoContainerStyle =
     "mx-14 h-36 flex flex-row border-solid border-2 rounded-lg xl:mx-0 xl:flex-col xl:h-full ";
 
 const UserInfo = () => {
-    const { isLoggedIn, accessToken } = useAuthStore();
+    const { isLoggedIn, accessToken, setLogout } = useAuthStore();
     const [name, setName] = useState("");
     const [solvedCount, setSolvedCount] = useState(0);
     const [email, setEmail] = useState("");
@@ -29,11 +29,12 @@ const UserInfo = () => {
                         e?.message || "사용자 정보를 불러오지 못했습니다."
                     );
                     setName(null);
+                    setLogout(); // 유저 정보가 없으면 로그아웃 처리
                 }
             };
             fetchUserInfo();
         }
-    }, [isLoggedIn]);
+    }, [isLoggedIn, setLogout]);
 
     return (
         <>

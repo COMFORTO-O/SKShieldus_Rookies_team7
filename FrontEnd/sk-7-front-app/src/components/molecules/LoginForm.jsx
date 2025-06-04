@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { getCookie } from "../../api/getCookie";
 
 // 로그인 페이지
-function LoginForm() {
+export default function LoginForm() {
     // 아이디, 비밀번호 상태 저장
     const [id, setId] = useState("");
     const [password, setPassword] = useState("");
@@ -152,5 +152,3 @@ function LoginForm() {
         </div>
     );
 }
-
-export default LoginForm;

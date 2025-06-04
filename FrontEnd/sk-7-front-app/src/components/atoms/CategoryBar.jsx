@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import useCategoryStore from "../../store/useCategoryStore";
 
 // // 정렬, 카테고리, 푼 문제 제외 체크박스 등
@@ -6,29 +6,56 @@ import useCategoryStore from "../../store/useCategoryStore";
 const sortOptions = [
     { label: "최신순", value: "recent" },
     { label: "레벨순", value: "level" },
-    { label: "정답률순", value: "accuragy" },
+    { label: "정답률순", value: "accuracy" },
 ];
 
-const CategoryBar = ({ onReset, onSearch }) => {
+const languageOptions = [
+    { label: "Java", value: "Java" },
+    { label: "Python", value: "Python" },
+    { label: "C++", value: "C++" },
+    { label: "JavaScript", value: "JavaScript" },
+];
+
+const CategoryBar = ({ onReset, onSearch, title, setTitle }) => {
     // 상태
     const {
         sort,
         setSort,
-        searchKeyword,
+        category,
         level,
         status,
         setStatus,
-        setSearchKeyword,
+        setCategory,
         setLevel,
     } = useCategoryStore();
+    // 언어 셀렉터 박스 ON/OFF
+    const [langOpen, setLangOpen] = useState(false);
 
+    // 언어 셀렉터 박스 ref
+    const langRef = useRef(null);
+    // 바깥 클릭 시 닫기
     useEffect(() => {
-        console.log({
-            sort,
-            level,
-            status,
-        });
-    }, [sort, level, status]);
+        const handleClick = (e) => {
+            if (langRef.current && !langRef.current.contains(e.target)) {
+                setLangOpen(false);
+            }
+        };
+        if (langOpen) {
+            document.addEventListener("mousedown", handleClick);
+        }
+        return () => document.removeEventListener("mousedown", handleClick);
+    }, [langOpen]);
+
+    // 셀렉트 박스 Toggle 핸들러
+    const handleLangToggle = () => setLangOpen((v) => !v);
+
+    const handleLangCheck = (val) => {
+        if (category.includes(val)) {
+            setCategory(category.filter((c) => c !== val));
+        } else {
+            setCategory([...category, val]);
+        }
+    };
 
     return (
         <div className="w-full">
@@ -62,6 +89,44 @@ const CategoryBar = ({ onReset, onSearch }) => {
                     ))}
                 </select>
 
+                {/* 언어 복수 선택 셀렉트 박스 */}
+                <div className="relative" ref={langRef}>
+                    <button
+                        type="button"
+                        className="border rounded px-3 py-2 transition bg-white min-w-[120px] text-left"
+                        onClick={handleLangToggle}
+                    >
+                        {category.length === 0
+                            ? "언어 선택"
+                            : category.join(", ")}
+                        {/* https://www.w3schools.com/charsets/tryit.asp?deci=128899 */}
+                        <span className="float-right ml-2">&#128899;</span>
+                    </button>
+                    {langOpen && (
+                        <div
+                            className="absolute z-10 mt-1 bg-white border rounded shadow w-40 max-h-48 overflow-auto transition"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {languageOptions.map((opt) => (
+                                <label
+                                    key={opt.value}
+                                    className="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={category.includes(opt.value)}
+                                        onChange={() =>
+                                            handleLangCheck(opt.value)
+                                        }
+                                        className="mr-2"
+                                    />
+                                    {opt.label}
+                                </label>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
                 {/* 푼 문제/안 푼 문제 셀렉트 박스 */}
                 <select
                     value={status}
@@ -93,9 +158,17 @@ const CategoryBar = ({ onReset, onSearch }) => {
                 >
                     <input
                         type="text"
-                        value={searchKeyword}
-                        onChange={(e) => setSearchKeyword(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && onSearch()}
+                        value={title}
+                        onChange={(e) => {
+                            setTitle(e.target.value);
+                            // console.log(`title: ${title}`);
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                onSearch();
+                            }
+                        }}
                         placeholder="문제 검색"
                         className="border rounded px-2 py-1 flex-1"
                     />

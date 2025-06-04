@@ -9,7 +9,9 @@ const UserInfoContainerStyle =
 
 const UserInfo = () => {
     const { isLoggedIn, accessToken } = useAuthStore();
-    const [userInfo, setUserInfo] = useState(null);
+    const [name, setName] = useState("");
+    const [solvedCount, setSolvedCount] = useState(0);
+    const [email, setEmail] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
@@ -18,13 +20,15 @@ const UserInfo = () => {
             // 유저 정보 가져오기
             const fetchUserInfo = async () => {
                 try {
-                    const response = await getUserInfo();
-                    setUserInfo(response?.data || null);
+                    const data = await getUserInfo();
+                    setName(data.name);
+                    setSolvedCount(data.solvedProblems.length);
+                    setEmail(data.email);
                 } catch (e) {
                     setError(
                         e?.message || "사용자 정보를 불러오지 못했습니다."
                     );
-                    setUserInfo(null);
+                    setName(null);
                 }
             };
             fetchUserInfo();
@@ -33,7 +37,7 @@ const UserInfo = () => {
 
     return (
         <>
-            {isLoggedIn ? (
+            {isLoggedIn && accessToken ? (
                 <div className={UserInfoContainerStyle}>
                     {/* 사용자 아이콘 */}
                     <div className="ml-8 flex items-center h-full xl:ml-0">
@@ -44,14 +48,15 @@ const UserInfo = () => {
                             className="h-full w-auto"
                         />
                     </div>
-                    <div className="flex flex-row ml-4 w-full xl:ml-0 xl:flex-col">
+                    <div className="flex flex-row ml-8 w-full xl:ml-0 xl:flex-col">
                         <div className="flex-1 flex flex-col justify-center">
                             <ul className="flex flex-col gap-3">
                                 <li className="font-sourgummy font-semibold text-lg text-blue-700 xl:text-center">
-                                    {userInfo?.name || "이름"}
+                                    {name || "이름"}
                                 </li>
-                                <li>점수:</li>
-                                <li>관리자 or 사용자</li>
+
+                                <li>이메일 : {email} (User)</li>
+                                <li>해결한 문제 수 : {solvedCount}</li>
                             </ul>
                         </div>
                         <div className="flex-1 flex items-center justify-center">

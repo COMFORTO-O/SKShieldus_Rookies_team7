@@ -1,60 +1,66 @@
+import { Avatar } from "@mui/material";
+import ProfileAccount from "../components/molecules/ProfileAccount";
+import ProfileActivity from "../components/molecules/ProfileActivity";
 import useAuthStore from "../store/useAuthStore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import getUserInfo from "../api/getUserInfo";
 
 const InfoPage = () => {
-    const { isLoggedIn, accessToken } = useAuthStore();
-    const [loading, setLoading] = useState(false);
-    // 계정 관리, 나의 활동  [ account, activity ]
-    const [activeTab, setActiveTab] = useState("account");
+    const { isLoggedIn } = useAuthStore();
+    const [name, setName] = useState("");
+    const [solvedCount, setSolvedCount] = useState(0);
+    const [email, setEmail] = useState(null);
+
+    const [current, setCurrent] = useState("account");
+
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        if (isLoggedIn) {
+            // 유저 정보 가져오기
+            const fetchUserInfo = async () => {
+                try {
+                    const data = await getUserInfo();
+                    setName(data.name);
+                    setSolvedCount(data.solvedProblems.length);
+                    setEmail(data.email);
+                } catch (e) {
+                    setError(
+                        e?.message || "사용자 정보를 불러오지 못했습니다."
+                    );
+                    setName(null);
+                }
+            };
+            fetchUserInfo();
+        }
+    }, [isLoggedIn]);
+
+    if (!error) {
+        return <div className="w-full ">{error}</div>;
+    }
 
     return (
-        <div className="h-full w-full overflow-auto p-6 bg-gray-50">
-            <div>
-                {/* 탭버튼 */}
-                <div className="flex gap-4 mb-6 mx-20">
-                    <button
-                        className={`px-4 py-2 rounded-t-lg font-semibold border-b-2 transition ${
-                            activeTab === "account"
-                                ? "border-primary font-bold text-primary bg-white"
-                                : "border-transparent text-gray-500"
-                        }`}
-                        onClick={() => setActiveTab("account")}
-                    >
-                        계정 관리
-                    </button>
-                    <button
-                        className={`px-4 py-2 rounded-t-lg font-semibold border-b-2 transition ${
-                            activeTab === "activity"
-                                ? "border-primary font-bold text-primary bg-white"
-                                : "border-transparent text-gray-500"
-                        }`}
-                        onClick={() => setActiveTab("activity")}
-                    >
-                        나의 활동
-                    </button>
+        <div className="w-screen">
+            <div className="w-full flex mt-10">
+                {/* 네비게이터 바 (계정 관리, 나의 활동) */}
+                <div className="flex flex-col rounded-md border-2 ml-5 mr-10 w-[250px] inline-block ">
+                    <div>계정 관리</div>
+                    <div>나의 활동</div>
                 </div>
-
-                {/* 탭 내용 */}
-                <div
-                    className="border-solid border-2 border-black w-full h-full 
-                        "
-                >
-                    {activeTab === "account" && (
+                {/* 내용 */}
+                <div className="flex-1 rounded-md border-2 mr-10">
+                    {current === "account" ? (
                         <div>
-                            <h2 className="text-3xl font-bold m-4 font-sourgummy text-primary">
+                            <h1 className="text-2xl font-semibold text-black">
                                 계정 관리
-                            </h2>
-                            <h3 className="text-xl mx-5 mt-10 font-semibold font-sourgummy text-primary">
+                            </h1>
+                            <h2 className="text-lg mt-5 font-semibold text-primary">
                                 기본 정보
-                            </h3>
-                            <div className="my-5 mx-5 h-96 rounded-3xl border-2 "></div>
+                            </h2>
+                            <div className="w-full h-[400px]">이름</div>
                         </div>
-                    )}
-                    {activeTab === "activity" && (
-                        <div>
-                            나의 활동 목록
-                            <div>내가 푼 문제</div>
-                        </div>
+                    ) : (
+                        <h1>나의 활동</h1>
                     )}
                 </div>
             </div>

@@ -62,6 +62,7 @@ public class ProblemController {
      * GET /api/problem?category=JAVA&level=2&status=unsolved&title=정렬&page=0
      */
     @GetMapping
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseDto<Page<ProblemResponseDto>> getProblems(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Integer level,

@@ -1,11 +1,13 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import useAuthStore from "../../store/useAuthStore";
+import useModalStore from "../../store/useModalStore";
 
 const Navbar = () => {
     // 로그인 유무 ( 로컬 스토리지, 쿠키 )
     const { isLoggedIn } = useAuthStore();
 
-    const navigate = useNavigate();
+    // Modal 상태 가져오기
+    const { infoModalOpen, openInfoModal, closeInfoModal } = useModalStore();
 
     return (
         <div className="bg-base-100 h-14 flex justify-between border-b-2">
@@ -16,31 +18,21 @@ const Navbar = () => {
                 <Link to="/">홈</Link>
                 {isLoggedIn ? (
                     <>
-                        <Link
-                            to="/info"
+                        <button>알림</button>
+                        <button
                             className="rounded-md w-20 h-7 text-center bg-primary text-base-100 hover:bg-hoverButton-900"
-                            onClick={() => {
-                                navigate("/info");
-                            }}
+                            onClick={
+                                infoModalOpen ? closeInfoModal : openInfoModal
+                            }
                         >
                             내 정보
-                        </Link>
-                        <button
-                            className="rounded-md w-20 h-7 text-center bg-red-400 text-white ml-2 hover:bg-red-600 transition"
-                            onClick={() => {
-                                // 로그아웃 처리 (예: 토큰 삭제, 상태 변경)
-                                localStorage.removeItem("accessToken");
-                                window.location.reload();
-                            }}
-                        >
-                            로그아웃
                         </button>
                     </>
                 ) : (
                     <>
                         <Link
                             to="/login"
-                            className="rounded-md w-16 h-7 text-center bg-secondary text-black border-solid border-2 hover:bg-primary hover:text-white transition"
+                            className="rounded-md w-16 h-7 text-center bg-blue-500 text-white border-solid border-2 hover:bg-blue-700 transition"
                         >
                             로그인
                         </Link>

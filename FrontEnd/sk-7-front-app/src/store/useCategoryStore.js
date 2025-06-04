@@ -11,8 +11,8 @@ const getStorage = (key, defaultValue) => {
 const useCategoryStore = create((set) => ({
     sort: getStorage("sort", "recent"),
     status: getStorage("status", "unsolved"),
-    searchKeyword: "",
-    level: getStorage("level", null),
+    category: getStorage("category", []),
+    level: getStorage("level", 0),
     setSort: (val) => {
         localStorage.setItem("sort", JSON.stringify(val));
         set({ sort: val });
@@ -21,7 +21,10 @@ const useCategoryStore = create((set) => ({
         localStorage.setItem("status", JSON.stringify(val));
         set({ status: val });
     },
-    setSearchKeyword: (val) => set({ searchKeyword: val }),
+    setCategory: (val) => {
+        localStorage.setItem("category", JSON.stringify(val));
+        set({ category: val });
+    },
     setLevel: (val) => {
         localStorage.setItem("level", JSON.stringify(val));
         set({ level: val });

@@ -42,7 +42,7 @@ const AuthValidation = (initialFields) => {
                 break;
             }
             case "phone":
-                if (!value || !/^010\d{7}$/.test(value)) {
+                if (!value || !/^010\d{8}$/.test(value)) {
                     error = "010으로 시작하는 11자리 숫자만 입력하세요.";
                 }
                 break;

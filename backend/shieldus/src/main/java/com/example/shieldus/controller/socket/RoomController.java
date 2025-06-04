@@ -37,8 +37,8 @@ public class RoomController {
         String title = problemTitle+"//"+langauge+"//"+userDetails.getUsername();
 
         Room room = new Room(roomId, title);
-        Optional<Member> member = memberRepository.findByEmail(userDetails.getUsername());
-        room.setOwner(member.get());
+
+        room.setOwner(userDetails);
 
         roomMap.put(roomId, room);
         return room;

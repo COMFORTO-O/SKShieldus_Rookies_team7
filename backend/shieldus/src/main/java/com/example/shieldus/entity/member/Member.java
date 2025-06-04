@@ -6,7 +6,8 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,6 +33,7 @@ public class Member {
     private Integer memberRank;
 
     @Column(nullable = true)
+    @Builder.Default
     private Boolean isDeleted = false;
 
     private LocalDateTime deletedAt;

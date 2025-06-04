@@ -1,5 +1,6 @@
 package com.example.shieldus.entity.socket;
 
+import com.example.shieldus.config.security.service.MemberUserDetails;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.socket.enumration.RoomRole;
 import lombok.Data;
@@ -11,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Room {
     private String id;
     private String title;
-    private Member owner;
+    private MemberUserDetails owner;
     private Map<String, RoomRole> memberRoles = new ConcurrentHashMap<>();
 
     public Room(String id, String name) {

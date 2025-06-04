@@ -109,14 +109,10 @@ public class ProblemRepositoryImpl implements ProblemRepositoryCustom {
         Long total = queryFactory.select(problem.count())
                 .from(problem)
                 .leftJoin(problem.category)
-                .leftJoin(memberSubmitProblem)
-                .on(memberSubmitProblem.member.id.eq(memberId)
-                        .and(memberSubmitProblem.problem.id.eq(problem.id)))
                 .where(
                         eqCategory(category),
                         eqLevel(level),
-                        containsTitle(title),
-                        eqStatus(memberId, solved)
+                        containsTitle(title)
                 )
                 .fetchOne();
         if (total == null) {

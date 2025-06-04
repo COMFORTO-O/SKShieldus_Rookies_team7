@@ -16,9 +16,9 @@ public class ProblemCode {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String code; // 예: "ERROR", "WARNING", "CRITICAL"
+    private String code; // Java, Python, C
 
-    private String description;
+    private String description; //Java , Python, C
 
     public ProblemCode(String code, String description) {
         this.code = code;

@@ -32,6 +32,7 @@ public class Member {
     private Integer memberRank;
 
     @Column(nullable = true)
+    @Builder.Default
     private Boolean isDeleted = false;
 
     private LocalDateTime deletedAt;

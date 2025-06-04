@@ -1,5 +1,6 @@
 package com.example.shieldus.service;
 
+import com.example.shieldus.config.judge0.JudgeProperties;
 import com.example.shieldus.controller.dto.CompileRequestDto;
 import com.example.shieldus.controller.dto.CompileResponseDto;
 import com.example.shieldus.controller.dto.CompileResponseDto.TestCaseResult;
@@ -45,7 +46,7 @@ public class CompileService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final String JUDGE0_URL = "http://localhost:2358/submissions?base64_encoded=false&wait=true";
+    private final JudgeProperties judgeProperties;
 
     //Test 3개만
     public CompileResponseDto runTest(CompileRequestDto requestDto, Long memberId) {
@@ -158,7 +159,7 @@ public class CompileService {
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
         try {
-            ResponseEntity<String> response = restTemplate.postForEntity(JUDGE0_URL, entity, String.class);
+            ResponseEntity<String> response = restTemplate.postForEntity(judgeProperties.getJudge0Url(), entity, String.class);
             JsonNode root = objectMapper.readTree(response.getBody());
 
             String stdout = root.path("stdout").asText("").trim();

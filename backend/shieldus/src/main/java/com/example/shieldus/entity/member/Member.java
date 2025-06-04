@@ -31,8 +31,8 @@ public class Member {
 
     private Integer memberRank;
 
-    @Column(nullable = false)
-    private Boolean isDeleted =false;
+    @Column(nullable = true)
+    private Boolean isDeleted = false;
 
     private LocalDateTime deletedOn;
 

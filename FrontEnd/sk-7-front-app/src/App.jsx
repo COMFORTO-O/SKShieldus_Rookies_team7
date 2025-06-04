@@ -86,7 +86,7 @@ function App() {
                         <Route path="/" element={<MainPage />} />
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/register" element={<SignupPage />} />
-                        <Route path="/solve" element={<SolvePage />} />
+                        <Route path="/solve/:id" element={<SolvePage />} />
                         <Route path="/info" element={<InfoPage />} />
                     </Routes>
                 </Suspense>

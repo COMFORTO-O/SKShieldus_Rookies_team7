@@ -43,6 +43,7 @@ public class DataInitRunner implements CommandLineRunner {
                 .phone("01012345678")
                 .memberRank(0)
                 .role(MemberRoleEnum.USER)
+                .isDeleted(false)
                 .build();
         memberRepository.save(member);
 

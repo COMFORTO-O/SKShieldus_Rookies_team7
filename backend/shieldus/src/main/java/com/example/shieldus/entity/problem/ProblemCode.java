@@ -16,7 +16,7 @@ public class ProblemCode {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String code; // 예: "ERROR", "WARNING", "CRITICAL"
+    private String code;
 
     private String description;
 

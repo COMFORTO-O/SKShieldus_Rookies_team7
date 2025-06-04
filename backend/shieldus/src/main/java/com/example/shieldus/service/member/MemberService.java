@@ -128,7 +128,7 @@ public class MemberService {
         }
     }
     // 임시 저장 목록 조회
-    @Transactional  // 기본값: readOnly = false
+    @Transactional  //
     public List<TempProblemResponseDto> getTempProblems(Long memberId) {
         return tempProblemRepository.findByMemberId(memberId).stream()
                 .map(t -> TempProblemResponseDto.builder()

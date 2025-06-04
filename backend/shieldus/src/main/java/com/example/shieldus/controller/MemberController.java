@@ -50,11 +50,11 @@ public class MemberController {
         return ResponseDto.success(solvedProblem);
     }
 
-    // 임시저장 확인(수정중)
-//    @GetMapping("/problem/temp/{id}")
-//    public ResponseDto<String> getProblemTemp(@AuthenticationPrincipal MemberUserDetails userDetails) {
-//        return ResponseDto.success("ok");
-//    }
+    // 임시 저장 확인(수정중)
+    @GetMapping("/problem/temp/{id}")
+    public ResponseDto<String> getProblemTemp(@AuthenticationPrincipal MemberUserDetails userDetails) {
+        return ResponseDto.success("ok");
+    }
 
     // 임시 저장 생성 API
     @PostMapping("/temp")
@@ -72,9 +72,6 @@ public class MemberController {
         List<TempProblemResponseDto> response = memberService.getTempProblems(userDetails.getMemberId());
         return ResponseDto.success(response);
     }
-
-
-
 
     /*
      * Admin 기능

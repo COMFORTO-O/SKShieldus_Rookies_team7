@@ -27,7 +27,7 @@ import java.util.List;
 @Order(1)
 @RequiredArgsConstructor
 @Slf4j
-@ConditionalOnProperty(name = "runner.data-init.enabled", havingValue = "true", matchIfMissing = false)
+//@ConditionalOnProperty(name = "runner.data-init", havingValue = "true", matchIfMissing = false)
 public class DataInitRunner implements CommandLineRunner {
 
     private final MemberRepository memberRepository;
@@ -43,7 +43,7 @@ public class DataInitRunner implements CommandLineRunner {
 //        // 회원 생성
         Member member = Member.builder()
                 .email("a@a.com")
-                .password(passwordEncoder.encode("test1234"))
+                .password(passwordEncoder.encode("123"))
                 .name("테스트유저")
                 .phone("01012345678")
                 .memberRank(0)
@@ -51,7 +51,16 @@ public class DataInitRunner implements CommandLineRunner {
                 .isDeleted(false)
                 .build();
         memberRepository.save(member);
-
+        Member member2 = Member.builder()
+                .email("b@b.com")
+                .password(passwordEncoder.encode("123"))
+                .name("테스트유저2")
+                .phone("01012345679")
+                .memberRank(0)
+                .role(MemberRoleEnum.USER)
+                .isDeleted(false)
+                .build();
+        memberRepository.save(member2);
 
         // 코드 생성
         ProblemCode problemCode1 = new ProblemCode("JAVA", "Java");

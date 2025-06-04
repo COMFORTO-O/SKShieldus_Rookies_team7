@@ -2,6 +2,7 @@ package com.example.shieldus.controller;
 
 import com.example.shieldus.config.security.service.MemberUserDetails;
 import com.example.shieldus.controller.dto.*;
+import com.example.shieldus.controller.dto.member.MemberTempCodeResponseDto;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
 import com.example.shieldus.service.member.MemberService;
 import com.example.shieldus.service.problem.ProblemService;
@@ -50,8 +51,9 @@ public class MemberController {
 
     // 임시저장 확인
     @GetMapping("/problem/temp/{id}")
-    public ResponseDto<String> getProblemTemp(@AuthenticationPrincipal MemberUserDetails userDetails) {
-        return ResponseDto.success("ok");
+    public ResponseDto<MemberTempCodeResponseDto> getProblemTemp( @PathVariable Long problemId, @AuthenticationPrincipal MemberUserDetails userDetails) {
+        MemberTempCodeResponseDto tempCodeResponseDto = memberService.getMemberTempCode(userDetails.getMemberId(),problemId);
+        return ResponseDto.success(tempCodeResponseDto);
     }
 
     /*

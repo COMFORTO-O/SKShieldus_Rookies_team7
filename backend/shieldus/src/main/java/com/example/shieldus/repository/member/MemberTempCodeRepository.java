@@ -19,4 +19,15 @@ public interface MemberTempCodeRepository extends JpaRepository<MemberTempCode, 
             "ORDER BY m.id DESC " +
             "LIMIT 1")
     Optional<MemberTempCode> findOneByMemberIdAndMemberSubmitProblemId(@Param("memberId") Long memberId, @Param("problemId") Long problemId);
+
+    @Query("""
+        SELECT m FROM MemberTempCode m
+        WHERE m.memberSubmitProblem.problem.id = :problemId
+          AND m.memberSubmitProblem.member.id = :memberId
+        ORDER BY m.submitDate DESC
+        """)
+    Optional<MemberTempCode> findTopByProblemIdAndMemberIdOrderBySubmitDateDesc(
+            @Param("problemId") Long problemId,
+            @Param("memberId") Long memberId
+    );
 }

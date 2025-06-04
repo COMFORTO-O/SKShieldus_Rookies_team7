@@ -5,6 +5,7 @@ import com.example.shieldus.controller.dto.ProblemRequestDto;
 import com.example.shieldus.controller.dto.UpdateProblemRequestDto;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
+import com.example.shieldus.entity.problem.enumration.ProblemLanguageEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,8 +34,8 @@ public class Problem extends BaseEntity {
     private String title;
     private String detail;
 
-    //@Enumerated(EnumType.STRING)
-    //private ProblemCategoryEnum category;
+    @Enumerated(EnumType.STRING)
+    private ProblemLanguageEnum language;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_code_id")

@@ -7,15 +7,19 @@ import com.example.shieldus.entity.problem.Problem;
 import com.example.shieldus.entity.problem.ProblemCode;
 import com.example.shieldus.entity.problem.ProblemTestCase;
 import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
+import com.example.shieldus.entity.problem.enumration.ProblemLanguageEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 public class ProblemResponseDto {
@@ -25,6 +29,7 @@ public class ProblemResponseDto {
     private ProblemCodeDto category;
     private Integer level;
     private LocalDateTime createdAt;
+    private ProblemLanguageEnum language;
 
     // member
     private String memberName;
@@ -33,6 +38,10 @@ public class ProblemResponseDto {
     private Long submitProblemId;
     private Boolean solved;
     private LocalDateTime completedAt;
+
+    // passRate
+    private Double passRate;
+
 
     // QueryDSL에서 사용할 생성자 추가
     public ProblemResponseDto(Long id, String title, String detail,
@@ -63,21 +72,25 @@ public class ProblemResponseDto {
 
 
     public ProblemResponseDto(Long id, String title, String detail, Integer level, LocalDateTime createdAt,
-                              Long problemCodeId, String problemCode, String problemDescription,
-                              Boolean solved, LocalDateTime completedAt) {
+                              Long problemCodeId, String problemCode, String problemDescription, ProblemLanguageEnum language) {
         this.id = id;
         this.title = title;
         this.detail = detail;
         this.level = level;
         this.createdAt = createdAt;
         this.category = new ProblemCodeDto(problemCodeId, problemCode, problemDescription);
-        this.solved = solved;
-        this.completedAt = completedAt;
-
-
+        this.language = language;
 
     }
-
+    // pass 관련 값 제작
+    public void setPass(Long successCount, Long count) {
+        if (count == null || count == 0) {
+            this.passRate = 0.0;
+        } else {
+            double rate = successCount.doubleValue() / count;
+            this.passRate = Math.round(rate * 100.0) / 100.0; // 소수점 둘째 자리까지 반올림
+        }
+    }
     // 문제 상세
     public static ProblemResponseDto fromProblem(Problem problem) {
         return ProblemResponseDto.builder()
@@ -146,4 +159,27 @@ public class ProblemResponseDto {
                     .build();
         }
     }
+
+
+
+    // 정답률 계산을 위한 클래스
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class Pass{
+        public Long memberId;
+        public Long problemId;
+        public Boolean isPass;
+        public LocalDateTime completedAt;
+
+        public Pass(Long memberId, Long problemId, Integer isPass, LocalDateTime completedAt) {
+            this.memberId = memberId;
+            this.problemId = problemId;
+            if(isPass != null && isPass > 0 ){
+                this.isPass = true;
+                this.completedAt = completedAt;
+            }
+        }
+    }
+
 }

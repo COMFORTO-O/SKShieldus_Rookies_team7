@@ -6,6 +6,7 @@ import com.example.shieldus.entity.problem.Problem;
 import com.example.shieldus.entity.problem.ProblemCode;
 import com.example.shieldus.entity.problem.ProblemTestCase;
 import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
+import com.example.shieldus.entity.problem.enumration.ProblemLanguageEnum;
 import com.example.shieldus.repository.member.MemberRepository;
 import com.example.shieldus.repository.problem.ProblemCodeRepository;
 import com.example.shieldus.repository.problem.ProblemRepository;
@@ -67,6 +68,7 @@ public class DataInitRunner implements CommandLineRunner {
                 .member(member)
                 .title("두 수 더하기")
                 .detail("두 정수를 입력받아 합을 출력하세요")
+                .language(ProblemLanguageEnum.JAVA)
                 .category(problemCode1)
                 .level(1)
                 .build();
@@ -92,6 +94,7 @@ public class DataInitRunner implements CommandLineRunner {
                 .member(member)
                 .title("세 수 곱하기")
                 .detail("세 정수를 입력받아 곱을 출력하세요")
+                .language(ProblemLanguageEnum.PYTHON)
                 .category(problemCode4)
                 .level(2)
                 .build();

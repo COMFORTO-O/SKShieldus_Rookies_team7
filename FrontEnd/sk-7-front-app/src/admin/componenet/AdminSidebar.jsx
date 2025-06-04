@@ -1,4 +1,4 @@
-import { FaHome, FaUsers, FaCog } from "react-icons/fa";
+import { FaHome, FaUsers, FaFileCode } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const AdminSidebar = () => {
@@ -7,22 +7,22 @@ const AdminSidebar = () => {
             <h1 className="text-xl font-bold mb-6">Admin</h1>
             <nav className="flex flex-col gap-4">
                 <Link
-                    to="/dashboard"
+                    to="/admin"
                     className="flex items-center gap-2 text-gray-700 hover:text-blue-500"
                 >
                     <FaHome size={18} /> Dashboard
                 </Link>
                 <Link
-                    to="/users"
+                    to="/adminuser"
                     className="flex items-center gap-2 text-gray-700 hover:text-blue-500"
                 >
-                    <FaUsers size={18} /> Users
+                    <FaUsers size={18} /> user
                 </Link>
                 <Link
-                    to="/settings"
+                    to="/adminproblem"
                     className="flex items-center gap-2 text-gray-700 hover:text-blue-500"
                 >
-                    <FaCog size={18} /> Settings
+                    <FaFileCode size={18} /> problem
                 </Link>
             </nav>
         </div>

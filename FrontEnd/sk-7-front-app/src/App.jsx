@@ -21,9 +21,17 @@ const SignupPage = React.lazy(() => import("./pages/SignupPage"));
 const SolvePage = React.lazy(() => import("./pages/SolvePage"));
 const InfoPage = React.lazy(() => import("./pages/InfoPage"));
 
-// 어드민 컴포넌트 불러오기
-const AdminMainPage = React.lazy(() => import("./admin/pages/AdminMainPage"));
+// 어드민 페이지 임포트트
+const AdminDashboardPage = React.lazy(() =>
+    import("./admin/pages/AdminDashboardPage")
+);
 const AdminLoginPage = React.lazy(() => import("./admin/pages/AdminLoginPage"));
+const AdminUserManagePage = React.lazy(() =>
+    import("./admin/pages/AdminUserManagePage")
+);
+const AdminProblemManagePage = React.lazy(() =>
+    import("./admin/pages/AdminProblemManagePage")
+);
 
 /*앱 컨테이너*/
 function App() {
@@ -47,7 +55,12 @@ function App() {
     const location = useLocation();
     // Navbar 표시 조건은 그대로 유지
     const showNavbar =
-        location.pathname !== "/login" && location.pathname !== "/register";
+        location.pathname !== "/login" &&
+        location.pathname !== "/register" &&
+        location.pathname !== "/adminlogin" &&
+        location.pathname !== "/admin" &&
+        location.pathname !== "/adminuser" &&
+        location.pathname !== "/adminproblem";
 
     // 로그인 상태 감지하여 리다이렉션
     // 이 로직은 user 상태가 변경될 때마다 실행됩니다.
@@ -94,12 +107,23 @@ function App() {
                         <Route path="/solve" element={<SolvePage />} />
                         <Route path="/info" element={<InfoPage />} />
 
-                        {/* Admin 라우트 */}
+                        {/* 어드민 라우트 */}
                         <Route element={<AdminRoute />}>
-                            <Route path="/admin" element={<AdminMainPage />} />
                             <Route
                                 path="/adminlogin"
                                 element={<AdminLoginPage />}
+                            />
+                            <Route
+                                path="/admin"
+                                element={<AdminDashboardPage />}
+                            />
+                            <Route
+                                path="/adminuser"
+                                element={<AdminUserManagePage />}
+                            />
+                            <Route
+                                path="/adminproblem"
+                                element={<AdminProblemManagePage />}
                             />
                         </Route>
                     </Routes>

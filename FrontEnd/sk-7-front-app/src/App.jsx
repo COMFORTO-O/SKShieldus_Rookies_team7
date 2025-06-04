@@ -12,6 +12,7 @@ import LoadingSpinner from "./components/atoms/LoadingSpinner";
 import useModalStore from "./store/useModalStore";
 import { Avatar } from "@mui/material";
 import InfoModal from "./components/modals/InfoModal";
+import AdminRoute from "./admin/routes/AdminRoute";
 
 // React.lazy를 사용하여 페이지 컴포넌트 동적 임포트
 const MainPage = React.lazy(() => import("./pages/MainPage"));
@@ -19,6 +20,10 @@ const LoginPage = React.lazy(() => import("./pages/LoginPage"));
 const SignupPage = React.lazy(() => import("./pages/SignupPage"));
 const SolvePage = React.lazy(() => import("./pages/SolvePage"));
 const InfoPage = React.lazy(() => import("./pages/InfoPage"));
+
+// 어드민 컴포넌트 불러오기
+const AdminMainPage = React.lazy(() => import("./admin/pages/AdminMainPage"));
+const AdminLoginPage = React.lazy(() => import("./admin/pages/AdminLoginPage"));
 
 /*앱 컨테이너*/
 function App() {
@@ -88,6 +93,15 @@ function App() {
                         <Route path="/register" element={<SignupPage />} />
                         <Route path="/solve" element={<SolvePage />} />
                         <Route path="/info" element={<InfoPage />} />
+
+                        {/* Admin 라우트 */}
+                        <Route element={<AdminRoute />}>
+                            <Route path="/admin" element={<AdminMainPage />} />
+                            <Route
+                                path="/adminlogin"
+                                element={<AdminLoginPage />}
+                            />
+                        </Route>
                     </Routes>
                 </Suspense>
             </main>

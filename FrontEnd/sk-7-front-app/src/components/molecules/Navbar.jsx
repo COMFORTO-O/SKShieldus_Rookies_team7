@@ -1,20 +1,25 @@
 import { Link } from "react-router-dom";
 import useAuthStore from "../../store/useAuthStore";
 import useModalStore from "../../store/useModalStore";
+import logo from "../../../public/logo.png";
 
 const Navbar = () => {
-    // 로그인 유무 ( 로컬 스토리지, 쿠키 )
     const { isLoggedIn } = useAuthStore();
-
-    // Modal 상태 가져오기
     const { infoModalOpen, openInfoModal, closeInfoModal } = useModalStore();
 
     return (
-        <div className="bg-base-100 h-14 flex justify-between border-b-2">
-            {/* 아이콘 */}
-            <p>아이콘</p>
+        <div className="bg-base-100 h-14 flex justify-between items-center border-b-2 px-4">
+            {/* 로고 (홈 링크) */}
+            <Link to="/" className="flex items-center">
+                <img
+                    src={logo}
+                    alt="로고"
+                    className="h-10 w-auto object-contain"
+                />
+            </Link>
+
             {/* 네비게이션 바 */}
-            <nav className="h-full flex gap-4 items-center text-black pr-4 font-sourgummy">
+            <nav className="flex gap-4 items-center text-black font-sourgummy">
                 <Link to="/">홈</Link>
                 {isLoggedIn ? (
                     <>

@@ -246,6 +246,10 @@ export default function MainContents() {
                     </button>
                 </div>
             )}
+
+            <div>
+                <Link to="/solve/1">임시 문제 페이지로</Link>
+            </div>
         </div>
     );
 }

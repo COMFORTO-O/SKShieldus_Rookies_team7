@@ -42,7 +42,9 @@ function App() {
     const location = useLocation();
     // Navbar 표시 조건은 그대로 유지
     const showNavbar =
-        location.pathname !== "/login" && location.pathname !== "/register";
+        location.pathname !== "/login" &&
+        location.pathname !== "/register" &&
+        !location.pathname.startsWith("/solve");
 
     // 로그인 상태 감지하여 리다이렉션
     // 이 로직은 user 상태가 변경될 때마다 실행됩니다.

@@ -1,66 +1,305 @@
-import { useState, useEffect } from "react";
-
+import { useState, useEffect, useRef, useCallback } from "react";
 import LanguageSelect from "../atoms/LanguageSelect";
-import Button from "../atoms/Button";
-
 import Editor, { useMonaco } from "@monaco-editor/react";
+import { Button } from "@mui/material";
+import { sendUserCode } from "../../api/sendCode";
 
-function CodeEditorSection() {
-    const [selectedLanguage, setSelectedLanguage] = useState("");
+function CodeEditorSection({ detail }) {
+    const [selectedLanguage, setSelectedLanguage] = useState("Java"); // 기본값 설정 예시
     const [code, setCode] = useState("// 코드를 입력하세요.");
 
+    const [result, setResult] = useState(null); // 실행 결과 상태
+    const [loading, setLoading] = useState(false);
+
     const monaco = useMonaco();
-    // 내가 사용할 모나코 인스턴스를 생성한다.
+    const editorRef = useRef(null);
+
+    // 리사이저 상태
+    const [editorSectionHeightPercent, setEditorSectionHeightPercent] =
+        useState(65); // 에디터 영역 (65%)
+    const isResizingVertical = useRef(false);
+    const resizableContainerRef = useRef(null); // 에디터와 결과창을 포함하는 컨테이너
 
     useEffect(() => {
         if (!monaco) return;
-        // 모나코 인스턴스가 null이면 early return을 해준다.
-
-        monaco.editor.setTheme("tomorrow");
-        // 내가 사용하는 모나코 에디터에 테마를 적용해준다.
     }, [monaco]);
 
+    // 에디터 핸들러
+    const handleEditorMount = (editor) => {
+        editorRef.current = editor;
+    };
+
+    // 실행 버튼 클릭 시
+    const handleRunCode = async () => {
+        if (!detail || !detail.id) {
+            setResult({ message: "문제 정보를 가져올 수 없습니다." });
+            return;
+        }
+        setLoading(true);
+        setResult("실행 중...");
+        try {
+            const res = await sendUserCode(detail.id, code, selectedLanguage);
+            setResult(res ?? "결과 없음");
+        } catch (err) {
+            setResult(err || "실행 중 오류 발생");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 제출 버튼 클릭 시
+    const handleSubmitCode = async () => {
+        // TODO: 제출 로직 구현
+        alert("제출 기능은 아직 구현되지 않았습니다.");
+    };
+
+    // 리사이저 이벤트 핸들러
+    const handleMouseDownOnVerticalResizer = useCallback((e) => {
+        e.preventDefault();
+        isResizingVertical.current = true;
+        document.body.style.cursor = "row-resize";
+        document.body.style.userSelect = "none";
+    }, []);
+    const handleMouseMoveVertical = useCallback((e) => {
+        if (!isResizingVertical.current || !resizableContainerRef.current) {
+            return;
+        }
+        const containerRect = resizableContainerRef.current.getBoundingClientRect();
+        // containerRect.top 부터 마우스 y 위치까지의 높이를 계산
+        let newEditorHeight = e.clientY - containerRect.top;
+        let newEditorHeightPercent = (newEditorHeight / containerRect.height) * 100;
+
+        // 높이 제한 (예: 에디터 20% ~ 80%)
+        const minHeightPercent = 20;
+        const maxHeightPercent = 80;
+        newEditorHeightPercent = Math.max(minHeightPercent, Math.min(newEditorHeightPercent, maxHeightPercent));
+
+        setEditorSectionHeightPercent(newEditorHeightPercent);
+
+        // 에디터 레이아웃 강제 업데이트 (필요할 경우)
+        if (editorRef.current) {
+            editorRef.current.layout();
+        }
+
+    }, []); // editorRef.current는 dependency array에 넣지 않아도 됨 (ref는 변경되어도 리렌더링 X)
+    const handleMouseUpVertical = useCallback(() => {
+        if (isResizingVertical.current) {
+            isResizingVertical.current = false;
+            document.body.style.cursor = 'default';
+            document.body.style.userSelect = 'auto';
+        }
+    }, []);
+
+    // Effect for vertical resizer global listeners
+    useEffect(() => {
+        window.addEventListener("mousemove", handleMouseMoveVertical);
+        window.addEventListener("mouseup", handleMouseUpVertical);
+        return () => {
+            window.removeEventListener("mousemove", handleMouseMoveVertical);
+            window.removeEventListener("mouseup", handleMouseUpVertical);
+            if (isResizingVertical.current) { // 컴포넌트 언마운트 시 정리
+                document.body.style.cursor = 'default';
+                document.body.style.userSelect = 'auto';
+            }
+        };
+    }, [handleMouseMoveVertical, handleMouseUpVertical]);
+
     return (
-        <div className="p-3 overflow-auto bg-gray-700 border-y border-gray-600">
-            <div className="h-[8%] flex flex-1 items-center">
-                <section className="flex-1"></section>
-                <section className="flex-1">
+        <div className="flex-1 flex flex-col h-full bg-gray-700 border-t border-gray-600">
+            {/* 상단 컨트롤 영역 */}
+            <div className="flex-none flex justify-end items-center p-2 border-b border-gray-700">
+                <div className="w-[150px]">
                     <LanguageSelect
                         selectedLanguage={selectedLanguage}
                         setSelectedLanguage={setSelectedLanguage}
                     />
-                </section>
+                </div>
             </div>
 
-            <section className="h-[82%]">
-                <Editor
-                    height="100%"
-                    language={selectedLanguage}
-                    value={code}
-                    onChange={(value) => setCode(value)}
-                    theme="vs-dark"
-                />
-            </section>
-
-            <div className="h-[10%] flex flex-1">
-                <section className="flex-1"></section>
-                <section className="flex justify-end items-center flex-1 space-x-4">
-                    <Button onClick={() => setCode("")} className="bg-gray-200">
-                        초기화
-                    </Button>
-                    <Button
-                        className="bg-gray-200"
-                        onClick={() => console.log("실행된 코드:", code)}
-                    >
-                        코드 실행
-                    </Button>
-                    <Button
-                        className="bg-blue-600 text-white"
-                        onClick={() => alert("제출 완료!")}
-                    >
-                        제출 후 채점
-                    </Button>
+            {/* 에디터 영역 + 실행 결과 영역 */}
+            <div
+                ref={resizableContainerRef}
+                className="flex-1 flex flex-col min-h-0 overflow-hidden"
+            >
+                {/* 에디터 영역 */}
+                <section
+                    className=" min-h-0 relative"
+                    style={{ height: `${editorSectionHeightPercent}%` }}
+                >
+                    <Editor
+                        height="100%"
+                        width="100%"
+                        language={selectedLanguage.toLowerCase()}
+                        value={code}
+                        onChange={(value) => setCode(value || "")} // value가 undefined일 경우 대비
+                        theme="vs-dark"
+                        onMount={handleEditorMount}
+                        options={{
+                            automaticLayout: true,
+                            fontSize: 16,
+                            scrollBeyondLastLine: false,
+                            minimap: { enabled: true },
+                            wordWrap: "on", // 자동 줄바꿈
+                        }}
+                    />
                 </section>
+
+                {/* 세로 리사이저 핸들 */}
+                <div
+                    className="h-1.5 hover:h-2 bg-gray-600 hover:bg-blue-500 cursor-row-resize flex-none
+                               transition-all duration-100 ease-in-out"
+                    onMouseDown={handleMouseDownOnVerticalResizer}
+                    onTouchStart={handleMouseDownOnVerticalResizer} // 기본 터치 지원
+                ></div>
+
+                {/* 실행 결과 영역 */}
+                <div className="flex-1 flex flex-col min-h-[200px]  border-t border-gray-700">
+                    <h2 className="text-white text-md font-semibold p-2 bg-gray-700 flex-none">
+                        실행 결과
+                    </h2>
+                    <div className="flex-1 bg-gray-900 p-2 overflow-auto text-sm text-white">
+                        {loading ? (
+                            <div className="p-4 text-center text-gray-400">
+                                실행 중...
+                            </div>
+                        ) : (
+                            <div className="space-y-4 p-4">
+                                {/* 각 테스트 케이스 결과 사이에 간격, 전체 패딩 */}
+                                {result &&
+                                result.testCaseResults &&
+                                result.testCaseResults.length > 0 ? (
+                                    result.testCaseResults.map(
+                                        (testCase, index) => (
+                                            <div
+                                                key={index} // 배열을 매핑할 때는 고유한 key prop이 필수입니다.
+                                                className={`p-4 rounded-md shadow ${
+                                                    testCase.correct
+                                                        ? "bg-green-50 border-green-300"
+                                                        : "bg-red-50 border-red-300"
+                                                } border`}
+                                            >
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <h3 className="font-semibold text-lg text-gray-800">
+                                                        테스트 케이스 #
+                                                        {index + 1}
+                                                    </h3>
+                                                    <span
+                                                        className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                                                            testCase.correct
+                                                                ? "bg-green-200 text-green-800"
+                                                                : "bg-red-200 text-red-800"
+                                                        }`}
+                                                    >
+                                                        {testCase.correct
+                                                            ? "성공"
+                                                            : "실패"}
+                                                    </span>
+                                                </div>
+
+                                                {/* 입력 */}
+                                                {testCase.input !==
+                                                    undefined && ( // 입력 값이 있는 경우에만 표시
+                                                    <div className="mb-2">
+                                                        <p className="text-sm font-medium text-gray-600">
+                                                            입력:
+                                                        </p>
+                                                        <pre className="p-2 bg-gray-100 rounded text-sm text-gray-700 whitespace-pre-wrap break-all">
+                                                            {testCase.input}
+                                                        </pre>
+                                                    </div>
+                                                )}
+
+                                                {/* 예상 출력 */}
+                                                {testCase.expectedOutput !==
+                                                    undefined && ( // 예상 출력 값이 있는 경우에만 표시
+                                                    <div className="mb-2">
+                                                        <p className="text-sm font-medium text-gray-600">
+                                                            예상 출력:
+                                                        </p>
+                                                        <pre className="p-2 bg-gray-100 rounded text-sm text-gray-700 whitespace-pre-wrap break-all">
+                                                            {
+                                                                testCase.expectedOutput
+                                                            }
+                                                        </pre>
+                                                    </div>
+                                                )}
+
+                                                {/* 실제 출력 또는 에러 메시지 */}
+                                                {testCase.error ? (
+                                                    <div className="mb-2">
+                                                        <p className="text-sm font-medium text-red-600">
+                                                            에러:
+                                                        </p>
+                                                        <pre className="p-2 bg-red-50 border border-red-200 rounded text-sm text-red-700 whitespace-pre-wrap break-all">
+                                                            {testCase.error}
+                                                        </pre>
+                                                    </div>
+                                                ) : (
+                                                    testCase.actualOutput !==
+                                                        undefined && ( // 에러가 없고 실제 출력 값이 있는 경우
+                                                        <div className="mb-2">
+                                                            <p className="text-sm font-medium text-gray-600">
+                                                                실제 출력:
+                                                            </p>
+                                                            <pre className="p-2 bg-gray-100 rounded text-sm text-gray-700 whitespace-pre-wrap break-all">
+                                                                {
+                                                                    testCase.actualOutput
+                                                                }
+                                                            </pre>
+                                                        </div>
+                                                    )
+                                                )}
+
+                                                {/* 추가 정보 (시간, 메모리 등) */}
+                                            </div>
+                                        )
+                                    )
+                                ) : (
+                                    <div className="p-4 text-center text-gray-500">
+                                        {result && result.message
+                                            ? result.message
+                                            : "실행 결과가 없습니다."}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+            {/* 하단 버튼 영역 */}
+            <div className="flex-none flex flex-row-reverse gap-3 items-center p-2 bg-gray-700 border-t border-gray-600">
+                <Button
+                    variant="contained"
+                    color="success"
+                    size="small"
+                    sx={{ mr: 1 }}
+                    onClick={handleSubmitCode}
+                    disabled={loading}
+                >
+                    제출
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick={handleRunCode}
+                    disabled={loading}
+                >
+                    실행
+                </Button>
+                <Button
+                    variant="contained"
+                    sx={{ backgroundColor: "#44576c", color: "#fff" }}
+                    size="small"
+                    onClick={() => {
+                        if (window.confirm("정말로 초기화하시겠습니까?")) {
+                            setCode("// 코드를 입력하세요.");
+                            setResult(null); // 실행 결과도 초기화
+                        }
+                    }}
+                >
+                    초기화
+                </Button>
             </div>
         </div>
     );

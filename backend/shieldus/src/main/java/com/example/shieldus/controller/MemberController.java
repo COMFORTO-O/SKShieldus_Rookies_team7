@@ -48,7 +48,7 @@ public class MemberController {
         return ResponseDto.success(solvedProblem);
     }
 
-    // 임시저장 확인
+    // 임시저장 확인(수정중)
     @GetMapping("/problem/temp/{id}")
     public ResponseDto<String> getProblemTemp(@AuthenticationPrincipal MemberUserDetails userDetails) {
         return ResponseDto.success("ok");
@@ -57,7 +57,5 @@ public class MemberController {
     /*
      * Admin 기능
      * */
-
-
 
 }

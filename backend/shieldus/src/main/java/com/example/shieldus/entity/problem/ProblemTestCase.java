@@ -33,11 +33,11 @@ public class ProblemTestCase extends BaseEntity {
     @Column(nullable = false)
     private String output;
 
-    public ProblemTestCase(Problem problem, String input, String output) {
+    public ProblemTestCase(Problem problem, String input, String output, Boolean isTestCase) {
         this.input = input;
         this.output = output;
         this.problem = problem;
-        this.isTestCase = true;
+        this.isTestCase = isTestCase;
     }
 
     public void update(ProblemTestCaseRequestDto.Update testCaseDto) {

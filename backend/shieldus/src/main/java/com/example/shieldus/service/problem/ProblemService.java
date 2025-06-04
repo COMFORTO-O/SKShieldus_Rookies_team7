@@ -153,7 +153,7 @@ public class ProblemService {
         for(UpdateProblemRequestDto.TestCaseDto testCaseDto : dto.getTestCase()) {
             // (a) 새 케이스 추가
             if(testCaseDto.isNullId()){
-                addTestCases.add(new ProblemTestCase(problem, testCaseDto.getInput(), testCaseDto.getOutput()));
+                addTestCases.add(new ProblemTestCase(problem, testCaseDto.getInput(), testCaseDto.getOutput(), testCaseDto.getIsTestCase()));
             }
             // (b) 기존 케이스 수정
             else{

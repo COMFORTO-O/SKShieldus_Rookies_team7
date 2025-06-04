@@ -53,6 +53,9 @@ public class UpdateProblemRequestDto {
         @NotBlank(message = "출력 예시는 필수입니다.")
         private String output;
 
+        @NotBlank(message = "출력 예시는 필수입니다.")
+        private Boolean isTestCase ;
+
 
         public Boolean isNullId(){
             return Objects.isNull(this.testCaseId) || this.testCaseId == 0L;

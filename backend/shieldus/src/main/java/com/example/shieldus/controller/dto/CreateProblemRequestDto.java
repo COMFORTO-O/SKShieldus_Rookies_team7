@@ -46,10 +46,13 @@ public class CreateProblemRequestDto {
         @NotBlank(message = "테스트 출력값은 필수입니다.")
         private String output;
 
+        @NotBlank(message = "테스트 출력값은 필수입니다.")
+        private Boolean isTestCase;
+
         public ProblemTestCase toEntity(Problem problem) {
             return ProblemTestCase.builder()
                     .problem(problem)
-                    .isTestCase(true)
+                    .isTestCase(this.isTestCase)
                     .input(this.input)
                     .output(this.output)
                     .build();

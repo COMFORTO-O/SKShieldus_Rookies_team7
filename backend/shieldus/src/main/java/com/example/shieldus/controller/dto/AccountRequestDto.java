@@ -48,6 +48,7 @@ public class AccountRequestDto {
                     .phone(phone)
                     .memberRank(0)
                     .role(MemberRoleEnum.USER)
+                    .isDeleted(false)
                     .build();
         }
 

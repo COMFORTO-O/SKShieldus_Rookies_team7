@@ -119,7 +119,7 @@ public class CompileService {
 
         if (allPass) {
             submit.setPass(true);
-            submit.setCompleteDate(LocalDateTime.now());
+            submit.setCompletedAt(LocalDateTime.now());
             memberSubmitProblemRepository.save(submit);
         }
 

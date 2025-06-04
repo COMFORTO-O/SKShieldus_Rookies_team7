@@ -1,5 +1,6 @@
 package com.example.shieldus.controller.dto;
 
+import com.example.shieldus.exception.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,7 +12,7 @@ public class ResponseDto<T> {
     private String message;
     private T data;
 
-    // 성공 응답 생성 메서드
+    // 성공 응답
     public static <T> ResponseDto<T> success(T data) {
         return ResponseDto.<T>builder()
                 .status(200)
@@ -20,12 +21,22 @@ public class ResponseDto<T> {
                 .build();
     }
 
-    // 실패 응답 생성 메서드
-    public static <T> ResponseDto<T> error(int status, String code,String message) {
+    // 실패 응답 (직접 status, code, message 전달)
+    public static <T> ResponseDto<T> error(int status, String code, String message) {
         return ResponseDto.<T>builder()
                 .status(status)
                 .code(code)
                 .message(message)
+                .data(null)
+                .build();
+    }
+
+    // 🔧 실패 응답 (ErrorCode enum 전달 시 편의용)
+    public static <T> ResponseDto<T> error(ErrorCode errorCode) {
+        return ResponseDto.<T>builder()
+                .status(errorCode.getStatus())
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
                 .data(null)
                 .build();
     }

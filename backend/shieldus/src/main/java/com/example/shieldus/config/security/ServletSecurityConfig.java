@@ -5,19 +5,15 @@ import com.example.shieldus.config.jwt.JwtTokenProvider;
 import com.example.shieldus.config.security.filter.JwtAuthenticationFilter;
 import com.example.shieldus.config.security.filter.JwtRequestFilter;
 import com.example.shieldus.config.security.service.MemberUserDetailsService;
+import com.example.shieldus.config.security.utils.CustomPermissionEvaluator;
 import com.example.shieldus.config.security.utils.RSAUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.simp.stomp.StompCommand;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -26,12 +22,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -75,7 +68,6 @@ public class ServletSecurityConfig {
                         .requestMatchers("/api/account/register").permitAll()
                         .requestMatchers("/api/compile/**").permitAll()
                         .requestMatchers("/api/problem/**").permitAll()
-                        .requestMatchers("/ws-stomp/**").permitAll()
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated()
@@ -96,7 +88,7 @@ public class ServletSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://127.0.0.1:8080", "http://127.0.0.1:3000", "http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://127.0.0.1:8080"));
         // 허용할 HTTP 메서드 (GET, POST, PUT, DELETE, OPTIONS 등)
         configuration.setAllowedMethods(List.of("*"));
         // 허용할 헤더 (모든 헤더 허용)
@@ -117,17 +109,12 @@ public class ServletSecurityConfig {
     }
 
     /*
-    * STOMP 용 RequestMatcher
+    * PermissionEvaluator 설정
     * */
     @Bean
-    public AuthorizationManager<Message<?>> messageAuthorizationManager() {
-        MessageMatcherDelegatingAuthorizationManager.Builder messages =
-                new MessageMatcherDelegatingAuthorizationManager.Builder();
-        messages
-                .simpDestMatchers("/app/**").authenticated()
-                .simpSubscribeDestMatchers("/topic/**", "/queue/**").permitAll()
-                .anyMessage().authenticated();
-        return messages.build();
+    public MethodSecurityExpressionHandler methodSecurityExpressionHandler() {
+        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+        expressionHandler.setPermissionEvaluator(new CustomPermissionEvaluator()); // 커스텀 PermissionEvaluator 등록
+        return expressionHandler;
     }
-
 }

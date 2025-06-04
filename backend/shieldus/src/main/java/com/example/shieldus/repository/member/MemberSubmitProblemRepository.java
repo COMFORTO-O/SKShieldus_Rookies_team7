@@ -7,8 +7,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface MemberSubmitProblemRepository extends JpaRepository<MemberSubmitProblem, Long> {
+public interface MemberSubmitProblemRepository extends JpaRepository<MemberSubmitProblem, Long>, MemberSubmitProblemRepositoryCustom {
     // 정답 기록만 조회
     List<MemberSubmitProblem> findByMemberIdAndPassTrue(Long memberId);
+    
     Optional<MemberSubmitProblem> findByMemberAndProblem(Member member, Problem problem);
+    
+    Optional<MemberSubmitProblem> findByMemberIdAndProblem_Id(Long memberId, Long problemId);
+
+    List<MemberSubmitProblem> findByProblemAndPassTrue(Problem problem);
+
 }

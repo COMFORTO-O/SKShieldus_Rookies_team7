@@ -1,23 +1,27 @@
 package com.example.shieldus.service.member;
 
-import com.example.shieldus.controller.dto.AccountRequestDto;
-import com.example.shieldus.controller.dto.MyPageResponseDto;
+import com.example.shieldus.controller.dto.*;
+import com.example.shieldus.controller.dto.MemberUpdateRequestDto;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
-import com.example.shieldus.entity.member.enumration.MemberRoleEnum;
+import com.example.shieldus.entity.member.MemberTempCode;
 import com.example.shieldus.exception.CustomException;
 import com.example.shieldus.exception.ErrorCode;
 import com.example.shieldus.repository.member.MemberRepository;
 import com.example.shieldus.repository.member.MemberSubmitProblemRepository;
+import com.example.shieldus.repository.member.MemberTempCodeRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Slf4j
 @Service
@@ -26,6 +30,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final MemberSubmitProblemRepository submitProblemRepository;
+    private final MemberTempCodeRepository tempCodeRepository;
     private final PasswordEncoder passwordEncoder;
 
     public MyPageResponseDto getMyPageInfo(Long memberId) {
@@ -43,7 +48,7 @@ public class MemberService {
                             solvedProblems.stream()
                                     .map(sub -> MyPageResponseDto.SolvedProblem.builder()
                                             .problemTitle(sub.getProblem().getTitle())
-                                            .completeDate(sub.getCompleteDate())
+                                            .completedAt(sub.getCompletedAt())
                                             .build())
                                     .collect(Collectors.toList())
                     )
@@ -75,4 +80,31 @@ public class MemberService {
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
         }
     }
+
+    @Transactional
+    public void deleteMember(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        try {
+            member.delete();
+        } catch (DataAccessException e) {
+            throw new CustomException(ErrorCode.DATABASE_ERROR, e);
+        }
+
+    }
+
+//    public Page<ProblemResponseDto> getMemberSubmitProblems(Long memberId, Pageable pageable) {
+//        Page<ProblemResponseDto> submitProblemList = submitProblemRepository.getMemberSubmitProblems(memberId, pageable);
+//        return submitProblemList;
+//    }
+
+    /*
+    *
+    * */
+    public ProblemResponseDto.SolvedProblem getSolvedProblem(Long memberId, Long submitProblemId) {
+        MemberTempCode memberSubmitProblem =  tempCodeRepository.findOneByMemberIdAndMemberSubmitProblemId(memberId, submitProblemId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+        return new ProblemResponseDto.SolvedProblem(memberSubmitProblem);
+
+    }
+
 }

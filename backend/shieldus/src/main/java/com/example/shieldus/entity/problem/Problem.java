@@ -34,8 +34,6 @@ public class Problem extends BaseEntity {
     private String title;
     private String detail;
 
-    @Enumerated(EnumType.STRING)
-    private ProblemLanguageEnum language;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_code_id")

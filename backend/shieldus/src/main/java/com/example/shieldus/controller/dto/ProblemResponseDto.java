@@ -29,7 +29,6 @@ public class ProblemResponseDto {
     private ProblemCodeDto category;
     private Integer level;
     private LocalDateTime createdAt;
-    private ProblemLanguageEnum language;
 
     // member
     private String memberName;
@@ -72,14 +71,13 @@ public class ProblemResponseDto {
 
 
     public ProblemResponseDto(Long id, String title, String detail, Integer level, LocalDateTime createdAt,
-                              Long problemCodeId, String problemCode, String problemDescription, ProblemLanguageEnum language) {
+                              Long problemCodeId, String problemCode, String problemDescription) {
         this.id = id;
         this.title = title;
         this.detail = detail;
         this.level = level;
         this.createdAt = createdAt;
         this.category = new ProblemCodeDto(problemCodeId, problemCode, problemDescription);
-        this.language = language;
 
     }
     // pass 관련 값 제작
@@ -180,6 +178,20 @@ public class ProblemResponseDto {
                 this.completedAt = completedAt;
             }
         }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class ProblemLanguageDto{
+        private String code;
+        private String displayName;
+        private Integer number;
+
+        public static ProblemLanguageDto fromEnum(ProblemLanguageEnum problemLanguageEnum){
+            return new ProblemLanguageDto(problemLanguageEnum.toString(), problemLanguageEnum.getDisplayName(), problemLanguageEnum.getJudgeNumber());
+        }
+
     }
 
 }

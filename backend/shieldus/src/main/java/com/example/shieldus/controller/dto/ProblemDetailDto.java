@@ -121,4 +121,6 @@ public class ProblemDetailDto {
         private String memberName;      // 풀이한 회원의 이름
         private LocalDateTime completedAt;  // 풀이 완료 일시
     }
+
+
 }

@@ -31,6 +31,7 @@ package com.example.shieldus.controller;
 import com.example.shieldus.config.security.service.MemberUserDetails;
 import com.example.shieldus.controller.dto.*;
 import com.example.shieldus.entity.problem.ProblemCode;
+import com.example.shieldus.entity.problem.enumration.ProblemLanguageEnum;
 import com.example.shieldus.service.problem.ProblemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -48,7 +49,12 @@ public class ProblemController {
 
     private final ProblemService problemService;
 
-
+    // language 조회
+    @GetMapping("/languages")
+    public ResponseDto<List<ProblemResponseDto.ProblemLanguageDto>> getProblemLanguage() {
+        List<ProblemResponseDto.ProblemLanguageDto> dto = ProblemLanguageEnum.getAllLanguages().stream().map(ProblemResponseDto.ProblemLanguageDto::fromEnum).toList();
+        return ResponseDto.success(dto);
+    }
 
     /**
      * 1) 문제 목록 조회 (필터링 + 페이징)
@@ -62,7 +68,6 @@ public class ProblemController {
      * GET /api/problem?category=JAVA&level=2&status=unsolved&title=정렬&page=0
      */
     @GetMapping
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseDto<Page<ProblemResponseDto>> getProblems(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Integer level,

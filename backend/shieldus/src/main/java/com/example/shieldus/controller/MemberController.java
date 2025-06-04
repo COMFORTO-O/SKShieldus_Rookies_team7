@@ -21,6 +21,8 @@ public class MemberController {
     private final MemberService memberService;
     private final ProblemService problemService;
 
+
+
     @GetMapping("/info")
     public ResponseDto<MyPageResponseDto> getUserInfo(@AuthenticationPrincipal MemberUserDetails userDetails) {
         // 서비스 계층에서 사용자 ID를 기반으로 마이페이지 데이터를 조회

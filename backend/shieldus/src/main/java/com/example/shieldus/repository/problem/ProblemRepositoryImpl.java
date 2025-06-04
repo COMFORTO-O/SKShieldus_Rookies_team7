@@ -49,8 +49,7 @@ public class ProblemRepositoryImpl implements ProblemRepositoryCustom {
                         problem.createdAt,
                         problem.category.id,
                         problem.category.code,
-                        problem.category.description,
-                        problem.language
+                        problem.category.description
                 ))
                 .from(problem)
                 .leftJoin(problem.category)

@@ -2,6 +2,9 @@ package com.example.shieldus.entity.problem.enumration;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Getter
 public enum ProblemLanguageEnum {
 
@@ -21,4 +24,7 @@ public enum ProblemLanguageEnum {
     }
 
 
+    public static List<ProblemLanguageEnum> getAllLanguages() {
+        return Arrays.asList(ProblemLanguageEnum.values());
+    }
 }

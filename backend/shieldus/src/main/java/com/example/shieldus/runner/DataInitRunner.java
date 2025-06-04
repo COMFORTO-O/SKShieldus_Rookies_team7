@@ -28,7 +28,7 @@ import java.util.List;
 @Order(1)
 @RequiredArgsConstructor
 @Slf4j
-//@ConditionalOnProperty(name = "runner.data-init", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(name = "runner.data-init", havingValue = "true", matchIfMissing = false)
 public class DataInitRunner implements CommandLineRunner {
 
     private final MemberRepository memberRepository;
@@ -77,7 +77,6 @@ public class DataInitRunner implements CommandLineRunner {
                 .member(member)
                 .title("두 수 더하기")
                 .detail("두 정수를 입력받아 합을 출력하세요")
-                .language(ProblemLanguageEnum.JAVA)
                 .category(problemCode1)
                 .level(1)
                 .build();
@@ -103,7 +102,6 @@ public class DataInitRunner implements CommandLineRunner {
                 .member(member)
                 .title("세 수 곱하기")
                 .detail("세 정수를 입력받아 곱을 출력하세요")
-                .language(ProblemLanguageEnum.PYTHON)
                 .category(problemCode4)
                 .level(2)
                 .build();

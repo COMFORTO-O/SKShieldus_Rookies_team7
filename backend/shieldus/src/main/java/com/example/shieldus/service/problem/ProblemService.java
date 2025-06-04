@@ -94,27 +94,19 @@ public class ProblemService {
 
     /**
      * 2) 문제 상세 조회 (테스트케이스 포함 + solved 여부 포함)
+     * TODO : submit problem 없을 시 추가
      */
     @Transactional(readOnly = true)
     public ProblemDetailDto getProblemDetail(Long memberId, Long problemId) {
-        // 사용자일 경우
-        if(memberId != null && memberId > 0) {
-            MemberSubmitProblem submitProblem = submitProblemRepository.findByMemberIdAndProblem_Id(memberId, problemId).orElseThrow(()-> new CustomException(ErrorCode.USER_NOT_FOUND));
-            try{
-                return new ProblemDetailDto(submitProblem);
-            }catch (Exception e){
-                throw new CustomException(ErrorCode.DATABASE_ERROR, e);
-            }
+
+        Problem problem = problemRepository.findById(problemId).orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
+        MemberSubmitProblem submitProblem = submitProblemRepository.findByMemberIdAndProblem_Id(memberId, problemId).orElse(null);
+        try{
+            return new ProblemDetailDto(problem, submitProblem);
+        }catch (Exception e){
+            throw new CustomException(ErrorCode.DATABASE_ERROR, e);
         }
-        // 사용자가 아닐 경우
-        else{
-            Problem problem = problemRepository.findById(problemId).orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_NOT_FOUND));
-            try{
-                return new ProblemDetailDto(problem);
-            }catch (Exception e){
-                throw new CustomException(ErrorCode.DATABASE_ERROR, e);
-            }
-        }
+
     }
 
     /**

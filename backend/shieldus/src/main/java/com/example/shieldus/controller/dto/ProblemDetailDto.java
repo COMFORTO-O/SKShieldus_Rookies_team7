@@ -54,6 +54,25 @@ public class ProblemDetailDto {
         this.category = ProblemDetailDto.CategoryDto.fromEntity(problem.getCategory());
     }
 
+
+    // Member Submit Problem -> Problem Detail Dto
+    public ProblemDetailDto(Problem problem, MemberSubmitProblem submitProblem) {
+        List<ProblemTestCase> testCases = problem.getTestCases();
+
+        this.id = problem.getId();
+        this.title = problem.getTitle();
+        this.detail = problem.getDetail();
+        this.level = problem.getLevel();
+        this.memberName = problem.getMember().getName();
+        this.createdAt = problem.getCreatedAt();
+        this.updatedAt = problem.getUpdatedAt();
+        this.testCase = testCases.stream().map(ProblemDetailDto.TestCaseInfoDto::fromEntity).toList();
+        this.category = ProblemDetailDto.CategoryDto.fromEntity(problem.getCategory());
+        if(submitProblem != null){
+            this.solved = submitProblem.getPass();
+        }
+    }
+
     // Problem -> Problem Detail Dto
     public ProblemDetailDto(Problem problem) {
         List<ProblemTestCase> testCases = problem.getTestCases();

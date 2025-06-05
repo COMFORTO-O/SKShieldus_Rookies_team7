@@ -25,7 +25,7 @@ public class ChatController {
     private final CodeStorageService codeStorageService;
     private final ChatStorageService chatStorageService;
 
-    // ✅ 방 ID 기반으로 메시지를 해당 방의 채팅방으로 전송
+    //  방 ID 기반으로 메시지를 해당 방의 채팅방으로 전송
     @MessageMapping("/chat.sendMessage.{roomId}")
     public void sendRoomMessage(@DestinationVariable String roomId,
                                 @Payload ChatMessage chatMessage,
@@ -34,16 +34,20 @@ public class ChatController {
         chatMessage.setType("CHAT");
         System.out.println("[" + roomId + "] " + principal.getName() + ": " + chatMessage.getContent());
         chatStorageService.saveMessage(roomId, chatMessage);
-        // ✅ 해당 방 구독자에게 메시지 전송
+        //  해당 방 구독자에게 메시지 전송
         messagingTemplate.convertAndSend("/topic/chatroom." + roomId, chatMessage);
     }
+    // 코드 업데이트 시 방으로 전송
     @MessageMapping("/code.update.{roomId}")
     public void updateCode(@DestinationVariable String roomId,
-                           @Payload CodeMessage codeMessage) {
+                           @Payload CodeMessage codeMessage,
+                           Principal principal) {
+        codeMessage.setSender(principal.getName());
         codeStorageService.saveCode(roomId, codeMessage.getCode());
         messagingTemplate.convertAndSend("/topic/code." + roomId, codeMessage);
-    }
 
+    }
+    //최신 코드 받아오기
     @MessageMapping("/code.latest.{roomId}")
     public void sendLatestCode(@DestinationVariable String roomId,
                                Principal principal) {
@@ -123,4 +127,24 @@ public class ChatController {
         payload.put("owner", room.getOwner().getEmail());
         messagingTemplate.convertAndSend("/topic/members." + roomId, payload);
     }
+    @MessageMapping("/room.kick.{roomId}")
+    public void kickUser(@DestinationVariable String roomId,
+                         @Payload Map<String, String> payload,
+                         Principal principal) {
+        String targetUsername = payload.get("targetUsername");
+        String owner = principal.getName();
+
+        Room room = RoomController.roomMap.get(roomId);
+        if (room == null || !room.getOwner().getEmail().equals(owner)) {
+            System.out.println("방장 아님");
+            return;
+        }
+        //강제 퇴장 메세지 전송
+        messagingTemplate.convertAndSendToUser(
+                targetUsername,
+                "/queue/kick",
+                Map.of("message", "방장에 의해 강제 퇴장되었습니다.")
+        );
+    }
+
 }

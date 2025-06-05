@@ -28,9 +28,8 @@ public class MemberController {
 
     @GetMapping("/info")
     public ResponseDto<MyInfoResponseDto> getUserInfo(@AuthenticationPrincipal MemberUserDetails userDetails) {
-        // 서비스 계층에서 사용자 ID를 기반으로 마이페이지 데이터를 조회
         MyInfoResponseDto myInfoResponseDto = memberService.getMyInfo(userDetails.getMemberId());
-        // 조회된 데이터를 성공 응답 포맷(ResponseDto)으로 감싸서 반환
+        //기존 info = {name,email,solvedproblem} => 변경된 info = {name,email,memberRank}
         return ResponseDto.success(myInfoResponseDto);
     }
 

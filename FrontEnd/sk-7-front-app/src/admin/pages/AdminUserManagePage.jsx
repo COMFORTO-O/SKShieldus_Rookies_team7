@@ -1,31 +1,44 @@
 import { useEffect, useState } from "react";
-import { registerUser, deleteUser, getUserInfo } from "../api/userApi";
+import { deleteUser, getUserList, registerUser } from "../api/userApi";
 import Button from "../../components/atoms/button";
 import Input from "../../components/atoms/Input";
 import AdminLayout from "../layout/AdminLayout";
 
 const AdminUserManagePage = () => {
-    const [users, setUsers] = useState([]); // 여러 유저를 가정
+    const [users, setUsers] = useState([
+        {
+            id: "",
+            name: "",
+            email: "",
+            phone: "",
+            role: "",
+            deleted: false
+        }
+    ]); // 여러 유저를 가정
     const [form, setForm] = useState({
         name: "",
         email: "",
         phone: "",
-        password: "",
+        role: "",
+        password: ""
     });
 
     const fetchUser = async () => {
         try {
-            const res = await getUserInfo();
-            setUsers([res.data]);
+            const res = await getUserList();
+            // paging 처리, data.content.list
+            setUsers(res.data.data.content);
+            console.log(res.data.data.content);
         } catch (err) {
             console.error("유저 정보 가져오기 실패:", err);
         }
     };
 
-    const handleDelete = async (email) => {
+    const handleDelete = async (id) => {
         if (!window.confirm("계정을 삭제하시겠습니까?")) return;
         try {
-            await deleteUser();
+            console.log(id);
+            await deleteUser(id);
             alert("계정이 삭제되었습니다.");
             fetchUser();
         } catch (err) {
@@ -48,6 +61,7 @@ const AdminUserManagePage = () => {
     useEffect(() => {
         fetchUser();
     }, []);
+
 
     return (
         <AdminLayout>
@@ -110,9 +124,9 @@ const AdminUserManagePage = () => {
                     <h3 className="text-xl font-semibold mb-4">계정 목록</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {users.length > 0 ? (
-                            users.map((user, index) => (
+                            users.map((user) => (
                                 <div
-                                    key={index}
+                                    key={user.id}
                                     className="bg-white p-6 rounded shadow border border-gray-300"
                                 >
                                     <p>
@@ -128,7 +142,7 @@ const AdminUserManagePage = () => {
                                         <Button
                                             variant="destructive"
                                             onClick={() =>
-                                                handleDelete(user.email)
+                                                handleDelete(user.id)
                                             }
                                         >
                                             계정 삭제

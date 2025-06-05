@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/useAuthStore";
 import Input from "../../components/atoms/Input";
 import Button from "../../components/atoms/Button";
+import { loginAdminTask } from "../../admin/api/loginAdminTask";
+
+import { encryptPassword } from "../../encrypt/encryptPassword";
 
 const AdminLoginPage = () => {
     const navigate = useNavigate();
@@ -14,16 +17,21 @@ const AdminLoginPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // try {
-        //     const success = await loginAdmin(email, password);
-        //     if (success) {
-        //         navigate("/admin"); // 로그인 성공 시 관리자 대시보드로 이동
-        //     } else {
-        //         setErrorMsg("이메일 또는 비밀번호가 올바르지 않습니다.");
-        //     }
-        // } catch (error) {
-        //     setErrorMsg("로그인 중 오류가 발생했습니다.");
-        // }
+        try {
+            let encryptedPassword = encryptPassword(password);
+            const success = await loginAdminTask({
+                email: email,
+                encryptedPassword: encryptedPassword
+            });
+            if (success) {
+                navigate("/admin"); // 로그인 성공 시 관리자 대시보드로 이동
+            } else {
+                setErrorMsg("이메일 또는 비밀번호가 올바르지 않습니다.");
+            }
+        } catch (error) {
+            console.log(error)
+            setErrorMsg("로그인 중 오류가 발생했습니다.");
+        }
     };
 
     return (

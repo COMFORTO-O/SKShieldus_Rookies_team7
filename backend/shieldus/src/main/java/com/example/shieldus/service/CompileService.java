@@ -73,7 +73,7 @@ public class CompileService {
             if (result.isCorrect()) passed++;
             results.add(result);
         }
-
+        submit.setUpdatedAt(LocalDateTime.now());
         memberTempCodeRepository.save(MemberTempCode.builder()
                 .memberSubmitProblem(submit)
                 .status(MemberTempCodeStatusEnum.TEST)
@@ -117,7 +117,7 @@ public class CompileService {
                 .code(requestDto.getCode())
                 .submitDate(LocalDateTime.now())
                 .build());
-
+        submit.setUpdatedAt(LocalDateTime.now());
         if (allPass) {
             submit.setPass(true);
             submit.setCompletedAt(LocalDateTime.now());
@@ -159,7 +159,7 @@ public class CompileService {
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
         try {
-            ResponseEntity<String> response = restTemplate.postForEntity(judgeProperties.getJudge0Url(), entity, String.class);
+            ResponseEntity<String> response = restTemplate.postForEntity(judgeProperties.getUrl(), entity, String.class);
             JsonNode root = objectMapper.readTree(response.getBody());
 
             String stdout = root.path("stdout").asText("").trim();
@@ -204,6 +204,7 @@ public class CompileService {
                         MemberSubmitProblem.builder()
                                 .member(member)
                                 .problem(problem)
+                                .createdAt(LocalDateTime.now())
                                 .pass(false)
                                 .build()));
     }

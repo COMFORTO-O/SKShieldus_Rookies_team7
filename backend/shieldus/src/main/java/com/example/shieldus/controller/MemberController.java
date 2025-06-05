@@ -3,6 +3,7 @@ package com.example.shieldus.controller;
 import com.example.shieldus.config.security.service.MemberUserDetails;
 import com.example.shieldus.controller.dto.*;
 import com.example.shieldus.controller.dto.member.MemberTempCodeResponseDto;
+import com.example.shieldus.entity.member.MemberSubmitProblem;
 import com.example.shieldus.service.member.MemberService;
 import com.example.shieldus.service.problem.ProblemService;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +24,15 @@ public class MemberController {
     private final MemberService memberService;
     private final ProblemService problemService;
 
-    @GetMapping("/info")
-    public ResponseDto<MyPageResponseDto> getUserInfo(@AuthenticationPrincipal MemberUserDetails userDetails) {
-        // 서비스 계층에서 사용자 ID를 기반으로 마이페이지 데이터를 조회
-        MyPageResponseDto myPageData = memberService.getMyPageInfo(userDetails.getMemberId());
-        // 조회된 데이터를 성공 응답 포맷(ResponseDto)으로 감싸서 반환
-        return ResponseDto.success(myPageData);
-    }
+
+//MYPAGE로 올라갔습니다.
+//    @GetMapping("/info")
+//    public ResponseDto<MyPageResponseDto> getUserInfo(@AuthenticationPrincipal MemberUserDetails userDetails) {
+//        // 서비스 계층에서 사용자 ID를 기반으로 마이페이지 데이터를 조회
+//        MyPageResponseDto myPageData = memberService.getMyPageInfo(userDetails.getMemberId());
+//        // 조회된 데이터를 성공 응답 포맷(ResponseDto)으로 감싸서 반환
+//        return ResponseDto.success(myPageData);
+//    }
 
 
     @GetMapping("/problem/solved/detail/{submitProblemId}") // 푼 문제 상세정보 / id = member_submit_problem_id;
@@ -77,10 +80,4 @@ public class MemberController {
         return ResponseDto.success("ok");
     }
 
-
-//    @GetMapping("/problem/solved") // 푼 문제 가져오기
-//    public ResponseDto<Page<ProblemResponseDto>> getSolvedProblem(Pageable pageable, @AuthenticationPrincipal MemberUserDetails userDetails) {
-//        Page<ProblemResponseDto> submitProblemList = memberService.getMemberSubmitProblems(userDetails.getMemberId(), pageable);
-//        return ResponseDto.success(submitProblemList);
-//    }
 }

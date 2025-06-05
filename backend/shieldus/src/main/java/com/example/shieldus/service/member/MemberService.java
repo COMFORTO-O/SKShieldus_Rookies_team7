@@ -15,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -32,25 +34,20 @@ public class MemberService {
     private final MemberTempCodeRepository tempCodeRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public MyPageResponseDto getMyPageInfo(Long memberId) {
+    public MyPageResponseDto getMyPageInfo(Long memberId, int page,int size) {
         try {
             Member member = memberRepository.findById(memberId)
                     .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-            List<MemberSubmitProblem> solvedProblems = submitProblemRepository
-                    .findByMemberIdAndPassTrue(memberId);
+            Pageable pageable = PageRequest.of(page, size, Sort.by("updatedAt").descending());
+            Page<MemberSubmitProblem> submissionPage = submitProblemRepository.findByMemberId(memberId, pageable);
+
+            Page<SubmissionDto> dtoPage = submissionPage.map(SubmissionDto::from);
 
             return MyPageResponseDto.builder()
                     .name(member.getName())
                     .email(member.getEmail())
-                    .solvedProblems(
-                            solvedProblems.stream()
-                                    .map(sub -> MyPageResponseDto.SolvedProblem.builder()
-                                            .problemTitle(sub.getProblem().getTitle())
-                                            .completedAt(sub.getCompletedAt())
-                                            .build())
-                                    .collect(Collectors.toList())
-                    )
+                    .submissions(dtoPage)
                     .build();
         } catch (DataAccessException e) {
             log.error("Database error in getMyPageInfo", e);

@@ -11,14 +11,16 @@ public class MemberResponseDto {
     private Long id;
     private String email;
     private String name;
+    private String phone;
     private MemberRoleEnum role;
     private boolean isDeleted;
     // 기타 필요한 필드들...
 
-    public MemberResponseDto(Long id, String email, String name, MemberRoleEnum role, boolean isDeleted) {
+    public MemberResponseDto(Long id, String email, String name, String phone, MemberRoleEnum role, boolean isDeleted) {
         this.id = id;
         this.email = email;
         this.name = name;
+        this.phone = phone;
         this.role = role;
         this.isDeleted = isDeleted;
     }

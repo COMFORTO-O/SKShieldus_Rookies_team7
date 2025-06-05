@@ -44,6 +44,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         member.id,
                         member.email,
                         member.name,
+                        member.phone,
                         member.role,
                         member.isDeleted
                 ))

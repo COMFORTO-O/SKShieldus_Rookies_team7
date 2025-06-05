@@ -17,7 +17,7 @@ public class ResponseDto<T> {
     public static <T> ResponseDto<T> success(T data) {
         return ResponseDto.<T>builder()
                 //.status(200) <-- 기존코드
-                .status(HttpStatus.OK.value()) // 수정코드(가독성향상)
+                .status(HttpStatus.OK.value()) // 200 -> HttpStatus상수활용(가독성향상)
                 .message("success")
                 .data(data)
                 .build();

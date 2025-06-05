@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 public class MemberResponseDto {
-    private Long memberId;
+    private Long id;
     private String email;
     private String name;
     private MemberRoleEnum role;
@@ -16,7 +16,7 @@ public class MemberResponseDto {
     // 기타 필요한 필드들...
 
     public MemberResponseDto(Long id, String email, String name, MemberRoleEnum role, boolean isDeleted) {
-        this.memberId = id;
+        this.id = id;
         this.email = email;
         this.name = name;
         this.role = role;

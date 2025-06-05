@@ -9,7 +9,8 @@ import com.example.shieldus.service.problem.ProblemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,17 +34,6 @@ public class MemberController {
 //        return ResponseDto.success(myPageData);
 //    }
 
-    @DeleteMapping("/delete")// 사용자 삭제 ( soft ), 진짜 삭제가 아닌 컬럼 붙여서 삭제
-    public ResponseDto<String> deleteMember(@AuthenticationPrincipal MemberUserDetails userDetails) {
-        memberService.deleteMember(userDetails.getMemberId());
-        return ResponseDto.success("ok");
-    }
-
-//    @GetMapping("/problem/solved") // 푼 문제 가져오기
-//    public ResponseDto<Page<ProblemResponseDto>> getSolvedProblem(Pageable pageable, @AuthenticationPrincipal MemberUserDetails userDetails) {
-//        Page<ProblemResponseDto> submitProblemList = memberService.getMemberSubmitProblems(userDetails.getMemberId(), pageable);
-//        return ResponseDto.success(submitProblemList);
-//    }
 
 //    @GetMapping("/problem/solved/detail/{submitProblemId}") // 푼 문제 상세정보 / id = member_submit_problem_id;
 //    public ResponseDto<ProblemResponseDto.SolvedProblem> getSolvedProblemDetail(
@@ -83,6 +73,22 @@ public class MemberController {
      * Admin 기능
      * */
 
+    // 회원 목록 조회
+    @PreAuthorize("hasAnyAuthority('PROBLEM_READ', 'ADMIN_READ')")
+    @GetMapping("/list") // 푼 문제 상세정보 / id = member_submit_problem_id;
+    public ResponseDto<Page<MemberResponseDto>> getSolvedProblemDetail(
+            @RequestParam(required = false) String searchName,
+            @RequestParam(required = false) String searchValue,
+            @PageableDefault(size = 10, sort = "id,desc") Pageable pageable,
+            @AuthenticationPrincipal MemberUserDetails userDetails) {
+        Page<MemberResponseDto> solvedProblem = memberService.getMembers(searchName, searchValue, pageable);
+        return ResponseDto.success(solvedProblem);
+    }
 
+    @DeleteMapping("/delete")// 사용자 삭제 ( soft ), 진짜 삭제가 아닌 컬럼 붙여서 삭제
+    public ResponseDto<String> deleteMember(@AuthenticationPrincipal MemberUserDetails userDetails) {
+        memberService.deleteMember(userDetails.getMemberId());
+        return ResponseDto.success("ok");
+    }
 
 }

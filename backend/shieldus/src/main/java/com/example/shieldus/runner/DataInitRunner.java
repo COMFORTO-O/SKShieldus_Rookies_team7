@@ -28,7 +28,7 @@ import java.util.List;
 @Order(1)
 @RequiredArgsConstructor
 @Slf4j
-//@ConditionalOnProperty(name = "runner.data-init", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(name = "runner.data-init", havingValue = "true", matchIfMissing = false)
 public class DataInitRunner implements CommandLineRunner {
 
     private final MemberRepository memberRepository;

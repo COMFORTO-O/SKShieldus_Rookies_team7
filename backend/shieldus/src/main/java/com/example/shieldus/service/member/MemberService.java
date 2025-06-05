@@ -126,4 +126,7 @@ public class MemberService {
                 .toList();
     }
 
+    public Page<MemberResponseDto> getMembers(String searchName, String searchValue, Pageable pageable) {
+        return memberRepository.getMembers(searchName, searchValue, pageable);
+    }
 }

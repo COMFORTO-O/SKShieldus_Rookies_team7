@@ -62,11 +62,12 @@ public class MemberService {
     public MyInfoResponseDto getMyInfo(Long memberId){
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        MyInfoResponseDto myInfoResponseDto = new MyInfoResponseDto();
-        myInfoResponseDto.setEmail(member.getEmail());
-        myInfoResponseDto.setMemberRank(member.getMemberRank());
-        myInfoResponseDto.setName(member.getName());
-        return myInfoResponseDto;
+
+        return  MyInfoResponseDto.builder()
+                        .email(member.getEmail())
+                        .memberRank(member.getMemberRank())
+                        .name(member.getName())
+                .build();
     }
 
     @Transactional

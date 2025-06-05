@@ -15,5 +15,5 @@ public class MyInfoResponseDto {
     private String name;
     private String email;
     private Integer memberRank;
-    public MyInfoResponseDto(){}
+
 }

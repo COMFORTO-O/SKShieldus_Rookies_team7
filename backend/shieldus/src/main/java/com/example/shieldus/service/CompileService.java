@@ -73,7 +73,7 @@ public class CompileService {
             if (result.isCorrect()) passed++;
             results.add(result);
         }
-
+        submit.setUpdatedAt(LocalDateTime.now());
         memberTempCodeRepository.save(MemberTempCode.builder()
                 .memberSubmitProblem(submit)
                 .status(MemberTempCodeStatusEnum.TEST)
@@ -117,7 +117,7 @@ public class CompileService {
                 .code(requestDto.getCode())
                 .submitDate(LocalDateTime.now())
                 .build());
-
+        submit.setUpdatedAt(LocalDateTime.now());
         if (allPass) {
             submit.setPass(true);
             submit.setCompletedAt(LocalDateTime.now());
@@ -204,6 +204,7 @@ public class CompileService {
                         MemberSubmitProblem.builder()
                                 .member(member)
                                 .problem(problem)
+                                .createdAt(LocalDateTime.now())
                                 .pass(false)
                                 .build()));
     }

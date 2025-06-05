@@ -3,12 +3,14 @@ package com.example.shieldus.controller;
 import com.example.shieldus.config.security.service.MemberUserDetails;
 import com.example.shieldus.controller.dto.MyPageResponseDto;
 import com.example.shieldus.controller.dto.ResponseDto;
+import com.example.shieldus.repository.member.MemberSubmitProblemRepository;
 import com.example.shieldus.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -17,13 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class MyPageController {
 
     private final MemberService memberService;
-
+    private final MemberSubmitProblemRepository memberSubmitProblemRepository;
     @GetMapping("/mypage")
-    public ResponseDto<MyPageResponseDto> getMyPage(@AuthenticationPrincipal MemberUserDetails userDetails) {
-        // 서비스 계층에서 사용자 ID를 기반으로 마이페이지 데이터를 조회
-        MyPageResponseDto myPageData = memberService.getMyPageInfo(userDetails.getMemberId());
-
-        // 조회된 데이터를 성공 응답 포맷(ResponseDto)으로 감싸서 반환
+    public ResponseDto<MyPageResponseDto> getMyPage(
+            @AuthenticationPrincipal MemberUserDetails userDetails,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        MyPageResponseDto myPageData = memberService.getMyPageInfo(userDetails.getMemberId(), page, size);
         return ResponseDto.success(myPageData);
     }
 }

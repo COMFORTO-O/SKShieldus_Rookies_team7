@@ -22,14 +22,14 @@ public class MemberController {
     private final ProblemService problemService;
 
 
-
-    @GetMapping("/info")
-    public ResponseDto<MyPageResponseDto> getUserInfo(@AuthenticationPrincipal MemberUserDetails userDetails) {
-        // 서비스 계층에서 사용자 ID를 기반으로 마이페이지 데이터를 조회
-        MyPageResponseDto myPageData = memberService.getMyPageInfo(userDetails.getMemberId());
-        // 조회된 데이터를 성공 응답 포맷(ResponseDto)으로 감싸서 반환
-        return ResponseDto.success(myPageData);
-    }
+//MYPAGE로 올라갔습니다.
+//    @GetMapping("/info")
+//    public ResponseDto<MyPageResponseDto> getUserInfo(@AuthenticationPrincipal MemberUserDetails userDetails) {
+//        // 서비스 계층에서 사용자 ID를 기반으로 마이페이지 데이터를 조회
+//        MyPageResponseDto myPageData = memberService.getMyPageInfo(userDetails.getMemberId());
+//        // 조회된 데이터를 성공 응답 포맷(ResponseDto)으로 감싸서 반환
+//        return ResponseDto.success(myPageData);
+//    }
 
     @DeleteMapping("/delete")// 사용자 삭제 ( soft ), 진짜 삭제가 아닌 컬럼 붙여서 삭제
     public ResponseDto<String> deleteMember(@AuthenticationPrincipal MemberUserDetails userDetails) {

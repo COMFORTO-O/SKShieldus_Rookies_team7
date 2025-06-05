@@ -31,11 +31,10 @@ public class MemberSubmitProblem {
     private Boolean pass;  // true or false
 
     private LocalDateTime completedAt;
-
+    private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "memberSubmitProblem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberTempCode> MemberTempCodes;
 
-    private Boolean isCorrect; // 정답 여부 필드
     private LocalDateTime createdAt; // 제출 시간 필드
 
 }

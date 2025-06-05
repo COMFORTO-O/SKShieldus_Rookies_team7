@@ -59,6 +59,15 @@ public class MemberService {
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
         }
     }
+    public MyInfoResponseDto getMyInfo(Long memberId){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        MyInfoResponseDto myInfoResponseDto = new MyInfoResponseDto();
+        myInfoResponseDto.setEmail(member.getEmail());
+        myInfoResponseDto.setMemberRank(member.getMemberRank());
+        myInfoResponseDto.setName(member.getName());
+        return myInfoResponseDto;
+    }
 
     @Transactional
     public void register(AccountRequestDto.Register dto) {

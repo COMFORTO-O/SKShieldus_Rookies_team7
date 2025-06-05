@@ -63,7 +63,7 @@ public class MemberController {
      * */
 
     // 회원 목록 조회
-    @PreAuthorize("hasPermission('PROBLEM_CREATE')")
+    @PreAuthorize("hasAnyAuthority('PROBLEM_READ', 'ADMIN_READ')")
     @GetMapping("/list") // 푼 문제 상세정보 / id = member_submit_problem_id;
     public ResponseDto<Page<MemberResponseDto>> getSolvedProblemDetail(
             @RequestParam(required = false) String searchName,

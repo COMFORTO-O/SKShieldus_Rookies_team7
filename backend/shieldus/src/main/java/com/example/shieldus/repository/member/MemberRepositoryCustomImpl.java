@@ -29,11 +29,11 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         BooleanExpression search = null;
         if (searchName != null && !searchName.isEmpty()) {
             if (searchName.equals("name"))
-                search = QMember.member.name.eq(searchValue);
+                search = QMember.member.name.containsIgnoreCase(searchValue);
             if (searchName.equals("email"))
-                search = QMember.member.email.eq(searchValue);
+                search = QMember.member.email.containsIgnoreCase(searchValue);
             if (searchName.equals("phone"))
-                search = QMember.member.phone.eq(searchValue);
+                search = QMember.member.phone.containsIgnoreCase(searchValue);
 //            if (searchName.equals("role"))
 //                search = QMember.member.role.eq(searchValue);
 
@@ -42,10 +42,10 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         List<MemberResponseDto> memberDtoList = queryFactory.select(Projections.constructor(
                         MemberResponseDto.class,
                         member.id,
-                        member.name,
-                        member.phone,
                         member.email,
-                        member.role
+                        member.name,
+                        member.role,
+                        member.isDeleted
                 ))
                 .from(member)
                 .where(search)

@@ -15,7 +15,11 @@ public enum MemberRoleEnum {
             Permission.PROBLEM_CREATE,
             Permission.PROBLEM_READ,
             Permission.PROBLEM_UPDATE,
-            Permission.PROBLEM_DELETE)),
+            Permission.PROBLEM_DELETE,
+            Permission.ADMIN_CREATE,
+            Permission.ADMIN_READ,
+            Permission.ADMIN_UPDATE,
+            Permission.ADMIN_DELETE)),
     USER(Set.of(
             Permission.PROBLEM_READ
     ));

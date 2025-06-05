@@ -65,8 +65,6 @@ public class JwtRequestFilter  extends OncePerRequestFilter {
                 System.err.println("JWT authentication failed for URI: " + request.getRequestURI() + ": " + e.getMessage());
             }
         }
-
         filterChain.doFilter(request, response);
-
     }
 }

@@ -1,7 +1,6 @@
 package com.example.shieldus.service.member;
 
 import com.example.shieldus.controller.dto.*;
-import com.example.shieldus.controller.dto.MemberUpdateRequestDto;
 import com.example.shieldus.controller.dto.member.MemberTempCodeResponseDto;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
@@ -11,7 +10,6 @@ import com.example.shieldus.exception.ErrorCode;
 import com.example.shieldus.repository.member.MemberRepository;
 import com.example.shieldus.repository.member.MemberSubmitProblemRepository;
 import com.example.shieldus.repository.member.MemberTempCodeRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,13 +63,14 @@ public class MemberService {
 
     @Transactional
     public void register(AccountRequestDto.Register dto) {
+        if (memberRepository.existsByEmail(dto.getEmail())) {
+            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE,"이미 존재하는 이메일입니다.");
+        }
         try {
-            if (memberRepository.existsByEmail(dto.getEmail())) {
-                throw new CustomException(ErrorCode.DUPLICATE_RESOURCE,"이미 존재하는 이메일입니다.");
-            }
+
             Member member = dto.toMember(passwordEncoder);
             memberRepository.save(member);
-        } catch (DataAccessException e) {
+        }catch (DataAccessException e) {
             log.error("Database error in register", e);
             throw new CustomException(ErrorCode.DATABASE_ERROR, e);
         } catch (IllegalArgumentException e) {
@@ -114,4 +113,7 @@ public class MemberService {
                 .orElse(null); // 없으면 null 반환
     }
 
+    public Page<MemberResponseDto> getMembers(String searchName, String searchValue, Pageable pageable) {
+        return memberRepository.getMembers(searchName, searchValue, pageable);
+    }
 }

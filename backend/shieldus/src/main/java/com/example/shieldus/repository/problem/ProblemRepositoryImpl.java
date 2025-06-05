@@ -118,7 +118,7 @@ public class ProblemRepositoryImpl implements ProblemRepositoryCustom {
         if (total == null) {
             total = 0L;
         }
-        return new PageImpl<>(problemResponses, pageable, 0);
+        return new PageImpl<>(problemResponses, pageable, total);
     }
 
     private BooleanExpression eqCategory(String category) {

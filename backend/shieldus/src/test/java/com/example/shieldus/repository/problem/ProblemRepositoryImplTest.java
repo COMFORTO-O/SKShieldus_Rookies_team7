@@ -4,7 +4,9 @@ import com.example.shieldus.controller.dto.ProblemResponseDto;
 import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
 import com.example.shieldus.entity.problem.Problem;
+import com.example.shieldus.entity.problem.ProblemCode;
 import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
+import com.example.shieldus.repository.member.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -38,6 +40,9 @@ class ProblemRepositoryImplTest {
     @Autowired
     private ProblemRepository problemRepository;
 
+    @Autowired
+    private ProblemCodeRepository problemCodeRepository;
+
     private Member memberA;
     private Problem prob1, prob2, prob3;
 
@@ -52,11 +57,12 @@ class ProblemRepositoryImplTest {
         memberB.setName("Bob");
         em.persist(memberB);
 
+        ProblemCode problemCode =new ProblemCode("TEST", "test");
         //  2) 문제 3개 생성
         prob1 = new Problem();
         prob1.setTitle("Java Basics");
         prob1.setDetail("Learn Java");
-        prob1.setCategory(ProblemCategoryEnum.ALGORITHM);
+        prob1.setCategory(problemCode);
         prob1.setLevel(1);
         prob1.setMember(memberA);
         em.persist(prob1);
@@ -64,7 +70,7 @@ class ProblemRepositoryImplTest {
         prob2 = new Problem();
         prob2.setTitle("Python Intro");
         prob2.setDetail("Python Basics");
-        prob2.setCategory(ProblemCategoryEnum.PYTHON);
+        prob2.setCategory(problemCode);
         prob2.setLevel(2);
         prob2.setMember(memberA);
         em.persist(prob2);
@@ -72,7 +78,7 @@ class ProblemRepositoryImplTest {
         prob3 = new Problem();
         prob3.setTitle("Advanced Java");
         prob3.setDetail("Streams & Lambdas");
-        prob3.setCategory(ProblemCategoryEnum.ALGORITHM);
+        prob3.setCategory(problemCode);
         prob3.setLevel(3);
         prob3.setMember(memberB);
         em.persist(prob3);

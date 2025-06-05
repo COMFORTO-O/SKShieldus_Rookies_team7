@@ -3,6 +3,7 @@ package com.example.shieldus.controller.dto;
 import com.example.shieldus.exception.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @Builder
@@ -15,7 +16,8 @@ public class ResponseDto<T> {
     // 성공 응답
     public static <T> ResponseDto<T> success(T data) {
         return ResponseDto.<T>builder()
-                .status(200)
+                //.status(200) <-- 기존코드
+                .status(HttpStatus.OK.value()) // 수정코드(가독성향상)
                 .message("success")
                 .data(data)
                 .build();

@@ -38,3 +38,5 @@ runner:
 # judge0 설정
 judge:
   url: http://localhost:2358/submissions?base64_encoded=false&wait=true
+
+# health check

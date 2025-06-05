@@ -7,9 +7,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "compile")
+@ConfigurationProperties(prefix = "judge0")
 @Getter
 @Setter
 public class JudgeProperties {
-    private String judge0Url;
+    private String url;
 }

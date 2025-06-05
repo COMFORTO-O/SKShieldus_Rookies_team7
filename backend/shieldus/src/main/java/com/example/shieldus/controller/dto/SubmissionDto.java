@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class SubmissionDto {
+    private Long submitProblemId;
     private Long problemId;
     private String problemTitle;
     private Boolean pass;
@@ -18,6 +19,7 @@ public class SubmissionDto {
 
     public static SubmissionDto from(MemberSubmitProblem entity) {
         return SubmissionDto.builder()
+                .submitProblemId(entity.getId())
                 .problemId(entity.getProblem().getId())
                 .problemTitle(entity.getProblem().getTitle())
                 .pass(entity.getPass())

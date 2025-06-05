@@ -13,6 +13,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/member") // 공통 URL prefix 설정
 @RequiredArgsConstructor
@@ -43,14 +45,25 @@ public class MemberController {
 //        return ResponseDto.success(submitProblemList);
 //    }
 
-    @GetMapping("/problem/solved/detail/{submitProblemId}") // 푼 문제 상세정보 / id = member_submit_problem_id;
-    public ResponseDto<ProblemResponseDto.SolvedProblem> getSolvedProblemDetail(
+//    @GetMapping("/problem/solved/detail/{submitProblemId}") // 푼 문제 상세정보 / id = member_submit_problem_id;
+//    public ResponseDto<ProblemResponseDto.SolvedProblem> getSolvedProblemDetail(
+//            @PathVariable Long submitProblemId,
+//            @AuthenticationPrincipal MemberUserDetails userDetails) {
+//        ProblemResponseDto.SolvedProblem solvedProblem = memberService.getSolvedProblem(submitProblemId, userDetails.getMemberId());
+//        return ResponseDto.success(solvedProblem);
+//    }
+
+    @GetMapping("/problem/submitcodes/{submitProblemId}") // 해당 문제에 대한 제출 내역(코드) 보기
+    public ResponseDto<List<MemberTempCodeDto>> getSolvedProblemDetail(
             @PathVariable Long submitProblemId,
             @AuthenticationPrincipal MemberUserDetails userDetails) {
-        ProblemResponseDto.SolvedProblem solvedProblem = memberService.getSolvedProblem(submitProblemId, userDetails.getMemberId());
-        return ResponseDto.success(solvedProblem);
+        List<MemberTempCodeDto> codes = memberService.getTempCodesForSubmission(
+                submitProblemId, userDetails.getMemberId());
+        return ResponseDto.success(codes);
     }
 
+
+    //문제 입장 시 임시 저장 코드 받아오기
     @GetMapping("/problem/temp/{problemId}")
     public ResponseDto<MemberTempCodeResponseDto> getProblemTemp(
             @PathVariable Long problemId,

@@ -111,4 +111,19 @@ public class MemberService {
                 .orElse(null); // 없으면 null 반환
     }
 
+    public List<MemberTempCodeDto> getTempCodesForSubmission(Long submitProblemId, Long memberId) {
+        MemberSubmitProblem submitProblem = submitProblemRepository.findById(submitProblemId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PROBLEM_CODE_NOT_FOUND));
+
+        if (!submitProblem.getMember().getId().equals(memberId)) {
+            throw new CustomException(ErrorCode.AUTHENTICATION_FAILED);
+        }
+
+        List<MemberTempCode> tempCodes = submitProblem.getMemberTempCodes();
+
+        return tempCodes.stream()
+                .map(MemberTempCodeDto::from)
+                .toList();
+    }
+
 }

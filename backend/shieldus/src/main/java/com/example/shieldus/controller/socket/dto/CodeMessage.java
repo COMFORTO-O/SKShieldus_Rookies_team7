@@ -7,4 +7,5 @@ import lombok.Setter;
 @Setter
 public class CodeMessage {
     private String code;
+    private String sender;
 }

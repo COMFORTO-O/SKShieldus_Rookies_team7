@@ -3,6 +3,7 @@ import { deleteUser, getUserList, registerUser } from "../../api/userApi.js";
 import Button from "../../../components/atoms/Button.jsx";
 import Input from "../../../components/atoms/Input.jsx";
 import AdminLayout from "../../layout/AdminLayout.jsx";
+import { useNavigate } from "react-router-dom";
 
 const AdminUserManagePage = () => {
     const [users, setUsers] = useState([
@@ -22,6 +23,9 @@ const AdminUserManagePage = () => {
         role: "",
         password: ""
     });
+
+    // navigate
+    const navigate = useNavigate();
 
     const fetchUser = async () => {
         try {
@@ -57,6 +61,10 @@ const AdminUserManagePage = () => {
             console.error("계정 생성 실패:", err);
         }
     };
+
+    const handleNavigateUserDetail= (id) => {
+        navigate(`/admin/user/${id}`)
+    }
 
     useEffect(() => {
         fetchUser();
@@ -129,9 +137,7 @@ const AdminUserManagePage = () => {
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">이메일</th>
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">전화번호</th>
                             <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">삭제여부</th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">관리하기</th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">관리하기</th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">관리하기</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">관리</th>
                         </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
@@ -146,15 +152,9 @@ const AdminUserManagePage = () => {
                                     <td className="px-6 py-4">
                                         <Button
                                             variant="destructive"
-                                            onClick={() => handleDelete(user.id)}
+                                            onClick={() => handleNavigateUserDetail(user.id)}
                                         >
                                             상세 보기
-                                        </Button>
-                                        <Button
-                                            variant="destructive"
-                                            onClick={() => handleDelete(user.id)}
-                                        >
-                                            계정 수정
                                         </Button>
                                         {user.deleted ?   (<></>) :
                                             (<Button

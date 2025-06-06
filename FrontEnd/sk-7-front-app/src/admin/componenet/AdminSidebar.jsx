@@ -13,7 +13,7 @@ const AdminSidebar = () => {
                     <FaHome size={18} /> Dashboard
                 </Link>
                 <Link
-                    to="/adminuser"
+                    to="/admin/user"
                     className="flex items-center gap-2 text-gray-700 hover:text-blue-500"
                 >
                     <FaUsers size={18} /> user

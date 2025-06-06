@@ -10,5 +10,8 @@ public enum Permission {
     ADMIN_READ,
     ADMIN_UPDATE,
     ADMIN_DELETE,
-
+    MEMBER_CREATE,
+    MEMBER_READ,
+    MEMBER_UPDATE,
+    MEMBER_DELETE;
 }

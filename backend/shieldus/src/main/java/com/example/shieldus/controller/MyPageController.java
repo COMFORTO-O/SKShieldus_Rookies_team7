@@ -6,6 +6,7 @@ import com.example.shieldus.controller.dto.ResponseDto;
 import com.example.shieldus.repository.member.MemberSubmitProblemRepository;
 import com.example.shieldus.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +21,11 @@ public class MyPageController {
 
     private final MemberService memberService;
     private final MemberSubmitProblemRepository memberSubmitProblemRepository;
+
+    @PreAuthorize("hasAnyAuthority('MEMBER_READ', 'ADMIN_READ')")
     @GetMapping("/mypage")
     public ResponseDto<MyPageResponseDto> getMyPage(
+            @RequestParam(required = false) String id,
             @AuthenticationPrincipal MemberUserDetails userDetails,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size

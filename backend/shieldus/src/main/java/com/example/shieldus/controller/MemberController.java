@@ -4,6 +4,8 @@ import com.example.shieldus.config.security.service.MemberUserDetails;
 import com.example.shieldus.controller.dto.*;
 import com.example.shieldus.controller.dto.member.MemberTempCodeResponseDto;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
+import com.example.shieldus.entity.member.enumration.MemberRoleEnum;
+import com.example.shieldus.exception.ErrorCode;
 import com.example.shieldus.service.member.MemberService;
 import com.example.shieldus.service.problem.ProblemService;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +45,13 @@ public class MemberController {
         return ResponseDto.success(solvedProblem);
     }
 
+
+    @DeleteMapping("/delete")// 사용자 삭제 ( soft ), 진짜 삭제가 아닌 컬럼 붙여서 삭제
+    public ResponseDto<String> deleteMember(@AuthenticationPrincipal MemberUserDetails userDetails) {
+        memberService.deleteMember(userDetails.getMemberId());
+        return ResponseDto.success("ok");
+    }
+
     @GetMapping("/problem/temp/{problemId}")
     public ResponseDto<MemberTempCodeResponseDto> getProblemTemp(
             @PathVariable Long problemId,
@@ -63,7 +72,7 @@ public class MemberController {
      * */
 
     // 회원 목록 조회
-    @PreAuthorize("hasAnyAuthority('PROBLEM_READ', 'ADMIN_READ')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_READ')")
     @GetMapping("/list") // 푼 문제 상세정보 / id = member_submit_problem_id;
     public ResponseDto<Page<MemberResponseDto>> getSolvedProblemDetail(
             @RequestParam(required = false) String searchName,
@@ -74,10 +83,37 @@ public class MemberController {
         return ResponseDto.success(solvedProblem);
     }
 
-    @DeleteMapping("/delete")// 사용자 삭제 ( soft ), 진짜 삭제가 아닌 컬럼 붙여서 삭제
-    public ResponseDto<String> deleteMember(@AuthenticationPrincipal MemberUserDetails userDetails) {
-        memberService.deleteMember(userDetails.getMemberId());
+    // 사용자 조회.
+    @PreAuthorize("hasAnyAuthority('MEMBER_READ', 'ADMIN_READ')")
+    @GetMapping("/info")
+    public ResponseDto<MyPageResponseDto> getMemberInfo(
+            @RequestParam(required = false) Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal MemberUserDetails userDetails
+    ) {
+        Long memberId = null;
+        if(userDetails.getRole().equals(MemberRoleEnum.USER)){
+            if(id == null){
+                memberId = userDetails.getMemberId();
+            }else{
+                return ResponseDto.error(ErrorCode.AUTHENTICATION_FAILED);
+            }
+
+        }else if (userDetails.getRole().equals(MemberRoleEnum.ADMIN)){
+            memberId = id == null || id == 0 ? userDetails.getMemberId() : id;
+        }
+        MyPageResponseDto myPageData = memberService.getMyPageInfo(memberId, page, size);
+        return ResponseDto.success(myPageData);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN_DELETE')")
+    @DeleteMapping("/delete/{id}")// 사용자 삭제 ( soft ), 진짜 삭제가 아닌 컬럼 붙여서 삭제
+    public ResponseDto<String> deleteMember(@PathVariable Long id, @AuthenticationPrincipal MemberUserDetails userDetails) {
+        memberService.deleteMember(id);
         return ResponseDto.success("ok");
     }
+
+
 
 }

@@ -64,7 +64,19 @@ public class MemberService {
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
         }
     }
+    /*
+    * 사용자 수 카운트
+    * */
+    public StatisticsResponseDto.MemberCount getMemberCount() {
+        return memberRepository.getMemberCount();
 
+    }
+    /*
+     * 일별 사용자 수 카운트
+     * */
+    public List<StatisticsResponseDto.MemberCount> getDailyMemberCount(){
+        return memberRepository.getDailyMemberCounts(7);
+    }
 
     /*
     * MemberSubmitProblem 정보 가져오기
@@ -175,6 +187,7 @@ public class MemberService {
                 .map(MemberTempCodeDto::from)
                 .toList();
     }
+
 
 
 }

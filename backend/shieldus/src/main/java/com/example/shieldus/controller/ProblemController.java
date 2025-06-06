@@ -197,7 +197,9 @@ public class ProblemController {
     @PreAuthorize("hasPermission(null, 'PROBLEM_UPDATE')")
     @PutMapping("/category/update/{id}")
     public ResponseDto<ProblemCodeResponseDto> updateCategory(
+            @PathVariable Long id,
             @RequestBody ProblemCodeRequestDto dto){
+        dto.setId(id);
         return ResponseDto.success(problemService.updateProblemCode(dto));
     }
 

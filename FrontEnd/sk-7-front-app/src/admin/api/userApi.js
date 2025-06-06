@@ -12,7 +12,7 @@ export const updateUser = (updateData) => {
     return api.post(`/api/member/update`, updateData);
 };
 
-export const getUserInfo = (searchData) => {
+export const getUserInfo = (searchData = null) => {
     return api.get("/api/member/info", searchData);
 };
 

@@ -61,7 +61,6 @@ function App() {
     const showNavbar =
         location.pathname !== "/login" &&
         location.pathname !== "/register" &&
-        location.pathname !== "/adminlogin" &&
         !location.pathname.startsWith("/admin");
 
     // 로그인 상태 감지하여 리다이렉션
@@ -112,7 +111,7 @@ function App() {
                         {/* 어드민 라우트 */}
                         <Route element={<AdminRoute />}>
                             <Route
-                                path="/adminlogin"
+                                path="/admin/login"
                                 element={<AdminLoginPage />}
                             />
                             <Route

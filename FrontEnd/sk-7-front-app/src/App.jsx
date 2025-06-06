@@ -16,6 +16,7 @@ import AdminRoute from "./admin/routes/AdminRoute";
 import AdminUserDetailPage from "./admin/pages/user/AdminUserDetailPage.jsx";
 import AdminProblemDetailPage from "./admin/pages/problem/AdminProblemDetailPage.jsx";
 import AdminProblemEditPage from "./admin/pages/problem/AdminProblemEditPage.jsx";
+import AdminCategoryManagePage from "./admin/pages/category/AdminCategoryManagePage.jsx";
 
 // React.lazy를 사용하여 페이지 컴포넌트 동적 임포트
 const MainPage = React.lazy(() => import("./pages/MainPage"));
@@ -137,6 +138,10 @@ function App() {
                             <Route
                                 path="/admin/problem/:id/edit"
                                 element={<AdminProblemEditPage />}
+                            />
+                            <Route
+                                path="/admin/category"
+                                element={<AdminCategoryManagePage />}
                             />
                         </Route>
                     </Routes>

@@ -53,7 +53,7 @@ const AdminUserDetailPage = () => {
         try {
             await deleteUser(userId);
             alert("계정이 성공적으로 삭제되었습니다.");
-            navigate('/admin/users'); // 삭제 후 사용자 목록 페이지로 이동
+            navigate('/admin/user'); // 삭제 후 사용자 목록 페이지로 이동
         } catch (err) {
             console.error("계정 삭제 실패:", err);
             alert("계정 삭제에 실패했습니다: " + (err.response?.data?.message || err.message));
@@ -104,7 +104,7 @@ const AdminUserDetailPage = () => {
             <AdminLayout>
                 <main className="p-6 text-center">
                     <p className="text-red-600 text-lg mb-4">{error}</p>
-                    <Button onClick={() => navigate('/admin/users')} variant="secondary">
+                    <Button onClick={() => navigate('/admin/user')} variant="secondary">
                         사용자 목록으로 돌아가기
                     </Button>
                 </main>
@@ -117,7 +117,7 @@ const AdminUserDetailPage = () => {
             <AdminLayout>
                 <main className="p-6 text-center">
                     <p className="text-gray-700 text-lg mb-4">사용자를 찾을 수 없습니다.</p>
-                    <Button onClick={() => navigate('/admin/users')} variant="secondary">
+                    <Button onClick={() => navigate('/admin/user')} variant="secondary">
                         사용자 목록으로 돌아가기
                     </Button>
                 </main>
@@ -228,7 +228,7 @@ const AdminUserDetailPage = () => {
                             )}
                             <Button
                                 type="button"
-                                onClick={() => navigate('/admin/users')}
+                                onClick={() => navigate('/admin/user')}
                                 variant="secondary"
                                 className="py-3 px-6 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105"
                             >

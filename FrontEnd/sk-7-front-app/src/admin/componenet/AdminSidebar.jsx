@@ -24,6 +24,12 @@ const AdminSidebar = () => {
                 >
                     <FaFileCode size={18} /> problem
                 </Link>
+                <Link
+                    to="/admin/category"
+                    className="flex items-center gap-2 text-gray-700 hover:text-blue-500"
+                >
+                    <FaFileCode size={18} /> category
+                </Link>
             </nav>
         </div>
     );

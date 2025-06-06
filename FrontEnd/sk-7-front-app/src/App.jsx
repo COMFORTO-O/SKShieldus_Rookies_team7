@@ -62,7 +62,7 @@ function App() {
         location.pathname !== "/login" &&
         location.pathname !== "/register" &&
         location.pathname !== "/adminlogin" &&
-        !location.pathname.startsWith("/admin/user");
+        !location.pathname.startsWith("/admin");
 
     // 로그인 상태 감지하여 리다이렉션
     // 이 로직은 user 상태가 변경될 때마다 실행됩니다.

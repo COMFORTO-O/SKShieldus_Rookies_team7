@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useAuthStore from "../../store/useAuthStore";
 import Input from "../../components/atoms/Input";
 import Button from "../../components/atoms/Button";
 import { loginAdminTask } from "../../admin/api/loginAdminTask";

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { deleteUser, getUserList, registerUser } from "../api/userApi";
-import Button from "../../components/atoms/button";
-import Input from "../../components/atoms/Input";
-import AdminLayout from "../layout/AdminLayout";
+import { deleteUser, getUserList, registerUser } from "../../api/userApi.js";
+import Button from "../../../components/atoms/Button.jsx";
+import Input from "../../../components/atoms/Input.jsx";
+import AdminLayout from "../../layout/AdminLayout.jsx";
 
 const AdminUserManagePage = () => {
     const [users, setUsers] = useState([
@@ -120,42 +120,61 @@ const AdminUserManagePage = () => {
                 </form>
 
                 {/* 사용자 목록 */}
-                <div className="overflow-y-auto max-h-[500px]">
-                    <h3 className="text-xl font-semibold mb-4">계정 목록</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="overflow-x-auto max-h-[500px] overflow-y-auto rounded border border-gray-300">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-100 sticky top-0 z-10">
+                        <tr>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">이름</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">권한</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">이메일</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">전화번호</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">삭제여부</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">관리하기</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">관리하기</th>
+                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">관리하기</th>
+                        </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
                         {users.length > 0 ? (
                             users.map((user) => (
-                                <div
-                                    key={user.id}
-                                    className="bg-white p-6 rounded shadow border border-gray-300"
-                                >
-                                    <p>
-                                        <strong>이름:</strong> {user.name}
-                                    </p>
-                                    <p>
-                                        <strong>이메일:</strong> {user.email}
-                                    </p>
-                                    <p>
-                                        <strong>전화번호:</strong> {user.phone}
-                                    </p>
-                                    <div className="mt-4">
+                                <tr key={user.id} className="hover:bg-gray-50">
+                                    <td className="px-6 py-4 text-sm text-gray-800">{user.name}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-800">{user.role}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-800">{user.email}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-800">{user.phone}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-800">{user.deleted ? "탈퇴" : "미탈퇴"}</td>
+                                    <td className="px-6 py-4">
                                         <Button
                                             variant="destructive"
-                                            onClick={() =>
-                                                handleDelete(user.id)
-                                            }
+                                            onClick={() => handleDelete(user.id)}
                                         >
-                                            계정 삭제
+                                            상세 보기
                                         </Button>
-                                    </div>
-                                </div>
+                                        <Button
+                                            variant="destructive"
+                                            onClick={() => handleDelete(user.id)}
+                                        >
+                                            계정 수정
+                                        </Button>
+                                        {user.deleted ?   (<></>) :
+                                            (<Button
+                                                variant="destructive"
+                                                onClick={() => handleDelete(user.id)}
+                                            >
+                                                계정 삭제
+                                            </Button>)}
+                                    </td>
+                                </tr>
                             ))
                         ) : (
-                            <p className="text-gray-500">
-                                사용자 정보가 없습니다.
-                            </p>
+                            <tr>
+                                <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
+                                    사용자 정보가 없습니다.
+                                </td>
+                            </tr>
                         )}
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
             </main>
         </AdminLayout>

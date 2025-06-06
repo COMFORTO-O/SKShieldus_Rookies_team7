@@ -27,7 +27,7 @@ const AdminDashboardPage = React.lazy(() =>
 );
 const AdminLoginPage = React.lazy(() => import("./admin/pages/AdminLoginPage"));
 const AdminUserManagePage = React.lazy(() =>
-    import("./admin/pages/AdminUserManagePage")
+    import("./admin/pages/user/AdminUserManagePage.jsx")
 );
 const AdminProblemManagePage = React.lazy(() =>
     import("./admin/pages/AdminProblemManagePage")

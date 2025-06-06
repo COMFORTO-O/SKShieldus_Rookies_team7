@@ -89,7 +89,7 @@ export default function MainContents() {
         setSort("recent"); // 정렬 기본값
         setStatus("unsolved"); // 상태 기본값
         setCategory([]); // 카테고리(언어) 기본값
-        setLevel(0); // 레벨 기본값
+        setLevel(null); // 레벨 기본값
         setTitle(""); // 검색어 기본값
         setPageNumber(1); // 페이지도 1로 초기화
         console.log("======초기화 끝======");

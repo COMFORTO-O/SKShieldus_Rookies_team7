@@ -14,6 +14,8 @@ import { Avatar } from "@mui/material";
 import InfoModal from "./components/modals/InfoModal";
 import AdminRoute from "./admin/routes/AdminRoute";
 import AdminUserDetailPage from "./admin/pages/user/AdminUserDetailPage.jsx";
+import AdminProblemDetailPage from "./admin/pages/problem/AdminProblemDetailPage.jsx";
+import AdminProblemEditPage from "./admin/pages/problem/AdminProblemEditPage.jsx";
 
 // React.lazy를 사용하여 페이지 컴포넌트 동적 임포트
 const MainPage = React.lazy(() => import("./pages/MainPage"));
@@ -61,7 +63,7 @@ function App() {
         location.pathname !== "/adminlogin" &&
         location.pathname !== "/admin" &&
         location.pathname.startsWith("/admin/user")&&
-        location.pathname !== "/admin/problem";
+        location.pathname.startsWith("/admin/problem");
 
     // 로그인 상태 감지하여 리다이렉션
     // 이 로직은 user 상태가 변경될 때마다 실행됩니다.
@@ -129,6 +131,14 @@ function App() {
                             <Route
                                 path="/admin/problem"
                                 element={<AdminProblemManagePage />}
+                            />
+                            <Route
+                                path="/admin/problem/:id"
+                                element={<AdminProblemDetailPage />}
+                            />
+                            <Route
+                                path="/admin/problem/:id/edit"
+                                element={<AdminProblemEditPage />}
                             />
                         </Route>
                     </Routes>

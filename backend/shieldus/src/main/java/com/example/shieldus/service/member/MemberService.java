@@ -109,6 +109,24 @@ public class MemberService {
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
         }
     }
+
+    /*
+     * 사용자 업데이트
+     * */
+    @Transactional
+    public Boolean updateMember(Long id, MemberRequestDto memberRequestDto) {
+        Member member = memberRepository.findByIdAndIsDeletedIsFalse(id).orElseThrow(()->new CustomException(ErrorCode.USER_NOT_FOUND));
+        member.setEmail(memberRequestDto.getEmail());
+        if(memberRequestDto.getPassword() != null && !memberRequestDto.getPassword().isEmpty()) {
+            member.setPassword(passwordEncoder.encode(memberRequestDto.getPassword()));
+        }
+        member.setName(memberRequestDto.getName());
+        member.setRole(memberRequestDto.getRole());
+        member.setPhone(memberRequestDto.getPhone());
+
+        return true;
+
+    }
     /*
     * 사용자 삭제
     * */

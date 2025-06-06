@@ -1,5 +1,6 @@
 package com.example.shieldus.entity.member;
 
+import com.example.shieldus.controller.dto.MemberRequestDto;
 import com.example.shieldus.entity.member.enumration.MemberRoleEnum;
 import jakarta.persistence.*;
         import lombok.*;
@@ -42,5 +43,7 @@ public class Member {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
     }
+
+
 
 }

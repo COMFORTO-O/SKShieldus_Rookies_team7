@@ -5,6 +5,7 @@ import com.example.shieldus.controller.dto.*;
 import com.example.shieldus.controller.dto.member.MemberTempCodeResponseDto;
 import com.example.shieldus.entity.member.MemberSubmitProblem;
 import com.example.shieldus.entity.member.enumration.MemberRoleEnum;
+import com.example.shieldus.exception.CustomException;
 import com.example.shieldus.exception.ErrorCode;
 import com.example.shieldus.service.member.MemberService;
 import com.example.shieldus.service.problem.ProblemService;
@@ -77,9 +78,6 @@ public class MemberController {
         return ResponseDto.success(tempCode);
     }
 
-    /*
-     * Admin 기능
-     * */
 
     // 회원 목록 조회
     @PreAuthorize("hasAnyAuthority('PROBLEM_READ', 'ADMIN_READ')")
@@ -93,6 +91,25 @@ public class MemberController {
         return ResponseDto.success(solvedProblem);
     }
 
+    // 회원 목록 조회
+    @PreAuthorize("hasAnyAuthority('MEMBER_UPDATE', 'ADMIN_UPDATE')")
+    @PostMapping("/update") // 푼 문제 상세정보 / id = member_submit_problem_id;
+    public ResponseDto<Boolean> getSolvedProblemDetail(
+            @RequestBody MemberRequestDto memberRequestDto,
+            @AuthenticationPrincipal MemberUserDetails userDetails) {
+        try{
+            Long memberId = getIdCheck(memberRequestDto.getId(), userDetails);
+            memberService.updateMember(memberId, memberRequestDto);
+            return ResponseDto.success(true);
+        }catch(CustomException e){
+            return ResponseDto.error(e.getErrorCode());
+        }catch (Exception e){
+            return ResponseDto.error(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
     // 사용자 조회.
     @PreAuthorize("hasAnyAuthority('MEMBER_READ', 'ADMIN_READ')")
     @GetMapping("/info")
@@ -101,23 +118,17 @@ public class MemberController {
             @PageableDefault(size = 10, sort = "id,desc") Pageable pageable,
             @AuthenticationPrincipal MemberUserDetails userDetails
     ) {
-        // User, Admin 판별
-        Long memberId = null;
-        if(userDetails.getRole().equals(MemberRoleEnum.USER)){
-            if(id == null){
-                memberId = userDetails.getMemberId();
-            }else{
-                return ResponseDto.error(ErrorCode.AUTHENTICATION_FAILED);
-            }
-
-        }else if (userDetails.getRole().equals(MemberRoleEnum.ADMIN)){
-            memberId = id == null || id == 0 ? userDetails.getMemberId() : id;
+        try{
+            Long memberId = getIdCheck(id, userDetails);
+            // ResponseDto 불러와 제작
+            MemberResponseDto myPageData = memberService.getMember(memberId);
+            Page<SubmissionDto> submissionDtoPage = memberService.getSubmissions(memberId, pageable);
+            return ResponseDto.success(new MemberResponseDto.Detail(myPageData, submissionDtoPage));
+        }catch(CustomException e){
+            return ResponseDto.error(e.getErrorCode());
+        }catch (Exception e){
+            return ResponseDto.error(ErrorCode.INTERNAL_SERVER_ERROR);
         }
-
-        // ResponseDto 불러와 제작
-        MemberResponseDto myPageData = memberService.getMember(memberId);
-        Page<SubmissionDto> submissionDtoPage = memberService.getSubmissions(memberId, pageable);
-        return ResponseDto.success(new MemberResponseDto.Detail(myPageData, submissionDtoPage));
     }
 
     // 사용자 삭제 요청
@@ -128,4 +139,19 @@ public class MemberController {
         return ResponseDto.success("ok");
     }
 
+
+    private Long getIdCheck(Long id,MemberUserDetails userDetails) {
+        Long memberId = null;
+        if(userDetails.getRole().equals(MemberRoleEnum.USER)){
+            if(id == null){
+                memberId = userDetails.getMemberId();
+            }else{
+                throw new CustomException(ErrorCode.AUTHENTICATION_FAILED);
+            }
+
+        }else if (userDetails.getRole().equals(MemberRoleEnum.ADMIN)){
+            memberId = id == null || id == 0 ? userDetails.getMemberId() : id;
+        }
+        return memberId;
+    }
 }

@@ -8,6 +8,7 @@ const Input = ({
     className = "",
     required = false,
     error = "",
+    readOnly = false
 }) => {
     return (
         <div className="mb-4">
@@ -19,6 +20,7 @@ const Input = ({
                 value={value}
                 onChange={onChange}
                 required={required}
+                readOnly={readOnly}
                 className={`
           w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2
           ${

@@ -8,8 +8,12 @@ export const deleteUser = (id) => {
     return api.delete(`/api/member/delete/${id}`);
 };
 
-export const getUserInfo = () => {
-    return api.get("/info");
+export const updateUser = (updateData) => {
+    return api.post(`/api/member/update`, updateData);
+};
+
+export const getUserInfo = (searchData) => {
+    return api.get("/api/member/info", searchData);
 };
 
 export const getUserList = () => {

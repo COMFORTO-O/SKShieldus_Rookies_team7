@@ -28,12 +28,12 @@ public class MemberController {
 
 
 
-    @GetMapping("/info")
-    public ResponseDto<MyInfoResponseDto> getUserInfo(@AuthenticationPrincipal MemberUserDetails userDetails) {
-        MyInfoResponseDto myInfoResponseDto = memberService.getMyInfo(userDetails.getMemberId());
-        //기존 info = {name,email,solvedproblem} => 변경된 info = {name,email,memberRank}
-        return ResponseDto.success(myInfoResponseDto);
-    }
+//    @GetMapping("/info")
+//    public ResponseDto<MyInfoResponseDto> getUserInfo(@AuthenticationPrincipal MemberUserDetails userDetails) {
+//        MyInfoResponseDto myInfoResponseDto = memberService.getMyInfo(userDetails.getMemberId());
+//        //기존 info = {name,email,solvedproblem} => 변경된 info = {name,email,memberRank}
+//        return ResponseDto.success(myInfoResponseDto);
+//    }
 
 
 //    @GetMapping("/problem/solved/detail/{submitProblemId}") // 푼 문제 상세정보 / id = member_submit_problem_id;

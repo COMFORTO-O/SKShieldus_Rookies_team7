@@ -11,6 +11,7 @@ import com.example.shieldus.exception.ErrorCode;
 import com.example.shieldus.repository.member.MemberRepository;
 import com.example.shieldus.repository.member.MemberSubmitProblemRepository;
 import com.example.shieldus.repository.member.MemberTempCodeRepository;
+import com.example.shieldus.repository.problem.ProblemRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,11 @@ public class MemberService {
     private final MemberSubmitProblemRepository submitProblemRepository;
     private final MemberTempCodeRepository tempCodeRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ProblemRepository problemRepository;
 
+    /*
+    * 마이페이지 정보 가져오기
+    * */
     public MyPageResponseDto getMyPageInfo(Long memberId, int page,int size) {
         try {
             Member member = memberRepository.findById(memberId)
@@ -59,17 +64,33 @@ public class MemberService {
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
         }
     }
-    public MyInfoResponseDto getMyInfo(Long memberId){
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        return  MyInfoResponseDto.builder()
-                        .email(member.getEmail())
-                        .memberRank(member.getMemberRank())
-                        .name(member.getName())
-                .build();
+
+    /*
+    * MemberSubmitProblem 정보 가져오기
+    * */
+    public Page<SubmissionDto> getSubmissions(Long memberId, Pageable pageable) {
+        return problemRepository.getSubmissions(memberId, pageable);
     }
 
+    /*
+     * 사용자 목록조회
+     * */
+    public Page<MemberResponseDto> getMembers(String searchName, String searchValue, Pageable pageable) {
+        return memberRepository.getMembers(searchName, searchValue, pageable);
+    }
+
+    /*
+    * 사용자 정보조회
+    * */
+    public MemberResponseDto getMember(Long id) {
+        return MemberResponseDto.fromEntity(
+                memberRepository.findById(id).orElseThrow(()->new CustomException(ErrorCode.USER_NOT_FOUND)));
+    }
+
+    /*
+    * 사용자 등록
+    * */
     @Transactional
     public void register(AccountRequestDto.Register dto) {
         try {
@@ -88,7 +109,9 @@ public class MemberService {
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR, e);
         }
     }
-
+    /*
+    * 사용자 삭제
+    * */
     @Transactional
     public void deleteMember(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -97,16 +120,12 @@ public class MemberService {
         } catch (DataAccessException e) {
             throw new CustomException(ErrorCode.DATABASE_ERROR, e);
         }
-
     }
 
-//    public Page<ProblemResponseDto> getMemberSubmitProblems(Long memberId, Pageable pageable) {
-//        Page<ProblemResponseDto> submitProblemList = submitProblemRepository.getMemberSubmitProblems(memberId, pageable);
-//        return submitProblemList;
-//    }
+
 
     /*
-    *
+    * Solved Problem 하나 가져오기
     * */
     public ProblemResponseDto.SolvedProblem getSolvedProblem(Long memberId, Long submitProblemId) {
         MemberTempCode memberSubmitProblem =  tempCodeRepository.findOneByMemberIdAndMemberSubmitProblemId(memberId, submitProblemId)
@@ -115,6 +134,9 @@ public class MemberService {
 
     }
 
+    /*
+     * Member Temp Code 가져오기
+     * */
     public MemberTempCodeResponseDto getMemberTempCode(Long memberId, Long problemId){
         return tempCodeRepository.findTopByProblemIdAndMemberIdOrderBySubmitDateDesc(memberId, problemId)
                 .map(MemberTempCodeResponseDto::fromEntity)
@@ -136,7 +158,5 @@ public class MemberService {
                 .toList();
     }
 
-    public Page<MemberResponseDto> getMembers(String searchName, String searchValue, Pageable pageable) {
-        return memberRepository.getMembers(searchName, searchValue, pageable);
-    }
+
 }

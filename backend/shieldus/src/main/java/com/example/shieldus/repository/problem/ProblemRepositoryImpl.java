@@ -1,6 +1,7 @@
 package com.example.shieldus.repository.problem;
 
 import com.example.shieldus.controller.dto.ProblemResponseDto;
+import com.example.shieldus.controller.dto.SubmissionDto;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -119,6 +120,39 @@ public class ProblemRepositoryImpl implements ProblemRepositoryCustom {
             total = 0L;
         }
         return new PageImpl<>(problemResponses, pageable, total);
+    }
+
+    public Page<SubmissionDto> getSubmissions(Long memberId, Pageable pageable) {
+
+        List<SubmissionDto> list = queryFactory
+                .select(Projections.constructor(
+                        SubmissionDto.class,
+                        memberSubmitProblem.id,
+                        memberSubmitProblem.problem.id,
+                        memberSubmitProblem.problem.title,
+                        memberSubmitProblem.pass,
+                        memberSubmitProblem.createdAt,
+                        memberSubmitProblem.updatedAt,
+                        memberSubmitProblem.completedAt
+                ))
+                .from(memberSubmitProblem)
+                .leftJoin(memberSubmitProblem.problem)
+                .where(memberSubmitProblem.member.id.eq(memberId))
+                .orderBy(memberSubmitProblem.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long total = queryFactory.select(memberSubmitProblem.count())
+                .from(memberSubmitProblem)
+                .leftJoin(memberSubmitProblem.problem)
+                .where(memberSubmitProblem.member.id.eq(memberId))
+                .fetchOne();
+
+        if(total == null) {
+            total = 0L;
+        }
+        return new PageImpl<>(list,pageable,total);
     }
 
     private BooleanExpression eqCategory(String category) {

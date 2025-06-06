@@ -96,12 +96,12 @@ public class MemberController {
     // 사용자 조회.
     @PreAuthorize("hasAnyAuthority('MEMBER_READ', 'ADMIN_READ')")
     @GetMapping("/info")
-    public ResponseDto<MyPageResponseDto> getMemberInfo(
+    public ResponseDto<MemberResponseDto.Detail> getMemberInfo(
             @RequestParam(required = false) Long id,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @PageableDefault(size = 10, sort = "id,desc") Pageable pageable,
             @AuthenticationPrincipal MemberUserDetails userDetails
     ) {
+        // User, Admin 판별
         Long memberId = null;
         if(userDetails.getRole().equals(MemberRoleEnum.USER)){
             if(id == null){
@@ -113,10 +113,14 @@ public class MemberController {
         }else if (userDetails.getRole().equals(MemberRoleEnum.ADMIN)){
             memberId = id == null || id == 0 ? userDetails.getMemberId() : id;
         }
-        MyPageResponseDto myPageData = memberService.getMyPageInfo(memberId, page, size);
-        return ResponseDto.success(myPageData);
+
+        // ResponseDto 불러와 제작
+        MemberResponseDto myPageData = memberService.getMember(memberId);
+        Page<SubmissionDto> submissionDtoPage = memberService.getSubmissions(memberId, pageable);
+        return ResponseDto.success(new MemberResponseDto.Detail(myPageData, submissionDtoPage));
     }
 
+    // 사용자 삭제 요청
     @PreAuthorize("hasAnyAuthority('ADMIN_DELETE')")
     @DeleteMapping("/delete/{id}")// 사용자 삭제 ( soft ), 진짜 삭제가 아닌 컬럼 붙여서 삭제
     public ResponseDto<String> deleteMember(@PathVariable Long id, @AuthenticationPrincipal MemberUserDetails userDetails) {

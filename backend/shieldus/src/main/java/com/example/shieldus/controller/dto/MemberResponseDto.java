@@ -1,7 +1,11 @@
 package com.example.shieldus.controller.dto;
 
+import com.example.shieldus.entity.member.Member;
 import com.example.shieldus.entity.member.enumration.MemberRoleEnum;
 import lombok.*;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,5 +27,22 @@ public class MemberResponseDto {
         this.phone = phone;
         this.role = role;
         this.isDeleted = isDeleted;
+    }
+
+    public static MemberResponseDto fromEntity(Member member) {
+        return new MemberResponseDto(member.getId(), member.getEmail(), member.getName(), member.getPhone(), member.getRole(), member.getIsDeleted());
+    }
+
+
+    @Getter
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Detail {
+        private MemberResponseDto member;
+        private Page<SubmissionDto> submissions;
+
+
     }
 }

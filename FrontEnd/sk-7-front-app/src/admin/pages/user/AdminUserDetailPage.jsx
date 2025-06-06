@@ -3,170 +3,281 @@ import { deleteUser, getUserInfo, updateUser } from "../../api/userApi.js";
 import Button from "../../../components/atoms/Button.jsx";
 import Input from "../../../components/atoms/Input.jsx";
 import AdminLayout from "../../layout/AdminLayout.jsx";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // useNavigate 임포트 추가
 import dayjs from 'dayjs';
 import { encryptPassword } from "../../../encrypt/encryptPassword.js";
+
 const AdminUserDetailPage = () => {
     const { id } = useParams();
     const userId = Number(id);
-    const [user, setUser] = useState({
-        member: {
-            id: 0,
-            name: "",
-            email: "",
-            phone: "",
-            role: "",
-            deleted: false,
-        },
-        submissions: {}
-    }); // 여러 유저를 가정
+    const navigate = useNavigate(); // 페이지 이동을 위한 navigate 훅 추가
+
+    const [user, setUser] = useState(null); // 초기값을 null로 설정하여 로딩 상태를 명확히
     const [form, setForm] = useState({
         name: "",
         email: "",
         phone: "",
         role: "",
-        password: "",
+        password: "", // 비밀번호는 초기화되지 않음 (새로 입력 시에만 업데이트)
         deleted: false,
     });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const fetchUserInfo = async () => {
         try {
-            const res = await getUserInfo ({id: userId, page:0, size:100 });
-            // paging 처리, data.content.list
+            setLoading(true);
+            const res = await getUserInfo({ id: userId, page: 0, size: 100 });
             setUser(res.data.data);
-            setForm(res.data.data.member)
-            console.log(res.data.data);
+            setForm(prevForm => ({ // 이전 폼 상태를 기반으로 업데이트
+                ...prevForm, // 기존 비밀번호는 유지
+                name: res.data.data.member.name,
+                email: res.data.data.member.email,
+                phone: res.data.data.member.phone,
+                role: res.data.data.member.role,
+                deleted: res.data.data.member.deleted,
+                password: "", // 비밀번호 필드는 데이터 로드 시 빈 값으로 초기화 (수정할 때만 입력)
+            }));
+            setError(null);
         } catch (err) {
             console.error("유저 정보 가져오기 실패:", err);
+            setError("사용자 정보를 불러오는 데 실패했습니다.");
+            setUser(null); // 에러 발생 시 user 상태 초기화
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleDelete = async () => {
-        if (!window.confirm("계정을 삭제하시겠습니까?")) return;
+        if (!window.confirm("정말로 이 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) return;
         try {
             await deleteUser(userId);
-            alert("계정이 삭제되었습니다.");
-            await fetchUserInfo();
+            alert("계정이 성공적으로 삭제되었습니다.");
+            navigate('/admin/users'); // 삭제 후 사용자 목록 페이지로 이동
         } catch (err) {
             console.error("계정 삭제 실패:", err);
+            alert("계정 삭제에 실패했습니다: " + (err.response?.data?.message || err.message));
         }
     };
 
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
-            let updateData = form;
-            if(updateData.password != null && updateData.password.length > 0){
-                updateData.password =  encryptPassword(updateData.password);
+            let updateData = { ...form }; // 폼 데이터를 복사
+            // 비밀번호 필드가 비어있지 않다면 암호화
+            if (updateData.password && updateData.password.length > 0) {
+                updateData.password = encryptPassword(updateData.password);
+            } else {
+                delete updateData.password; // 비밀번호가 비어있으면 전송하지 않음
             }
-            await updateUser(form);
 
-            alert("업데이트되었습니다.");
-            await fetchUserInfo();
+            // `id` 필드를 DTO에 포함해야 한다면 여기에 추가
+            // updateData.id = userId;
+
+            await updateUser(updateData); // updateUser 함수가 userId를 경로 파라미터로 받는지, DTO에 포함하는지 확인 필요
+            alert("계정 정보가 성공적으로 업데이트되었습니다.");
+            await fetchUserInfo(); // 업데이트 후 최신 정보 다시 불러오기
         } catch (err) {
-            console.error("계정 생성 실패:", err);
+            console.error("계정 업데이트 실패:", err.response?.data || err.message);
+            alert("계정 업데이트에 실패했습니다: " + (err.response?.data?.message || err.message));
         }
     };
 
     useEffect(() => {
-        fetchUserInfo();
-    }, []);
+        if (userId) { // userId가 유효한 경우에만 데이터 가져오기
+            fetchUserInfo();
+        }
+    }, [userId]); // userId가 변경될 때마다 다시 호출
 
+    if (loading) {
+        return (
+            <AdminLayout>
+                <main className="p-6 text-center">
+                    <p className="text-gray-700 text-lg">사용자 정보를 불러오는 중입니다...</p>
+                </main>
+            </AdminLayout>
+        );
+    }
+
+    if (error) {
+        return (
+            <AdminLayout>
+                <main className="p-6 text-center">
+                    <p className="text-red-600 text-lg mb-4">{error}</p>
+                    <Button onClick={() => navigate('/admin/users')} variant="secondary">
+                        사용자 목록으로 돌아가기
+                    </Button>
+                </main>
+            </AdminLayout>
+        );
+    }
+
+    if (!user) { // user가 null이면 데이터를 찾을 수 없음
+        return (
+            <AdminLayout>
+                <main className="p-6 text-center">
+                    <p className="text-gray-700 text-lg mb-4">사용자를 찾을 수 없습니다.</p>
+                    <Button onClick={() => navigate('/admin/users')} variant="secondary">
+                        사용자 목록으로 돌아가기
+                    </Button>
+                </main>
+            </AdminLayout>
+        );
+    }
 
     return (
         <AdminLayout>
-            <main className="p-6 overflow-auto">
-                <h2 className="text-2xl font-semibold mb-6">계정 관리</h2>
-                {/* 계정 생성 폼 */}
-                <form
-                    onSubmit={handleUpdate}
-                    className="bg-white p-6 rounded shadow mb-8 max-w-2xl"
-                >
-                    <div className=" sm:grid-cols-2 gap-4">
-                        <Input
-                            className="border p-2 rounded"
-                            placeholder="이름"
-                            value={form.name}
-                            onChange={(e) =>
-                                setForm({ ...form, name: e.target.value })
-                            }
-                            required
-                        />
-                        <Input
-                            className="border p-2 rounded"
-                            placeholder="이메일"
-                            type="email"
-                            value={form.email}
-                            onChange={(e) =>
-                                setForm({ ...form, email: e.target.value })
-                            }
-                            required
-                        />
-                        <Input
-                            className="border p-2 rounded"
-                            placeholder="권한"
-                            type="role"
-                            value={form.role}
-                            onChange={(e) =>
-                                setForm({ ...form, email: e.target.value })
-                            }
-                            required
-                        />
-                        <Input
-                            className="border p-2 rounded"
-                            placeholder="전화번호"
-                            value={form.phone}
-                            onChange={(e) =>
-                                setForm({ ...form, phone: e.target.value })
-                            }
-                            required
-                        />
-                        <Input
-                            className="border p-2 rounded"
-                            placeholder="비밀번호"
-                            type="password"
-                            value={form.password}
-                            onChange={(e) =>
-                                setForm({ ...form, password: e.target.value })
-                            }
-                        />
-                        <Input readOnly={true} value={form.deleted? "탈퇴" : "미탈퇴" }/>
-                    </div>
-                    <div className="mt-4">
-                        <Button type="submit">계정 업데이트</Button>
-                        <Button onClick={handleDelete}>계정 삭제</Button>
-                    </div>
-                </form>
+            <main className="p-6 md:p-8 lg:p-10 bg-gray-100 min-h-screen">
+                <h2 className="text-3xl font-bold text-gray-800 mb-8">사용자 상세 정보 및 관리</h2>
 
-                {/* 사용자 목록 */}
-                <div className="overflow-x-auto max-h-[500px] overflow-y-auto rounded border border-gray-300">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-100 sticky top-0 z-10">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">문제</th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">성공여부</th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">시작일시</th>
-                        </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                        {user.submissions.content?.length > 0 ? (
-                            user.submissions.content.map((submission) => (
-                                <tr key={submission.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 text-sm text-gray-800">{submission.problemTitle}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-800">{submission.pass ? "성공": "실패"}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-800">{dayjs(submission.createdAt).format("YYYY-MM-DD HH:mm:ss")}</td>
-                                </tr>
-                            ))
-                        ) : (
+                {/* 사용자 정보 및 수정 폼 섹션 */}
+                <section className="bg-white p-6 rounded-xl shadow-lg mb-10 border border-gray-200">
+                    <h3 className="text-2xl font-semibold text-gray-700 mb-6 border-b pb-3">
+                        {user.member.name} 님의 정보
+                    </h3>
+                    <form onSubmit={handleUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                        <div className="md:col-span-2">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">회원 ID:</label>
+                            <Input readOnly={true} value={user.member.id} className="w-full p-3 bg-gray-100 border border-gray-300 rounded-lg" />
+                        </div>
+                        <div>
+                            <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">이름:</label>
+                            <Input
+                                id="name"
+                                name="name"
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                                placeholder="이름"
+                                value={form.name}
+                                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">이메일:</label>
+                            <Input
+                                id="email"
+                                name="email"
+                                className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                                placeholder="이메일"
+                                type="email"
+                                value={form.email}
+                                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                required
+                                readOnly // 이메일은 변경 불가능하게 설정하는 경우가 많습니다. 필요 시 제거하세요.
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="phone" className="block text-gray-700 text-sm font-bold mb-2">전화번호:</label>
+                            <Input
+                                id="phone"
+                                name="phone"
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                                placeholder="전화번호"
+                                value={form.phone}
+                                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="role" className="block text-gray-700 text-sm font-bold mb-2">권한:</label>
+                            <select
+                                id="role"
+                                name="role"
+                                className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                                value={form.role}
+                                onChange={(e) => setForm({ ...form, role: e.target.value })}
+                                required
+                            >
+                                <option value="USER">일반 사용자</option>
+                                <option value="ADMIN">관리자</option>
+                            </select>
+                        </div>
+                        <div className="md:col-span-2">
+                            <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">새 비밀번호 (변경 시에만 입력):</label>
+                            <Input
+                                id="password"
+                                name="password"
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                                placeholder="새 비밀번호 (비밀번호 변경 시에만 입력)"
+                                type="password"
+                                value={form.password}
+                                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                            />
+                            <p className="text-sm text-gray-500 mt-1">비밀번호를 입력하지 않으면 변경되지 않습니다.</p>
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">계정 상태:</label>
+                            <Input readOnly={true} value={form.deleted ? "탈퇴 계정" : "활성 계정"} className="w-full p-3 bg-gray-100 border border-gray-300 rounded-lg" />
+                        </div>
+                        <div className="md:col-span-2 flex justify-end space-x-3 mt-6">
+                            <Button
+                                type="submit"
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105"
+                            >
+                                정보 업데이트
+                            </Button>
+                            {!user.member.deleted && ( // 탈퇴하지 않은 사용자만 삭제 버튼 표시
+                                <Button
+                                    type="button"
+                                    onClick={handleDelete}
+                                    variant="destructive"
+                                    className="py-3 px-6 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105"
+                                >
+                                    계정 삭제
+                                </Button>
+                            )}
+                            <Button
+                                type="button"
+                                onClick={() => navigate('/admin/users')}
+                                variant="secondary"
+                                className="py-3 px-6 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105"
+                            >
+                                목록으로
+                            </Button>
+                        </div>
+                    </form>
+                </section>
+
+                {/* 제출 기록 섹션 */}
+                <section className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <h3 className="text-2xl font-semibold text-gray-700 mb-6 border-b pb-3">제출 기록</h3>
+                    <div className="overflow-x-auto max-h-[500px] overflow-y-auto rounded-lg border border-gray-300">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-100 sticky top-0 z-10 shadow-sm">
                             <tr>
-                                <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
-                                    사용자 정보가 없습니다.
-                                </td>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">문제 제목</th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">성공 여부</th>
+                                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">제출 일시</th>
                             </tr>
-                        )}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                            {user.submissions.content && user.submissions.content.length > 0 ? (
+                                user.submissions.content.map((submission) => (
+                                    <tr key={submission.id} className="hover:bg-gray-50 transition duration-150 ease-in-out">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{submission.problemTitle}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                                    submission.pass ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                                }`}>
+                                                    {submission.pass ? "성공" : "실패"}
+                                                </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                            {dayjs(submission.createdAt).format("YYYY-MM-DD HH:mm:ss")}
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={3} className="px-6 py-4 text-center text-gray-500">
+                                        제출 기록이 없습니다.
+                                    </td>
+                                </tr>
+                            )}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             </main>
         </AdminLayout>
     );

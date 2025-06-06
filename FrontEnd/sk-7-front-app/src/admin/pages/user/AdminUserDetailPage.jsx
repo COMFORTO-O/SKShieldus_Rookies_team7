@@ -3,22 +3,22 @@ import { deleteUser, getUserInfo, updateUser } from "../../api/userApi.js";
 import Button from "../../../components/atoms/Button.jsx";
 import Input from "../../../components/atoms/Input.jsx";
 import AdminLayout from "../../layout/AdminLayout.jsx";
-import { useParams, useNavigate } from "react-router-dom"; // useNavigate 임포트 추가
+import { useParams, useNavigate } from "react-router-dom";
 import dayjs from 'dayjs';
 import { encryptPassword } from "../../../encrypt/encryptPassword.js";
 
 const AdminUserDetailPage = () => {
     const { id } = useParams();
     const userId = Number(id);
-    const navigate = useNavigate(); // 페이지 이동을 위한 navigate 훅 추가
+    const navigate = useNavigate();
 
-    const [user, setUser] = useState(null); // 초기값을 null로 설정하여 로딩 상태를 명확히
+    const [user, setUser] = useState(null);
     const [form, setForm] = useState({
         name: "",
         email: "",
         phone: "",
         role: "",
-        password: "", // 비밀번호는 초기화되지 않음 (새로 입력 시에만 업데이트)
+        password: "",
         deleted: false,
     });
     const [loading, setLoading] = useState(true);
@@ -29,20 +29,20 @@ const AdminUserDetailPage = () => {
             setLoading(true);
             const res = await getUserInfo({ id: userId, page: 0, size: 100 });
             setUser(res.data.data);
-            setForm(prevForm => ({ // 이전 폼 상태를 기반으로 업데이트
-                ...prevForm, // 기존 비밀번호는 유지
+            setForm(prevForm => ({
+                ...prevForm,
                 name: res.data.data.member.name,
                 email: res.data.data.member.email,
                 phone: res.data.data.member.phone,
                 role: res.data.data.member.role,
                 deleted: res.data.data.member.deleted,
-                password: "", // 비밀번호 필드는 데이터 로드 시 빈 값으로 초기화 (수정할 때만 입력)
+                password: "",
             }));
             setError(null);
         } catch (err) {
             console.error("유저 정보 가져오기 실패:", err);
             setError("사용자 정보를 불러오는 데 실패했습니다.");
-            setUser(null); // 에러 발생 시 user 상태 초기화
+            setUser(null);
         } finally {
             setLoading(false);
         }
@@ -53,7 +53,7 @@ const AdminUserDetailPage = () => {
         try {
             await deleteUser(userId);
             alert("계정이 성공적으로 삭제되었습니다.");
-            navigate('/admin/user'); // 삭제 후 사용자 목록 페이지로 이동
+            navigate('/admin/user');
         } catch (err) {
             console.error("계정 삭제 실패:", err);
             alert("계정 삭제에 실패했습니다: " + (err.response?.data?.message || err.message));
@@ -63,20 +63,20 @@ const AdminUserDetailPage = () => {
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
-            let updateData = { ...form }; // 폼 데이터를 복사
-            // 비밀번호 필드가 비어있지 않다면 암호화
+            let updateData = { ...form };
+
             if (updateData.password && updateData.password.length > 0) {
                 updateData.password = encryptPassword(updateData.password);
             } else {
-                delete updateData.password; // 비밀번호가 비어있으면 전송하지 않음
+                delete updateData.password;
             }
 
-            // `id` 필드를 DTO에 포함해야 한다면 여기에 추가
-            // updateData.id = userId;
 
-            await updateUser(updateData); // updateUser 함수가 userId를 경로 파라미터로 받는지, DTO에 포함하는지 확인 필요
+
+
+            await updateUser(updateData);
             alert("계정 정보가 성공적으로 업데이트되었습니다.");
-            await fetchUserInfo(); // 업데이트 후 최신 정보 다시 불러오기
+            await fetchUserInfo();
         } catch (err) {
             console.error("계정 업데이트 실패:", err.response?.data || err.message);
             alert("계정 업데이트에 실패했습니다: " + (err.response?.data?.message || err.message));
@@ -84,10 +84,10 @@ const AdminUserDetailPage = () => {
     };
 
     useEffect(() => {
-        if (userId) { // userId가 유효한 경우에만 데이터 가져오기
+        if (userId) {
             fetchUserInfo();
         }
-    }, [userId]); // userId가 변경될 때마다 다시 호출
+    }, [userId]);
 
     if (loading) {
         return (
@@ -112,7 +112,7 @@ const AdminUserDetailPage = () => {
         );
     }
 
-    if (!user) { // user가 null이면 데이터를 찾을 수 없음
+    if (!user) {
         return (
             <AdminLayout>
                 <main className="p-6 text-center">
@@ -163,7 +163,7 @@ const AdminUserDetailPage = () => {
                                 value={form.email}
                                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                                 required
-                                readOnly // 이메일은 변경 불가능하게 설정하는 경우가 많습니다. 필요 시 제거하세요.
+                                readOnly
                             />
                         </div>
                         <div>
@@ -216,7 +216,7 @@ const AdminUserDetailPage = () => {
                             >
                                 정보 업데이트
                             </Button>
-                            {!user.member.deleted && ( // 탈퇴하지 않은 사용자만 삭제 버튼 표시
+                            {!user.member.deleted && (
                                 <Button
                                     type="button"
                                     onClick={handleDelete}

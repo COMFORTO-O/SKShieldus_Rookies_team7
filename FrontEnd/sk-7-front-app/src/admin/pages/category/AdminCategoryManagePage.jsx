@@ -2,21 +2,21 @@ import React, { useEffect, useState } from 'react';
 import AdminLayout from '../../layout/AdminLayout.jsx';
 import Button from '../../../components/atoms/Button.jsx';
 import Input from '../../../components/atoms/Input.jsx';
-import { getCategories, createCategory, updateCategory } from '../../api/categoryApi.js'; // 새로 만든 API 함수 임포트
+import { getCategories, createCategory, updateCategory } from '../../api/categoryApi.js';
 
 const AdminCategoryManagePage = () => {
     const [categories, setCategories] = useState([]);
     const [form, setForm] = useState({
-        id: null, // 업데이트 시 필요, 생성 시에는 null
-        code: '', // 카테고리 코드 (예: JAVA, PYTHON)
-        description: '', // 카테고리 설명 (예: Java 언어 관련 문제)
+        id: null,
+        code: '',
+        description: '',
     });
-    const [isEditing, setIsEditing] = useState(false); // 수정 모드 여부
+    const [isEditing, setIsEditing] = useState(false);
 
     const fetchCategories = async () => {
         try {
             const res = await getCategories();
-            // 백엔드 응답이 ResponseDto<List<ProblemCode>> 형태이므로 res.data.data에 접근
+
             setCategories(res.data.data || []);
         } catch (err) {
             console.error("카테고리 목록 가져오기 실패:", err);
@@ -33,19 +33,19 @@ const AdminCategoryManagePage = () => {
         e.preventDefault();
         try {
             if (isEditing) {
-                // 업데이트 로직
-                // 백엔드 DTO는 id를 포함하지 않으므로, 요청 본문에서는 code와 description만 보냄
-                // URL 파라미터로 id를 사용
-                const { id, code, description } = form; // form에서 id, code, description 추출
-                await updateCategory(id, { code, description }); // id는 URL로, 나머지는 본문으로
+
+
+
+                const { id, code, description } = form;
+                await updateCategory(id, { code, description });
                 alert("카테고리가 성공적으로 업데이트되었습니다.");
             } else {
-                // 생성 로직
-                // 백엔드 DTO는 id를 포함하지 않으므로, 요청 본문에서는 code와 description만 보냄
+
+
                 await createCategory({ code: form.code, description: form.description });
                 alert("카테고리가 성공적으로 생성되었습니다.");
             }
-            // 성공 후 폼 초기화 및 목록 새로고침
+
             setForm({ id: null, code: '', description: '' });
             setIsEditing(false);
             fetchCategories();
@@ -55,13 +55,13 @@ const AdminCategoryManagePage = () => {
         }
     };
 
-    // 수정 버튼 클릭 시 폼에 데이터 채우기
+
     const handleEditClick = (category) => {
         setForm({ id: category.id, code: category.code, description: category.description });
         setIsEditing(true);
     };
 
-    // 폼 초기화 버튼 클릭 시
+
     const handleResetForm = () => {
         setForm({ id: null, code: '', description: '' });
         setIsEditing(false);

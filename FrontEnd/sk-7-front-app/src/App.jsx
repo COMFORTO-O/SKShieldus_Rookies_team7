@@ -31,7 +31,7 @@ const AdminUserManagePage = React.lazy(() =>
     import("./admin/pages/user/AdminUserManagePage.jsx")
 );
 const AdminProblemManagePage = React.lazy(() =>
-    import("./admin/pages/AdminProblemManagePage")
+    import("./admin/pages/problem/AdminProblemManagePage.jsx")
 );
 
 /*앱 컨테이너*/
@@ -61,7 +61,7 @@ function App() {
         location.pathname !== "/adminlogin" &&
         location.pathname !== "/admin" &&
         location.pathname.startsWith("/admin/user")&&
-        location.pathname !== "/adminproblem";
+        location.pathname !== "/admin/problem";
 
     // 로그인 상태 감지하여 리다이렉션
     // 이 로직은 user 상태가 변경될 때마다 실행됩니다.
@@ -127,7 +127,7 @@ function App() {
                                 element={<AdminUserDetailPage />}
                             />
                             <Route
-                                path="/adminproblem"
+                                path="/admin/problem"
                                 element={<AdminProblemManagePage />}
                             />
                         </Route>

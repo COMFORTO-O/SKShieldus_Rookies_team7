@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { getProblems, deleteProblem } from "../api/problemApi";
-import Button from "../../components/atoms/button";
-import AdminLayout from "../layout/AdminLayout";
+import { getProblems, deleteProblem } from "../../api/problemApi.js";
+import Button from "../../../components/atoms/Button.jsx";
+import AdminLayout from "../../layout/AdminLayout.jsx";
 
 const AdminProblemManagePage = () => {
     const [problems, setProblems] = useState([]);

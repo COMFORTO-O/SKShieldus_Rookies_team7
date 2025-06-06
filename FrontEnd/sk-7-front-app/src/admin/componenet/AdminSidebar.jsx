@@ -19,7 +19,7 @@ const AdminSidebar = () => {
                     <FaUsers size={18} /> user
                 </Link>
                 <Link
-                    to="/adminproblem"
+                    to="/admin/problem"
                     className="flex items-center gap-2 text-gray-700 hover:text-blue-500"
                 >
                     <FaFileCode size={18} /> problem

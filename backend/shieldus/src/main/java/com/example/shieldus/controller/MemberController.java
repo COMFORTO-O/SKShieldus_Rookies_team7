@@ -27,24 +27,34 @@ public class MemberController {
     private final ProblemService problemService;
 
 
-//MYPAGE로 올라갔습니다.
-//    @GetMapping("/info")
-//    public ResponseDto<MyPageResponseDto> getUserInfo(@AuthenticationPrincipal MemberUserDetails userDetails) {
-//        // 서비스 계층에서 사용자 ID를 기반으로 마이페이지 데이터를 조회
-//        MyPageResponseDto myPageData = memberService.getMyPageInfo(userDetails.getMemberId());
-//        // 조회된 데이터를 성공 응답 포맷(ResponseDto)으로 감싸서 반환
-//        return ResponseDto.success(myPageData);
-//    }
 
-
-    @GetMapping("/problem/solved/detail/{submitProblemId}") // 푼 문제 상세정보 / id = member_submit_problem_id;
-    public ResponseDto<ProblemResponseDto.SolvedProblem> getSolvedProblemDetail(
-            @PathVariable Long submitProblemId,
-            @AuthenticationPrincipal MemberUserDetails userDetails) {
-        ProblemResponseDto.SolvedProblem solvedProblem = memberService.getSolvedProblem(submitProblemId, userDetails.getMemberId());
-        return ResponseDto.success(solvedProblem);
+    @GetMapping("/info")
+    public ResponseDto<MyInfoResponseDto> getUserInfo(@AuthenticationPrincipal MemberUserDetails userDetails) {
+        MyInfoResponseDto myInfoResponseDto = memberService.getMyInfo(userDetails.getMemberId());
+        //기존 info = {name,email,solvedproblem} => 변경된 info = {name,email,memberRank}
+        return ResponseDto.success(myInfoResponseDto);
     }
 
+
+//    @GetMapping("/problem/solved/detail/{submitProblemId}") // 푼 문제 상세정보 / id = member_submit_problem_id;
+//    public ResponseDto<ProblemResponseDto.SolvedProblem> getSolvedProblemDetail(
+//            @PathVariable Long submitProblemId,
+//            @AuthenticationPrincipal MemberUserDetails userDetails) {
+//        ProblemResponseDto.SolvedProblem solvedProblem = memberService.getSolvedProblem(submitProblemId, userDetails.getMemberId());
+//        return ResponseDto.success(solvedProblem);
+//    }
+
+    @GetMapping("/problem/submitcodes/{submitProblemId}") // 해당 문제에 대한 제출 내역(코드) 보기
+    public ResponseDto<List<MemberTempCodeDto>> getSolvedProblemDetail(
+            @PathVariable Long submitProblemId,
+            @AuthenticationPrincipal MemberUserDetails userDetails) {
+        List<MemberTempCodeDto> codes = memberService.getTempCodesForSubmission(
+                submitProblemId, userDetails.getMemberId());
+        return ResponseDto.success(codes);
+    }
+
+
+    //문제 입장 시 임시 저장 코드 받아오기
 
     @DeleteMapping("/delete")// 사용자 삭제 ( soft ), 진짜 삭제가 아닌 컬럼 붙여서 삭제
     public ResponseDto<String> deleteMember(@AuthenticationPrincipal MemberUserDetails userDetails) {
@@ -72,7 +82,7 @@ public class MemberController {
      * */
 
     // 회원 목록 조회
-    @PreAuthorize("hasAnyAuthority('ADMIN_READ')")
+    @PreAuthorize("hasAnyAuthority('PROBLEM_READ', 'ADMIN_READ')")
     @GetMapping("/list") // 푼 문제 상세정보 / id = member_submit_problem_id;
     public ResponseDto<Page<MemberResponseDto>> getSolvedProblemDetail(
             @RequestParam(required = false) String searchName,
@@ -113,7 +123,5 @@ public class MemberController {
         memberService.deleteMember(id);
         return ResponseDto.success("ok");
     }
-
-
 
 }

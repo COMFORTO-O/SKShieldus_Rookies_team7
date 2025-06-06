@@ -1,12 +1,16 @@
 package com.example.shieldus.runner;
 
 import com.example.shieldus.entity.member.Member;
+import com.example.shieldus.entity.member.MemberSubmitProblem;
+import com.example.shieldus.entity.member.MemberTempCode;
 import com.example.shieldus.entity.member.enumration.MemberRoleEnum;
 import com.example.shieldus.entity.problem.Problem;
 import com.example.shieldus.entity.problem.ProblemCode;
 import com.example.shieldus.entity.problem.ProblemTestCase;
-import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
+import com.example.shieldus.entity.member.enumration.MemberTempCodeStatusEnum;
 import com.example.shieldus.entity.problem.enumration.ProblemLanguageEnum;
+import com.example.shieldus.repository.member.MemberSubmitProblemRepository;
+import com.example.shieldus.repository.member.MemberTempCodeRepository;
 import com.example.shieldus.repository.member.MemberRepository;
 import com.example.shieldus.repository.problem.ProblemCodeRepository;
 import com.example.shieldus.repository.problem.ProblemRepository;
@@ -20,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,13 +33,15 @@ import java.util.List;
 @Order(1)
 @RequiredArgsConstructor
 @Slf4j
-@ConditionalOnProperty(name = "runner.data-init", havingValue = "true", matchIfMissing = false)
+//@ConditionalOnProperty(name = "runner.data-init", havingValue = "true", matchIfMissing = false)
 public class DataInitRunner implements CommandLineRunner {
 
     private final MemberRepository memberRepository;
     private final ProblemRepository problemRepository;
     private final ProblemCodeRepository problemCodeRepository;
     private final ProblemTestCaseRepository testCaseRepository;
+    private final MemberSubmitProblemRepository memberSubmitProblemRepository;
+    private final MemberTempCodeRepository memberTempCodeRepository;
     private final PasswordEncoder passwordEncoder;
     @Override
     @Transactional
@@ -121,6 +128,108 @@ public class DataInitRunner implements CommandLineRunner {
                         .output(pair[1])
                         .build()
         ));
+        MemberSubmitProblem submit1 = MemberSubmitProblem.builder()
+                .member(member)
+                .problem(problem1)
+                .pass(true)
+                .createdAt(LocalDateTime.now().minusMinutes(10))
+                .updatedAt(LocalDateTime.now().minusMinutes(5))
+                .completedAt(LocalDateTime.now().minusMinutes(5))
+                .build();
+
+        MemberSubmitProblem submit2 = MemberSubmitProblem.builder()
+                .member(member)
+                .problem(problem2)
+                .pass(false)
+                .createdAt(LocalDateTime.now().minusMinutes(8))
+                .updatedAt(LocalDateTime.now().minusMinutes(3))
+                .completedAt(null)
+                .build();
+        memberSubmitProblemRepository.saveAll(List.of(submit1, submit2));
+        MemberTempCode tempCode1 = MemberTempCode.builder()
+                .memberSubmitProblem(submit1)
+                .status(MemberTempCodeStatusEnum.CORRECT)
+                .langauge("Python")
+                .code("a, b = map(int, input().split())\nprint(a + b)")
+                .submitDate(LocalDateTime.now().minusMinutes(9))
+                .build();
+
+
+        MemberTempCode tempCode2 = MemberTempCode.builder()
+                .memberSubmitProblem(submit2)
+                .status(MemberTempCodeStatusEnum.TEST)
+                .langauge("Python")
+                .code("a, b, c = map(int, input().split())\nprint(a * b * c)")
+                .submitDate(LocalDateTime.now().minusMinutes(7))
+                .build();
+
+        MemberTempCode tempCode3 = MemberTempCode.builder()
+                .memberSubmitProblem(submit1)
+                .status(MemberTempCodeStatusEnum.CORRECT)
+                .langauge("Python")
+                .code("a, b = map(int, input().split())\nprint(a + b)\n testtest")
+                .submitDate(LocalDateTime.now().minusMinutes(9))
+                .build();
+
+        memberSubmitProblemRepository.saveAll(List.of(submit1, submit2));
+
+        submit1.setMemberTempCodes(List.of(tempCode1,tempCode3));
+        submit2.setMemberTempCodes(List.of(tempCode2));
+        memberTempCodeRepository.saveAll(List.of(tempCode1, tempCode2,tempCode3));
+
+        // 테스트용 문제 10개 생성
+        for (int i = 1; i <= 10; i++) {
+            Problem dynamicProblem = Problem.builder()
+                    .member(member)
+                    .title("문제 " + i)
+                    .detail("이것은 문제 " + i + "의 설명입니다.")
+                    .category(problemCode1)
+                    .level(i % 3 + 1)
+                    .build();
+            problemRepository.save(dynamicProblem);
+
+            // 테스트케이스 3개씩
+            for (int j = 1; j <= 3; j++) {
+                testCaseRepository.save(ProblemTestCase.builder()
+                        .problem(dynamicProblem)
+                        .input(j + " " + j)
+                        .output(String.valueOf(j + j))
+                        .isTestCase(true)
+                        .build());
+            }
+
+            // 제출내역 5개
+            for (int k = 1; k <= 5; k++) {
+                MemberSubmitProblem submit = MemberSubmitProblem.builder()
+                        .member(member)
+                        .problem(dynamicProblem)
+                        .pass(k % 2 == 0) // 짝수는 통과, 홀수는 실패
+                        .createdAt(LocalDateTime.now().minusMinutes(i * 10 + k))
+                        .updatedAt(LocalDateTime.now().minusMinutes(i * 10 + k - 1))
+                        .completedAt(k % 2 == 0 ? LocalDateTime.now().minusMinutes(i * 10 + k - 1) : null)
+                        .build();
+                memberSubmitProblemRepository.save(submit);
+
+                // 제출 코드 2개
+                MemberTempCode temp1 = MemberTempCode.builder()
+                        .memberSubmitProblem(submit)
+                        .status(k % 2 == 0 ? MemberTempCodeStatusEnum.CORRECT : MemberTempCodeStatusEnum.TEST)
+                        .langauge("Python")
+                        .code("print(" + i + " + " + k + ")")
+                        .submitDate(LocalDateTime.now().minusMinutes(i * 10 + k - 2))
+                        .build();
+
+                MemberTempCode temp2 = MemberTempCode.builder()
+                        .memberSubmitProblem(submit)
+                        .status(MemberTempCodeStatusEnum.TEST)
+                        .langauge("Python")
+                        .code("print(" + i + " + " + k + " + ' 다시 도전')")
+                        .submitDate(LocalDateTime.now().minusMinutes(i * 10 + k - 1))
+                        .build();
+
+                memberTempCodeRepository.saveAll(List.of(temp1, temp2));
+            }
+        }
 
         log.info("Test data initialization complete.");
     }

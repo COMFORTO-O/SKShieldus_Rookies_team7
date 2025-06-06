@@ -77,6 +77,7 @@ public class CompileService {
         memberTempCodeRepository.save(MemberTempCode.builder()
                 .memberSubmitProblem(submit)
                 .status(MemberTempCodeStatusEnum.TEST)
+                .langauge(requestDto.getLanguage())
                 .code(requestDto.getCode())
                 .submitDate(LocalDateTime.now())
                 .build());
@@ -114,6 +115,7 @@ public class CompileService {
         memberTempCodeRepository.save(MemberTempCode.builder()
                 .memberSubmitProblem(submit)
                 .status(allPass ? MemberTempCodeStatusEnum.CORRECT : MemberTempCodeStatusEnum.INCORRECT)
+                .langauge(requestDto.getLanguage())
                 .code(requestDto.getCode())
                 .submitDate(LocalDateTime.now())
                 .build());

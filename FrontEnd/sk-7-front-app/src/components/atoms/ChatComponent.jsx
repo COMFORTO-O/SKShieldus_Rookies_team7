@@ -545,6 +545,7 @@ const ChatComponent = forwardRef(
             unsubscribeAllRoomSpecific,
             setRole,
             setEditingBy,
+            code
         ]);
 
         useEffect(() => {

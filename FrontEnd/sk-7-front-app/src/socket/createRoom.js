@@ -2,11 +2,11 @@ import axios from "axios";
 
 // 방 생성 요청
 // TODO : 초기 코드 같이 보내주기
-const createRoom = async ({ problemId, language }) => {
+const createRoom = async ({ problemId, language, code }) => {
     try {
         const response = await axios.post(
             "http://localhost:8080/api/rooms",
-            { problemId: problemId, language: language },
+            { problemId: problemId, language: language, code: code },
             { withCredentials: true }
         );
         console.log(response.data);

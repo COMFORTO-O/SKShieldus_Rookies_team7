@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getProblemDetail, updateProblem } from '../../api/problemApi.js'; // `updateProblem` API 함수가 이 DTO를 처리하도록 백엔드에 맞춰야 합니다.
-import AdminLayout from '../../layout/AdminLayout.jsx';
-import Button from '../../../components/atoms/Button.jsx';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getProblemDetail, updateProblem } from "../../api/problemApi.js"; // `updateProblem` API 함수가 이 DTO를 처리하도록 백엔드에 맞춰야 합니다.
+import AdminLayout from "../../layout/AdminLayout.jsx";
+import Button from "../../../components/atoms/Button.jsx";
 // axiosInstance는 `updateProblem` 내부에서 사용될 것이므로 여기서는 직접 임포트하지 않습니다.
 
 const AdminProblemEditPage = () => {
@@ -16,10 +16,10 @@ const AdminProblemEditPage = () => {
     // DTO 구조에 맞춰 폼 데이터 상태 정의
     const [formData, setFormData] = useState({
         problemId: null, // 초기에는 null, 불러온 문제 ID로 설정
-        title: '',
-        detail: '',
-        category: '', // categoryCode 대신 category 필드 사용
-        level: '',
+        title: "",
+        detail: "",
+        category: "", // categoryCode 대신 category 필드 사용
+        level: "",
         testCase: [], // List<TestCaseDto>
     });
 
@@ -36,15 +36,16 @@ const AdminProblemEditPage = () => {
                     problemId: problemData.id,
                     title: problemData.title,
                     detail: problemData.detail,
-                    category: problemData.category?.code || '', // category.code를 category 필드로
+                    category: problemData.category?.code || "", // category.code를 category 필드로
                     level: problemData.level,
                     // testCaseId를 포함하고 isTestCase 필드를 추가 (기본값 true로 설정)
-                    testCase: problemData.testCase.map(tc => ({
-                        testCaseId: tc.id,
-                        input: tc.input,
-                        output: tc.output,
-                        isTestCase: true, // 기존 테스트 케이스는 true로 설정
-                    })) || [],
+                    testCase:
+                        problemData.testCase.map((tc) => ({
+                            testCaseId: tc.id,
+                            input: tc.input,
+                            output: tc.output,
+                            isTestCase: true, // 기존 테스트 케이스는 true로 설정
+                        })) || [],
                 });
             } catch (err) {
                 console.error("문제 정보 가져오기 실패:", err);
@@ -61,7 +62,7 @@ const AdminProblemEditPage = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleTestCaseChange = (index, e) => {
@@ -69,23 +70,23 @@ const AdminProblemEditPage = () => {
         const newTestCases = [...formData.testCase];
         newTestCases[index] = {
             ...newTestCases[index],
-            [name]: type === 'checkbox' ? checked : value, // 체크박스 처리
+            [name]: type === "checkbox" ? checked : value, // 체크박스 처리
         };
-        setFormData(prev => ({ ...prev, testCase: newTestCases }));
+        setFormData((prev) => ({ ...prev, testCase: newTestCases }));
     };
 
     const addTestCase = () => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
             testCase: [
                 ...prev.testCase,
-                { testCaseId: null, input: '', output: '', isTestCase: true }, // 새 테스트 케이스는 ID null, isTestCase 기본값 true
+                { testCaseId: null, input: "", output: "", isTestCase: true }, // 새 테스트 케이스는 ID null, isTestCase 기본값 true
             ],
         }));
     };
 
     const removeTestCase = (index) => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
             testCase: prev.testCase.filter((_, i) => i !== index),
         }));
@@ -101,7 +102,7 @@ const AdminProblemEditPage = () => {
                 detail: formData.detail,
                 category: formData.category,
                 level: parseInt(formData.level), // Integer 타입이므로 parseInt
-                testCase: formData.testCase.map(tc => ({
+                testCase: formData.testCase.map((tc) => ({
                     testCaseId: tc.testCaseId, // 기존 ID는 그대로, 새로 추가된 것은 null
                     input: tc.input,
                     output: tc.output,
@@ -114,7 +115,10 @@ const AdminProblemEditPage = () => {
             navigate(`/admin/problem/${id}`); // 상세 페이지로 리다이렉트
         } catch (err) {
             console.error("문제 수정 실패:", err.response?.data || err.message);
-            alert("문제 수정에 실패했습니다: " + (err.response?.data?.message || err.message));
+            alert(
+                "문제 수정에 실패했습니다: " +
+                    (err.response?.data?.message || err.message)
+            );
         }
     };
 
@@ -146,7 +150,10 @@ const AdminProblemEditPage = () => {
             <AdminLayout>
                 <main className="p-6 text-center">
                     <p>문제를 찾을 수 없습니다.</p>
-                    <Button onClick={() => navigate('/admin/problem')} className="mt-4">
+                    <Button
+                        onClick={() => navigate("/admin/problem")}
+                        className="mt-4"
+                    >
                         문제 목록으로 돌아가기
                     </Button>
                 </main>
@@ -158,12 +165,19 @@ const AdminProblemEditPage = () => {
         <AdminLayout>
             <main className="p-6 overflow-auto">
                 <div className="bg-white shadow rounded-lg p-6">
-                    <h2 className="text-2xl font-semibold mb-6">문제 수정 ({problem.id})</h2>
+                    <h2 className="text-2xl font-semibold mb-6">
+                        문제 수정 ({problem.id})
+                    </h2>
 
                     <form onSubmit={handleSubmit}>
                         {/* 문제 정보 입력 필드 */}
                         <div className="mb-4">
-                            <label htmlFor="title" className="block text-gray-700 text-sm font-bold mb-2">제목:</label>
+                            <label
+                                htmlFor="title"
+                                className="block text-gray-700 text-sm font-bold mb-2"
+                            >
+                                제목:
+                            </label>
                             <input
                                 type="text"
                                 id="title"
@@ -175,7 +189,12 @@ const AdminProblemEditPage = () => {
                             />
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="detail" className="block text-gray-700 text-sm font-bold mb-2">문제 내용:</label>
+                            <label
+                                htmlFor="detail"
+                                className="block text-gray-700 text-sm font-bold mb-2"
+                            >
+                                문제 내용:
+                            </label>
                             <textarea
                                 id="detail"
                                 name="detail"
@@ -187,7 +206,12 @@ const AdminProblemEditPage = () => {
                             ></textarea>
                         </div>
                         <div className="mb-4">
-                            <label htmlFor="level" className="block text-gray-700 text-sm font-bold mb-2">난이도 (1-10):</label>
+                            <label
+                                htmlFor="level"
+                                className="block text-gray-700 text-sm font-bold mb-2"
+                            >
+                                난이도 (1-10):
+                            </label>
                             <input
                                 type="number"
                                 id="level"
@@ -201,7 +225,12 @@ const AdminProblemEditPage = () => {
                             />
                         </div>
                         <div className="mb-6">
-                            <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">카테고리:</label>
+                            <label
+                                htmlFor="category"
+                                className="block text-gray-700 text-sm font-bold mb-2"
+                            >
+                                카테고리:
+                            </label>
                             {/* 실제 카테고리 목록을 드롭다운으로 제공하는 것이 더 좋습니다. */}
                             <input
                                 type="text"
@@ -215,28 +244,47 @@ const AdminProblemEditPage = () => {
                         </div>
 
                         {/* 테스트 케이스 수정 섹션 */}
-                        <h3 className="text-xl font-semibold mb-4">테스트 케이스</h3>
+                        <h3 className="text-xl font-semibold mb-4">
+                            테스트 케이스
+                        </h3>
                         {formData.testCase.map((test, index) => (
-                            <div key={test.testCaseId || `new-${index}`} className="flex flex-wrap items-center mb-4 p-4 border rounded-lg bg-gray-50">
+                            <div
+                                key={test.testCaseId || `new-${index}`}
+                                className="flex flex-wrap items-center mb-4 p-4 border rounded-lg bg-gray-50"
+                            >
                                 <div className="w-full md:w-1/2 md:pr-2 mb-2 md:mb-0">
-                                    <label htmlFor={`input-${index}`} className="block text-gray-700 text-sm font-bold mb-1">입력 {index + 1}:</label>
+                                    <label
+                                        htmlFor={`input-${index}`}
+                                        className="block text-gray-700 text-sm font-bold mb-1"
+                                    >
+                                        입력 {index + 1}:
+                                    </label>
                                     <textarea
                                         id={`input-${index}`}
                                         name="input"
                                         value={test.input}
-                                        onChange={(e) => handleTestCaseChange(index, e)}
+                                        onChange={(e) =>
+                                            handleTestCaseChange(index, e)
+                                        }
                                         rows="2"
                                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                         required
                                     ></textarea>
                                 </div>
                                 <div className="w-full md:w-1/2 md:pl-2 mb-2 md:mb-0">
-                                    <label htmlFor={`output-${index}`} className="block text-gray-700 text-sm font-bold mb-1">출력 {index + 1}:</label>
+                                    <label
+                                        htmlFor={`output-${index}`}
+                                        className="block text-gray-700 text-sm font-bold mb-1"
+                                    >
+                                        출력 {index + 1}:
+                                    </label>
                                     <textarea
                                         id={`output-${index}`}
                                         name="output"
                                         value={test.output}
-                                        onChange={(e) => handleTestCaseChange(index, e)}
+                                        onChange={(e) =>
+                                            handleTestCaseChange(index, e)
+                                        }
                                         rows="2"
                                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                         required
@@ -248,10 +296,14 @@ const AdminProblemEditPage = () => {
                                             type="checkbox"
                                             name="isTestCase"
                                             checked={test.isTestCase}
-                                            onChange={(e) => handleTestCaseChange(index, e)}
+                                            onChange={(e) =>
+                                                handleTestCaseChange(index, e)
+                                            }
                                             className="form-checkbox h-5 w-5 text-blue-600"
                                         />
-                                        <span className="ml-2 text-gray-700 text-sm">테스트 케이스 사용</span>
+                                        <span className="ml-2 text-gray-700 text-sm">
+                                            테스트 케이스 사용
+                                        </span>
                                     </label>
                                 </div>
                                 <div className="w-full text-right mt-2">

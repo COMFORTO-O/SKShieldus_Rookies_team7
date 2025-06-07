@@ -1,5 +1,4 @@
-import { useState, useRef } from "react";
-import { FaCamera } from "react-icons/fa";
+import { useState } from "react";
 import image from "../../../public/image.png";
 import Input from "../atoms/Input";
 import Label from "../atoms/Label";
@@ -8,8 +7,6 @@ import Button from "../atoms/Button";
 
 export default function ProfileAccount({ name, email }) {
     const [isLoading, setIsLoading] = useState(false);
-    const [profileImage, setProfileImage] = useState(image);
-    const fileInputRef = useRef(null);
 
     const [profile, setProfile] = useState({
         name,
@@ -22,14 +19,6 @@ export default function ProfileAccount({ name, email }) {
         setProfile((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setProfileImage(imageUrl);
-        }
-    };
-
     return (
         <div className="w-full h-full flex">
             <div className="w-[30%] pl-7">계정 정보</div>
@@ -37,25 +26,17 @@ export default function ProfileAccount({ name, email }) {
             <div className="w-[70%] space-y-4">
                 <form>
                     <div className="flex flex-row items-center">
-                        <div className="relative">
-                            <img
-                                src={profileImage}
-                                className="w-[200px] h-[200px] border rounded-[20%] object-cover"
-                            />
-                            <input
-                                type="file"
-                                accept="image/*"
-                                ref={fileInputRef}
-                                className="hidden"
-                                onChange={handleImageChange}
-                            />
-                            <button
-                                type="button"
-                                onClick={() => fileInputRef.current.click()}
-                                className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow-md"
-                            >
-                                <FaCamera className="text-gray-700" />
-                            </button>
+                        <div className="flex flex-row items-center">
+                            <div>
+                                <img
+                                    src={image}
+                                    className="w-[200px] h-[200px] border rounded-[20%] object-cover"
+                                    alt="Profile"
+                                />
+                            </div>
+                            <div className="flex items-center ml-5 text-2xl font-bold">
+                                {profile.name}
+                            </div>
                         </div>
 
                         <div className="flex items-center ml-5 text-2xl font-bold">

@@ -22,7 +22,7 @@ public enum ErrorCode {
 //    DB	DB 오류	500 Internal Server Error	DB500	쿼리 실패, DB 연결 문제 등
 
     INVALID_REQUEST("REQ400", HttpStatus.BAD_REQUEST, "잘못된 요청입니다.", false),
-
+    ACCESS_DENIED("REQ401", HttpStatus.FORBIDDEN, "접근이 거부되었습니다", false),
     // USER
     USER_NOT_FOUND("USR404", HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.", false),
     UNAUTHORIZED("AUTH401", HttpStatus.UNAUTHORIZED, "인증이 필요합니다.", false),

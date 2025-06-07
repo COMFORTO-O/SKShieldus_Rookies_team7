@@ -1,4 +1,8 @@
-const LanguageSelect = ({ selectedLanguage, setSelectedLanguage }) => {
+const LanguageSelect = ({
+    languages,
+    selectedLanguage,
+    setSelectedLanguage,
+}) => {
     const handleChange = (e) => {
         setSelectedLanguage(e.target.value);
     };
@@ -10,10 +14,9 @@ const LanguageSelect = ({ selectedLanguage, setSelectedLanguage }) => {
                 onChange={handleChange}
                 className="border border-gray-300 rounded-md w-full p-2"
             >
-                <option value="Java">Java</option>
-                <option value="Python">Python</option>
-                <option value="C++">C++</option>
-                <option value="JavaScript">JavaScript</option>
+                {languages.map((item) => (
+                    <option value={item.code}>{item.code}</option>
+                ))}
             </select>
         </div>
     );

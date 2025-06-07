@@ -108,7 +108,7 @@ export default function MainContents() {
         console.log("======초기화 시작======");
         // 초기화 플래그 ON
         setIsResetting(true);
-        setSort("recent"); // 정렬 기본값
+        setSort("createdAt"); // 정렬 기본값
         setStatus("unsolved"); // 상태 기본값
         setCategory([]); // 카테고리(언어) 기본값
         setLevel(null); // 레벨 기본값
@@ -190,7 +190,7 @@ export default function MainContents() {
                 />
             </div>
             <div className="border-solid border-2 mt-5">
-                <div className="flex px-4 w-full text-center mb-1">
+                <div className="flex px-4 w-full mb-1">
                     <span className="px-2 py-1 text-xs">상태</span>
                     <span className="flex-1 ml-4 py-1 text-xs">문제</span>
                     <span className="ml-4 px-2 py-1 text-xs">난이도</span>
@@ -246,10 +246,6 @@ export default function MainContents() {
                     </button>
                 </div>
             )}
-
-            <div>
-                <Link to="/solve/1">임시 문제 페이지로</Link>
-            </div>
         </div>
     );
 }

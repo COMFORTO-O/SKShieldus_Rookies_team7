@@ -1,12 +1,20 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, {
+    useRef,
+    useEffect,
+    useState,
+    useCallback,
+    forwardRef,
+    useImperativeHandle,
+} from "react";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import useAuthStore from "../../store/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import useCodeStore from "../../store/useCodeStore";
 import RoleStore from "../../store/RoleStore";
+import editByStore from "../../store/editByStore";
 
-const ChatJoinComponent = ({ roomId }) => {
+const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
     // 코드 상태 (Global)
     const { setCode } = useCodeStore();
 
@@ -16,7 +24,7 @@ const ChatJoinComponent = ({ roomId }) => {
     const [isConnected, setIsConnected] = useState(false); // 초기값 false
     // 연결 상태
     // 초기 connectionStatus는 initialRoomIdToJoin 유무에 따라 설정
-    const [connectionStatus, setConnectionStatus] = useState("도움방 요청");
+    const [connectionStatus, setConnectionStatus] = useState("방 입장");
     // 받은 메세지
     const [receivedMessages, setReceivedMessages] = useState([]);
     // 현재 연결된 방 ID
@@ -43,14 +51,14 @@ const ChatJoinComponent = ({ roomId }) => {
     const chatAreaRef = useRef(null);
 
     // 현재 코드 수정 중인 참여자
-    const [editingBy, setEditingBy] = useState(null);
+    const { editingBy, setEditingBy } = editByStore();
     // 수정 타이머 참조
     const editingTimerRef = useRef(null);
 
     // 참여자 ( id, role )
     const [memberMap, setMemberMap] = useState({});
     // OWNER, CODE_EDIT, CHAT_ONLY 등 (Global)
-    const { myRole, setRole } = RoleStore();
+    const { role: myRole, setRole } = RoleStore();
     // 사용자 Email
     const [currentUserEmail, setCurrentUserEmail] = useState("");
     // 소유자 Email
@@ -60,6 +68,28 @@ const ChatJoinComponent = ({ roomId }) => {
     const { isLoggedIn, userEmail } = useAuthStore();
 
     //====================================================== 여기까지 상태
+
+    // 외부에서 호출할 수 있도록 메서드 노출
+    useImperativeHandle(ref, () => ({
+        sendCodeUpdateFromParent: (newCode) => {
+            // 코드 업데이트를 서버로 전송 (Client 가 존재하고 현재 연결이 된 상태인 경우)
+            if (stompClientRef.current?.active && currentRoomId) {
+                if (
+                    myRole === "CHAT_AND_EDIT" ||
+                    myRole === "OWNER" ||
+                    currentUserEmail === ownerEmail
+                ) {
+                    // 코드 업데이트 구독
+                    stompClientRef.current.publish({
+                        destination: `/app/code.update.${currentRoomId}`,
+                        body: JSON.stringify({ code: newCode }),
+                    });
+                } else {
+                    console.warn("코드 수정 권한이 없습니다.");
+                }
+            }
+        },
+    }));
 
     // <---- 구독 해제 유틸리티 ---->
     const unsubscribe = useCallback((subscriptionRef) => {
@@ -175,7 +205,7 @@ const ChatJoinComponent = ({ roomId }) => {
                 });
             console.log(`[${roomId}] 코드 업데이트 구독 완료.`);
         },
-        [currentUserEmail, setCode, unsubscribe]
+        [currentUserEmail, setCode, unsubscribe, setEditingBy]
     );
 
     // <---- 연결 초기 설정 구독 ---->
@@ -239,9 +269,7 @@ const ChatJoinComponent = ({ roomId }) => {
                                 // 현재 방에서 강퇴된 경우
                                 alert(`강퇴 알림: ${alertMsg}`);
                                 setCurrentRoomId("");
-                                setConnectionStatus(
-                                    "강퇴됨 (새로운 방 요청 가능)"
-                                );
+                                setConnectionStatus("강퇴됨");
                                 navigate("/helpRoomList"); // 페이지 이동
                             }
                         } catch (e) {
@@ -339,7 +367,7 @@ const ChatJoinComponent = ({ roomId }) => {
             setReceivedMessages([]);
             unsubscribeAllRoomSpecific(); // 모든 구독 참조 정리
             stompClientRef.current = null; // 명시적 null 처리
-            setConnectionStatus("도움방 요청");
+            setConnectionStatus("방 입장");
             setMemberMap({});
             setOwnerEmail("");
             setRole("CHAT_ONLY");
@@ -414,7 +442,7 @@ const ChatJoinComponent = ({ roomId }) => {
                 setReceivedMessages([]);
                 unsubscribeAllRoomSpecific(); // 모든 구독 참조 정리
                 stompClientRef.current = null;
-                setConnectionStatus("도움방 요청");
+                setConnectionStatus("방 입장");
                 setMemberMap({});
                 setOwnerEmail("");
                 setRole("CHAT_ONLY");
@@ -429,6 +457,7 @@ const ChatJoinComponent = ({ roomId }) => {
         connectionStatus,
         unsubscribeAllRoomSpecific,
         setRole,
+        setEditingBy,
     ]);
 
     useEffect(() => {
@@ -512,7 +541,7 @@ const ChatJoinComponent = ({ roomId }) => {
                 connectionStatus !== "도움방 생성 중..." &&
                 connectionStatus !== "연결 시도 중..."
             ) {
-                console.log("도움방 요청/참여 버튼 클릭");
+                console.log("방 참여 버튼 클릭");
                 connectToHelpRoom();
             } else {
                 console.log(
@@ -748,6 +777,6 @@ const ChatJoinComponent = ({ roomId }) => {
             )}
         </div>
     );
-};
+});
 
 export default ChatJoinComponent;

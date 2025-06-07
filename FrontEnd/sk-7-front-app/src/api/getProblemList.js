@@ -15,7 +15,7 @@ export const getProblemList = async ({
     status,
     page,
     size = 10,
-    sort = "id",
+    sort,
 }) => {
     // 각 상태를 보기 좋게 출력
     console.log("=== 문제 리스트 요청 상태 ===");
@@ -35,12 +35,12 @@ export const getProblemList = async ({
         params.append("title", title);
     if (level !== undefined && level !== null && level !== 0)
         params.append("level", level);
-    // if (status !== undefined && status !== null && status !== "")
-    //     params.append("status", status);
+    if (status !== undefined && status !== null && status !== "")
+        params.append("status", status);
     if (page !== undefined && page !== null) params.append("page", page - 1);
     if (size !== undefined && size !== null) params.append("size", size); // size 파라미터 추가
-    // if (sort !== undefined && sort !== null && sort !== "")
-    //     params.append("sort", sort);
+    if (sort !== undefined && sort !== null && sort !== "")
+        params.append("sort", sort);
 
     // category 처리 (,로 연결해 String으로 구성)
     if (category) {

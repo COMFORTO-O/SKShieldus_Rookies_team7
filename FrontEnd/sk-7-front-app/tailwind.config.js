@@ -36,9 +36,11 @@ export default {
                 },
                 vanila: "#FFF4E3",
                 levelColor: {
-                    hard: "#ff7919",
-                    medium: "#ffdd30",
-                    easy: "#7efc5b",
+                    5: "#fa0800",
+                    4: "#f05e59",
+                    3: "#ffb75e",
+                    2: "#d4fa6b",
+                    1: "#0afa4a",
                 },
             },
             fontFamily: {

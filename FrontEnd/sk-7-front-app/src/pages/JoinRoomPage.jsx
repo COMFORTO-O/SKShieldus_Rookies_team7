@@ -32,6 +32,21 @@ export default function JoinRoomPage() {
     const isResizingHorizontal = useRef(false); // 수평 리사이징 상태
     const mainContainerRef = useRef(null);
 
+    const chatComponentRef = useRef(null); // ChatComponent의 메서드 호출용 ref
+
+    // CodeEditorSection에서 사용자가 코드를 로컬에서 변경했을 때 호출될 콜백 함수
+    const handleLocalCodeEdit = useCallback((newCodeFromEditor) => {
+        if (
+            chatComponentRef.current &&
+            typeof chatComponentRef.current.sendCodeUpdateFromParent ===
+                "function"
+        ) {
+            chatComponentRef.current.sendCodeUpdateFromParent(
+                newCodeFromEditor
+            );
+        }
+    }, []); // chatComponentRef는 ref
+
     useEffect(() => {
         const checkMobileView = () => {
             const mobile = window.innerWidth < MD_BREAKPOINT;
@@ -182,6 +197,7 @@ export default function JoinRoomPage() {
                     <ProblemSectionForJoin
                         detail={data}
                         roomId={roomToJoinData.id}
+                        chatComponentRef={chatComponentRef}
                     />
                 </div>
 
@@ -207,7 +223,10 @@ export default function JoinRoomPage() {
                                 }`}
                 >
                     {/* CodeEditorSection이 h-full과 flex flex-col 등을 통해 부모를 채우도록 설계 */}
-                    <CodeEditorSection detail={data} />
+                    <CodeEditorSection
+                        detail={data}
+                        onLocalCodeEdit={handleLocalCodeEdit}
+                    />
                 </div>
             </main>
         </div>

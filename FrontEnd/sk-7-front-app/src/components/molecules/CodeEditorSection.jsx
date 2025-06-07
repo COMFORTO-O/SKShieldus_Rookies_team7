@@ -4,12 +4,20 @@ import Editor, { useMonaco } from "@monaco-editor/react";
 import { Button } from "@mui/material";
 import { sendUserCode } from "../../api/sendCode";
 import useCodeStore from "../../store/useCodeStore";
+import RoleStore from "../../store/RoleStore";
+import editByStore from "../../store/editByStore";
+import useAuthStore from "../../store/useAuthStore";
 
 function CodeEditorSection({ detail, onLocalCodeEdit }) {
     // 코드 상태
     const { code, setCode, resetCode } = useCodeStore();
+    const { role } = RoleStore();
+    const { editingBy } = editByStore();
+    const { userEmail: currentUser } = useAuthStore();
 
-    const [selectedLanguage, setSelectedLanguage] = useState("Java"); // 기본값 설정 예시
+    const [selectedLanguage, setSelectedLanguage] = useState(
+        detail.category.code
+    ); // 기본값 설정 예시
 
     const [result, setResult] = useState(null); // 실행 결과 상태
     const [loading, setLoading] = useState(false);
@@ -40,7 +48,7 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
                 onLocalCodeEdit(value); // 변경된 코드를 부모에게 알림
             }
         },
-        [setCode]
+        [setCode, onLocalCodeEdit]
     );
 
     // 실행 버튼 클릭 시
@@ -141,6 +149,7 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
             <div className="flex-none flex justify-end items-center p-2 border-b border-gray-700">
                 <div className="w-[150px]">
                     <LanguageSelect
+                        languages={[detail.category]}
                         selectedLanguage={selectedLanguage}
                         setSelectedLanguage={setSelectedLanguage}
                     />
@@ -172,6 +181,10 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
                             minimap: { enabled: true },
                             wordWrap: "on", // 자동 줄바꿈
                         }}
+                        disabled={
+                            role !== "CHAT_AND_EDIT" ||
+                            (editingBy && editingBy !== currentUser)
+                        }
                     />
                 </section>
 

@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import createRoom from "../../socket/createRoom";
 import useCodeStore from "../../store/useCodeStore";
 import RoleStore from "../../store/RoleStore";
+import editByStore from "../../store/editByStore";
 
 const ChatComponent = forwardRef(
     (
@@ -58,14 +59,14 @@ const ChatComponent = forwardRef(
         const chatAreaRef = useRef(null);
 
         // 현재 코드 수정 중인 참여자
-        const [editingBy, setEditingBy] = useState(null);
+        const { editingBy, setEditingBy } = editByStore();
         // 수정 타이머 참조
         const editingTimerRef = useRef(null);
 
         // 참여자 ( id, role )
         const [memberMap, setMemberMap] = useState({});
         // OWNER, CODE_EDIT, CHAT_ONLY 등 (Global)
-        const { myRole, setRole } = RoleStore();
+        const { role: myRole, setRole } = RoleStore();
         // 사용자 Email
         const [currentUserEmail, setCurrentUserEmail] = useState("");
         // 소유자 Email
@@ -218,7 +219,7 @@ const ChatComponent = forwardRef(
                     );
                 console.log(`[${roomId}] 코드 업데이트 구독 완료.`);
             },
-            [currentUserEmail, setCode, unsubscribe]
+            [currentUserEmail, setCode, unsubscribe, setEditingBy]
         );
 
         // <---- 연결 초기 설정 구독 ---->
@@ -360,7 +361,14 @@ const ChatComponent = forwardRef(
 
                 setConnectionStatus("도움방 참여 완료"); // 모든 구독 및 요청 후 상태 변경
             },
-            [setCode, currentUserEmail, currentRoomId, navigate, setRole]
+            [
+                setCode,
+                currentUserEmail,
+                currentRoomId,
+                navigate,
+                setRole,
+                myRole,
+            ]
         ); // currentRoomId 의존성 추가 (kick 메시지 처리)
 
         // <---- 도움방 연결 해제 ---->
@@ -535,6 +543,7 @@ const ChatComponent = forwardRef(
             disconnectFromHelpRoom,
             unsubscribeAllRoomSpecific,
             setRole,
+            setEditingBy,
         ]);
 
         useEffect(() => {
@@ -699,6 +708,7 @@ const ChatComponent = forwardRef(
                         } 사용자를 강퇴하시겠습니까?`
                     )
                 ) {
+                    console.log(targetUserEmail);
                     stompClientRef.current.publish({
                         destination: `/app/room.kick.${currentRoomId}`,
                         body: JSON.stringify({
@@ -925,7 +935,7 @@ const ChatComponent = forwardRef(
                                                                     코드편집
                                                                 </option>
                                                             </select>
-                                                            <button
+                                                            {/* <button
                                                                 onClick={() =>
                                                                     forceKickUser(
                                                                         email
@@ -935,7 +945,7 @@ const ChatComponent = forwardRef(
                                                                 title="강퇴"
                                                             >
                                                                 X
-                                                            </button>
+                                                            </button> */}
                                                         </>
                                                     )}
                                             </div>

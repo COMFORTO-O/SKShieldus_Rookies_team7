@@ -2,7 +2,7 @@ import useCodeStore from "../../store/useCodeStore";
 import ChatComponent from "../atoms/ChatComponent";
 import ChatJoinComponent from "../atoms/ChatJoinComponent";
 
-function ProblemSectionForJoin({ detail, roomId }) {
+function ProblemSectionForJoin({ detail, roomId, chatComponentRef }) {
     // 코드 상태
     const { code, setCode, resetCode } = useCodeStore();
     return (
@@ -19,7 +19,7 @@ function ProblemSectionForJoin({ detail, roomId }) {
 
                 <section className="flex-none text-white flex flex-col">
                     {/* 채팅 메시지 출력 영역 */}
-                    <ChatJoinComponent roomId={roomId} />
+                    <ChatJoinComponent roomId={roomId} ref={chatComponentRef} />
                 </section>
             </section>
         </div>

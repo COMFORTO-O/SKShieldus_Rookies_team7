@@ -40,7 +40,7 @@ const AdminProblemManagePage = React.lazy(() =>
 
 /*앱 컨테이너*/
 function App() {
-    const { setLogin, user } = useAuthStore(); // Zustand에서 상태와 액션을 가져옵니다.
+    const { setLogin, setEmail, user } = useAuthStore(); // Zustand에서 상태와 액션을 가져옵니다.
     const navigate = useNavigate();
 
     // Modal 상태 가져오기

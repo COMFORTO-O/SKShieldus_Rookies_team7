@@ -4,16 +4,18 @@ import useCategoryStore from "../../store/useCategoryStore";
 // // 정렬, 카테고리, 푼 문제 제외 체크박스 등
 
 const sortOptions = [
-    { label: "최신순", value: "recent" },
+    { label: "최신순", value: "createdAt" },
+    { label: "ID 순", value: "id" },
     { label: "레벨순", value: "level" },
-    { label: "정답률순", value: "accuracy" },
 ];
 
 const languageOptions = [
-    { label: "Java", value: "Java" },
-    { label: "Python", value: "Python" },
-    { label: "C++", value: "C++" },
-    { label: "JavaScript", value: "JavaScript" },
+    { label: "JAVA", value: "Java" },
+    { label: "PYTHON", value: "Python" },
+    { label: "C", value: "C" },
+    { label: "HTML", value: "HTML" },
+    { label: "ALGORITHM", value: "Algorithm" },
+    { label: "string", value: "string" },
 ];
 
 const CategoryBar = ({ onReset, onSearch, title, setTitle }) => {

@@ -69,9 +69,6 @@ const UserInfo = () => {
                                 <li>해결한 문제 수 : {solvedCount}</li>
                             </ul>
                         </div>
-                        <div className="flex-1 flex items-center justify-center">
-                            기타 정보
-                        </div>
                     </div>
                 </div>
             ) : (

@@ -36,5 +36,5 @@ runner:
     enabled: false
 
 # judge0 설정
-judge0:
+judge:
   url: http://localhost:2358/submissions?base64_encoded=false&wait=true

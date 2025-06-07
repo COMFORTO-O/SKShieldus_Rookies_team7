@@ -7,6 +7,9 @@ import axios from "axios";
 const useAuthStore = create((set) => ({
     isLoggedIn: false,
     accessToken: null,
+    userName: "",
+    userEmail: "",
+    solvedCount: 0,
     setLogin: (token) => {
         set({ isLoggedIn: true, accessToken: token });
     },
@@ -19,6 +22,9 @@ const useAuthStore = create((set) => ({
         // }
         set({ isLoggedIn: false, accessToken: null });
     },
+    setName: (val) => set({ userName: val }),
+    setEmail: (val) => set({ userEmail: val }),
+    setSolvedCount: (val) => set({ solvedCount: val }),
 }));
 
 export default useAuthStore;

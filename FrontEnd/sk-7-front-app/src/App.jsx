@@ -10,13 +10,14 @@ import Navbar from "./components/molecules/Navbar";
 import useAuthStore from "./store/useAuthStore";
 import LoadingSpinner from "./components/atoms/LoadingSpinner";
 import useModalStore from "./store/useModalStore";
-import { Avatar } from "@mui/material";
 import InfoModal from "./components/modals/InfoModal";
 import AdminRoute from "./admin/routes/AdminRoute";
 import AdminUserDetailPage from "./admin/pages/user/AdminUserDetailPage.jsx";
 import AdminProblemDetailPage from "./admin/pages/problem/AdminProblemDetailPage.jsx";
 import AdminProblemEditPage from "./admin/pages/problem/AdminProblemEditPage.jsx";
 import AdminCategoryManagePage from "./admin/pages/category/AdminCategoryManagePage.jsx";
+import HelpRoomListPage from "./pages/HelpRoomListPage";
+import JoinRoomPage from "./pages/JoinRoomPage";
 
 // React.lazy를 사용하여 페이지 컴포넌트 동적 임포트
 const MainPage = React.lazy(() => import("./pages/MainPage"));
@@ -48,13 +49,15 @@ function App() {
     // 앱이 처음 마운트될 때 한 번만 실행되어 accessToken을 확인하고 상태를 업데이트합니다.
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
-        if (token) {
+        const email = localStorage.getItem("Email");
+        if (token && email) {
             // 토큰이 만료된 상태라면
 
             console.log("현재 로그인 상태입니다.\nAccess Token:", token);
             setLogin(token); // Zustand 상태 업데이트
+            setEmail(email);
         }
-    }, [setLogin]);
+    }, [setLogin, setEmail]);
 
     const location = useLocation();
     // Navbar 표시 조건은 그대로 유지
@@ -107,8 +110,13 @@ function App() {
                         <Route path="/" element={<MainPage />} />
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/register" element={<SignupPage />} />
-                        <Route path="/solve" element={<SolvePage />} />
+                        <Route path="/solve/:id" element={<SolvePage />} />
                         <Route path="/info" element={<InfoPage />} />
+                        <Route
+                            path="/helpRoomList"
+                            element={<HelpRoomListPage />}
+                        />
+                        <Route path="/join/:id" element={<JoinRoomPage />} />
 
                         {/* 어드민 라우트 */}
                         <Route element={<AdminRoute />}>

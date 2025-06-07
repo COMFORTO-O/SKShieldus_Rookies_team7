@@ -7,4 +7,7 @@ export default defineConfig({
     server: {
         port: 3000,
     },
+    define: {
+        global: "window", // window 객체로 매핑
+    },
 });

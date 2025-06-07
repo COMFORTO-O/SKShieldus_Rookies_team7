@@ -15,7 +15,7 @@ export default function LoginForm() {
     const [id, setId] = useState("");
     const [password, setPassword] = useState("");
     // 로그인 정보 상태
-    const { isLoggedIn, setLogin } = useAuthStore();
+    const { isLoggedIn, setLogin, setEmail } = useAuthStore();
     // 에러 메세지 상태
     const [error, setError] = useState("");
     // 스피너
@@ -64,11 +64,14 @@ export default function LoginForm() {
                 if (result.success) {
                     // 로그인 성공
                     const token = getCookie("Authorization");
+
                     if (token) {
                         alert("로그인 성공");
                         // 토큰 정보 저장
                         localStorage.setItem("accessToken", token);
+                        localStorage.setItem("Email", id);
                         setLogin(token);
+                        setEmail(id);
                         // 페이지 이동
                         navigate("/", { replace: true });
                     } else {

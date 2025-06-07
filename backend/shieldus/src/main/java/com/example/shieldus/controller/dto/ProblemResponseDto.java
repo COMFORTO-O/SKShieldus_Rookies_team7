@@ -85,8 +85,10 @@ public class ProblemResponseDto {
         if (count == null || count == 0) {
             this.passRate = 0.0;
         } else {
-            double rate = successCount.doubleValue() / count;
-            this.passRate = Math.round(rate * 100.0) / 100.0; // 소수점 둘째 자리까지 반올림
+            if(successCount != null) {
+                double rate = successCount.doubleValue() / count;
+                this.passRate = Math.round(rate * 100.0) / 100.0; // 소수점 둘째 자리까지 반올림
+            }
         }
     }
     // 문제 상세

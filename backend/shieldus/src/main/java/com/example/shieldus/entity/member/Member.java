@@ -4,6 +4,8 @@ import com.example.shieldus.entity.member.enumration.MemberRoleEnum;
 import jakarta.persistence.*;
         import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -28,5 +30,17 @@ public class Member {
     private String phone;
 
     private Integer memberRank;
+
+    @Column(nullable = true)
+    @Builder.Default
+    private Boolean isDeleted = false;
+
+    private LocalDateTime deletedAt;
+
+
+    public void delete(){
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
+    }
 
 }

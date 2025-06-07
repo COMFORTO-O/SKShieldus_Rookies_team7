@@ -33,25 +33,35 @@ export const getProblemList = async ({
 
     if (title !== undefined && title !== null && title !== "")
         params.append("title", title);
-    if (level !== undefined && level !== null) params.append("level", level);
-    if (status !== undefined && status !== null && status !== "")
-        params.append("status", status);
-    if (page !== undefined && page !== null) params.append("page", page);
+    if (level !== undefined && level !== null && level !== 0)
+        params.append("level", level);
+    // if (status !== undefined && status !== null && status !== "")
+    //     params.append("status", status);
+    if (page !== undefined && page !== null) params.append("page", page - 1);
     if (size !== undefined && size !== null) params.append("size", size); // size 파라미터 추가
-    if (sort !== undefined && sort !== null && sort !== "")
-        params.append("sort", sort);
+    // if (sort !== undefined && sort !== null && sort !== "")
+    //     params.append("sort", sort);
 
     // category 처리 (,로 연결해 String으로 구성)
     if (category) {
         if (Array.isArray(category)) {
-            // 빈 배열이 아니면 콤마로 join해서 하나의 문자열로 전달
+            // 빈 배열이 아니면 콤마로 join해서 하나의 문자열로 전달 (공백 없이)
             if (category.length > 0) {
-                params.append("category", category.join(","));
+                params.append(
+                    "category",
+                    category
+                        .map((c) => c.toUpperCase().replace(/\s+/g, ""))
+                        .join(",")
+                );
             }
         } else if (typeof category === "string" && category !== "") {
-            params.append("category", category);
+            params.append(
+                "category",
+                category.toUpperCase().replace(/\s+/g, "")
+            );
         }
     }
+    console.log(params);
 
     try {
         const response = await axios.get(
@@ -64,8 +74,10 @@ export const getProblemList = async ({
                 withCredentials: true,
             }
         );
+        console.log(response.data);
 
-        return response.data;
+        // content만 반환
+        return response.data?.data;
     } catch (error) {
         // 에러 출력
         throw (

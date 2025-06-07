@@ -17,6 +17,6 @@ public class MyPageResponseDto {
     @Builder
     public static class SolvedProblem {
         private String problemTitle; // 문제 제목
-        private LocalDateTime completeDate; // 완료 날짜
+        private LocalDateTime completedAt; // 완료 날짜
     }
 }

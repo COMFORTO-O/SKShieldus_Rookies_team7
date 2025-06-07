@@ -1,5 +1,6 @@
 package com.example.shieldus.service;
 
+import com.example.shieldus.config.judge0.JudgeProperties;
 import com.example.shieldus.controller.dto.CompileRequestDto;
 import com.example.shieldus.controller.dto.CompileResponseDto;
 import com.example.shieldus.controller.dto.CompileResponseDto.TestCaseResult;
@@ -45,7 +46,7 @@ public class CompileService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final String JUDGE0_URL = "http://localhost:2358/submissions?base64_encoded=false&wait=true";
+    private final JudgeProperties judgeProperties;
 
     //Test 3개만
     public CompileResponseDto runTest(CompileRequestDto requestDto, Long memberId) {
@@ -59,12 +60,12 @@ public class CompileService {
         //제출 내역 or Test 내역 있으면 가져오기
         MemberSubmitProblem submit = getOrCreateSubmit(member, problem);
 
-        List<ProblemTestCase> testCases = problemTestCaseRepository.findByProblem(problem);
+        List<ProblemTestCase> testCases = problemTestCaseRepository.findByProblem_IdAndIsTestCaseIsTrue(problem.getId());
 
         List<TestCaseResult> results = new ArrayList<>();
 
         int passed = 0;
-        int total = Math.min(testCases.size(), 3); // 3개 이하 오류 처리 + 3개까지
+        int total = testCases.size();
 
         for (int i = 0; i < total; i++) {
             ProblemTestCase testCase = testCases.get(i);
@@ -119,7 +120,7 @@ public class CompileService {
 
         if (allPass) {
             submit.setPass(true);
-            submit.setCompleteDate(LocalDateTime.now());
+            submit.setCompletedAt(LocalDateTime.now());
             memberSubmitProblemRepository.save(submit);
         }
 
@@ -158,7 +159,8 @@ public class CompileService {
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
         try {
-            ResponseEntity<String> response = restTemplate.postForEntity(JUDGE0_URL, entity, String.class);
+            System.out.println(judgeProperties.getUrl());
+            ResponseEntity<String> response = restTemplate.postForEntity(judgeProperties.getUrl(), entity, String.class);
             JsonNode root = objectMapper.readTree(response.getBody());
 
             String stdout = root.path("stdout").asText("").trim();

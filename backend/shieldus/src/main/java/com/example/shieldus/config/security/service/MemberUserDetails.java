@@ -1,6 +1,8 @@
 package com.example.shieldus.config.security.service;
 
 import com.example.shieldus.entity.member.Member;
+import com.example.shieldus.entity.member.enumration.MemberRoleEnum;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,11 +12,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Getter
 public class MemberUserDetails implements UserDetails {
 
     private String email;
     private String password;
     private List<GrantedAuthority> authorities;
+    private MemberRoleEnum role;
     private Long id;
     private String name;
     private String phone;
@@ -50,15 +54,6 @@ public class MemberUserDetails implements UserDetails {
 
     public Long getMemberId(){
         return this.id;
-    }
-    public String getMemberName(){
-        return this.name;
-    }
-    public String getMemberPhone(){
-        return this.phone;
-    }
-    public Integer getMemberRank(){
-        return this.memberRank;
     }
 
     @Override

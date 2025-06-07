@@ -2,7 +2,6 @@ package com.example.shieldus.controller;
 
 import com.example.shieldus.config.security.service.MemberUserDetails;
 import com.example.shieldus.controller.dto.MyPageResponseDto;
-import com.example.shieldus.controller.dto.MyPageResponseDto;
 import com.example.shieldus.controller.dto.ResponseDto;
 import com.example.shieldus.service.member.MemberService;
 import lombok.RequiredArgsConstructor;

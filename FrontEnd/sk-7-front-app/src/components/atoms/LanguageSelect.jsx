@@ -1,8 +1,4 @@
-import { useState } from "react";
-
-const LanguageSelect = () => {
-    const [selectedLanguage, setSelectedLanguage] = useState("");
-
+const LanguageSelect = ({ selectedLanguage, setSelectedLanguage }) => {
     const handleChange = (e) => {
         setSelectedLanguage(e.target.value);
     };

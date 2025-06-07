@@ -1,30 +1,36 @@
 package com.example.shieldus.repository.problem;
 
 import com.example.shieldus.controller.dto.ProblemResponseDto;
-import com.example.shieldus.entity.member.QMember;
-import com.example.shieldus.entity.member.QMemberSubmitProblem;
-import com.example.shieldus.entity.problem.QProblem;
-import com.example.shieldus.entity.problem.enumration.ProblemCategoryEnum;
-import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberPath;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.example.shieldus.entity.member.QMemberSubmitProblem.memberSubmitProblem;
+import static com.example.shieldus.entity.problem.QProblem.problem;
 
 @Repository
+@RequiredArgsConstructor
 public class ProblemRepositoryImpl implements ProblemRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
-    @Autowired
-    public ProblemRepositoryImpl(EntityManager em) {
-        this.queryFactory = new JPAQueryFactory(em);
-    }
 
     @Override
     public Page<ProblemResponseDto> findProblemsWithFilters(
@@ -32,90 +38,123 @@ public class ProblemRepositoryImpl implements ProblemRepositoryCustom {
             String category,
             Integer level,
             String title,
-            String status,
+            Boolean solved,
             Pageable pageable) {
 
-        QProblem p = QProblem.problem;
-        QMember m = QMember.member;
-        QMemberSubmitProblem msp = QMemberSubmitProblem.memberSubmitProblem;
+        List<ProblemResponseDto> problemResponses = queryFactory.select(Projections.constructor(ProblemResponseDto.class,
+                        problem.id,
+                        problem.title,
+                        problem.detail,
+                        problem.level,
+                        problem.createdAt,
+                        problem.category.id,
+                        problem.category.code,
+                        problem.category.description
+                ))
+                .from(problem)
+                .leftJoin(problem.category)
+                .where(
+                        eqCategory(category),
+                        eqLevel(level),
+                        containsTitle(title)
+                )
+                .orderBy(problemOrderBy(pageable))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
-        BooleanExpression categoryCondition = hasCategory(category);
-        BooleanExpression levelCondition    = hasLevel(level);
-        BooleanExpression titleCondition    = hasTitle(title);
-        BooleanExpression statusCondition   = hasStatus(status, msp);
+        List<Long> idList = problemResponses.stream().map(ProblemResponseDto::getId).toList();
+        // 성공, 실패 비율 구하기
+        List<ProblemResponseDto.Pass> passList = queryFactory.select(
+                Projections.constructor(
+                        ProblemResponseDto.Pass.class,
+                        memberSubmitProblem.member.id,
+                        memberSubmitProblem.problem.id.as("problemId"),
+                        new CaseBuilder()
+                                .when(memberSubmitProblem.pass.isTrue()).then(1)
+                                .otherwise(0)
+                                .max() // 그룹 내에서 가장 큰 값(1)을 가져옴
+                                .eq(1),
+                        memberSubmitProblem.completedAt
+                ))
+                .from(memberSubmitProblem)
+                .where(memberSubmitProblem.problem.id.in(idList))
+                .groupBy(memberSubmitProblem.member.id, memberSubmitProblem.problem.id)
+                .fetch();
 
-        // ✅ 1) Content 쿼리
-        List<ProblemResponseDto> content = queryFactory
-            .select(Projections.constructor(
-                ProblemResponseDto.class,
-                p.id,
-                p.title,
-                p.detail,
-                p.category,
-                p.level,
-                m.name,
-                msp.pass.coalesce(false)
-            ))
-            .from(p)
-            .leftJoin(p.member, m) // 변경
-            .leftJoin(msp).on(
-                msp.problem.eq(p),
-                msp.member.id.eq(memberId)
-            )
-            .where(categoryCondition, levelCondition, titleCondition, statusCondition)
-            .orderBy(p.id.desc())
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
-            .fetch();
-
-        // ✅ 2) Count 쿼리
-        long total = queryFactory
-            .select(p.count())
-            .from(p)
-            .leftJoin(p.member, m) // 필요
-            .leftJoin(msp).on(
-                msp.problem.eq(p),
-                msp.member.id.eq(memberId)
-            )
-            .where(categoryCondition, levelCondition, titleCondition, statusCondition)
-            .fetchOne();
-
-        return new PageImpl<>(
-            content,
-            PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending()),
-            total
-        );
-    }
+        Map<Long, Long> passCountMap = new HashMap<>();
+        Map<Long, Long> successPassCountMap = new HashMap<>();
+        passList.forEach(pass -> {
+            passCountMap.put(pass.getProblemId(), passCountMap.getOrDefault(pass.getProblemId(), 0L) + 1);
+            if (pass.getIsPass()) {
+                // 패스 ID 와 같다면 pass 처리
+                if(pass.getMemberId().equals(memberId)) {
+                    problemResponses.stream().filter(dto->dto.getId().equals(pass.getProblemId())).findFirst().ifPresent(dto -> dto.setSolved(true));
+                }
+                successPassCountMap.put(pass.getProblemId(), successPassCountMap.getOrDefault(pass.getProblemId(), 0L) + 1);
+            }
+        });
+        problemResponses.forEach(problem -> {
+            // 키가 없을 겨우
+            if(!passCountMap.containsKey(problem.getId())) {
+               problem.setPass(0L,0L);
+            }
+            else{
+                problem.setPass(successPassCountMap.get(problem.getId()), passCountMap.get(problem.getId()));
+            }
+        });
 
 
-    private BooleanExpression hasCategory(String category) {
-        if (!StringUtils.hasText(category)) return null;
-        try {
-            return QProblem.problem.category.eq(
-                ProblemCategoryEnum.valueOf(category.toUpperCase())
-            );
-        } catch (IllegalArgumentException e) {
-            return null;
+
+        Long total = queryFactory.select(problem.count())
+                .from(problem)
+                .leftJoin(problem.category)
+                .leftJoin(memberSubmitProblem)
+                .on(memberSubmitProblem.member.id.eq(memberId)
+                        .and(memberSubmitProblem.problem.id.eq(problem.id)))
+                .where(
+                        eqCategory(category),
+                        eqLevel(level),
+                        containsTitle(title),
+                        eqStatus(memberId, solved)
+                )
+                .fetchOne();
+        if (total == null) {
+            total = 0L;
         }
+        return new PageImpl<>(problemResponses, pageable, 0);
     }
 
-    private BooleanExpression hasLevel(Integer level) {
-        return level == null ? null : QProblem.problem.level.eq(level);
+    private BooleanExpression eqCategory(String category) {
+        return (category == null || category.isEmpty()) ? null : problem.category.code.eq(category);
     }
 
-    private BooleanExpression hasTitle(String title) {
-        return !StringUtils.hasText(title)
-            ? null
-            : QProblem.problem.title.containsIgnoreCase(title);
+    private BooleanExpression eqLevel(Integer level) {
+        return level == null ? null : problem.level.eq(level);
     }
 
-    private BooleanExpression hasStatus(String status, QMemberSubmitProblem msp) {
-        if ("solved".equalsIgnoreCase(status)) {
-            return msp.pass.isTrue();
-        } else if ("unsolved".equalsIgnoreCase(status)) {
-            return msp.pass.isFalse()
-                   .or(msp.id.isNull());
+    private BooleanExpression containsTitle(String title) {
+        return (title == null || title.isEmpty()) ? null : problem.title.containsIgnoreCase(title);
+    }
+
+    private BooleanExpression eqStatus(Long memberId, Boolean solved) {
+        return memberId != null && memberId > 0 && solved != null ? (solved ? memberSubmitProblem.pass.isTrue() : memberSubmitProblem.pass.isFalse()) : null;
+    }
+
+    private OrderSpecifier<?>[] problemOrderBy(Pageable pageable) {
+        if (pageable.getSort().isSorted()) {
+            return pageable.getSort().stream().map(order -> {
+                Order direction = order.isAscending() ? Order.ASC : Order.DESC;
+                String property = order.getProperty();
+
+                if (property.equals("createdAt")) {
+                    return new OrderSpecifier<>(direction, problem.createdAt);
+                }
+                return problem.id.desc();
+            }).toArray(OrderSpecifier[]::new);
+
+        } else {
+            return List.of(problem.id.desc()).toArray(new OrderSpecifier[0]);
         }
-        return null;
     }
 }

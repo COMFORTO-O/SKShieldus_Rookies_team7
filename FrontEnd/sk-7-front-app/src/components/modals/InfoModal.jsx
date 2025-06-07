@@ -1,13 +1,38 @@
 import { useNavigate } from "react-router-dom";
 import useModalStore from "../../store/useModalStore";
 import { Avatar } from "@mui/material";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import useAuthStore from "../../store/useAuthStore";
+import getUserInfo from "../../api/getUserInfo";
 
 // 유저 정보 Modal
 const InfoModal = () => {
-    const { infoModalOpen, closeInfoModal } = useModalStore();
+    const { isLoggedIn } = useAuthStore();
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [error, setError] = useState("");
+    const { closeInfoModal } = useModalStore();
     const navigate = useNavigate();
     const modalRef = useRef(null);
+
+    useEffect(() => {
+        if (isLoggedIn) {
+            // 유저 정보 가져오기
+            const fetchUserInfo = async () => {
+                try {
+                    const data = await getUserInfo();
+                    setName(data.name);
+                    setEmail(data.email);
+                } catch (e) {
+                    setError(
+                        e?.message || "사용자 정보를 불러오지 못했습니다."
+                    );
+                    setName(null);
+                }
+            };
+            fetchUserInfo();
+        }
+    }, [isLoggedIn]);
 
     // 바깥 클릭 시 모달 닫기
     useEffect(() => {
@@ -43,8 +68,15 @@ const InfoModal = () => {
                     sx={{ width: "30%", height: "30%" }}
                     className="ml-5 h-full w-auto"
                 />
-                <div className="flex-1">
-                    <h1>이름</h1>
+                <div className="flex-1 flex flex-col gap-2">
+                    {error ? (
+                        <div className="text-red-500 text-sm">{error}</div>
+                    ) : (
+                        <>
+                            <h1>이름 : {name}</h1>
+                            <h1>이메일 : {email} (User)</h1>
+                        </>
+                    )}
                 </div>
                 <button
                     className="bg-white flex justify-center items-center h-12 border-t-2 font-sourgummy"

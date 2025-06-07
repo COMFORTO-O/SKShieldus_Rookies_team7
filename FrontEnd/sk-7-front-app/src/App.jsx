@@ -61,7 +61,9 @@ function App() {
     const showNavbar =
         location.pathname !== "/login" &&
         location.pathname !== "/register" &&
-        !location.pathname.startsWith("/admin");
+        !location.pathname.startsWith("/solve") &&
+        !location.pathname.startsWith("/admin") &&
+        !location.pathname.startsWith("/join");
 
     // 로그인 상태 감지하여 리다이렉션
     // 이 로직은 user 상태가 변경될 때마다 실행됩니다.

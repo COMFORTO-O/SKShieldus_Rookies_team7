@@ -10,7 +10,7 @@ public interface ProblemRepositoryCustom {
             String category,
             Integer level,
             String title,
-            String status,
+            Boolean status,
             Pageable pageable
     );
 }

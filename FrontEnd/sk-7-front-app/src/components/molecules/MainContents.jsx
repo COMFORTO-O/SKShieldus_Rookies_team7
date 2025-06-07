@@ -6,15 +6,8 @@ import useCategoryStore from "../../store/useCategoryStore";
 import CategoryBar from "../atoms/CategoryBar";
 import ProblemItem from "../atoms/ProblemItem";
 import { getProblemList } from "../../api/getProblemList";
-import { Link } from "react-router-dom";
-
-// - title: String (제목 키워드 포함)
-// - category: String (JAVA, PYTHON, …)
-// - level: Integer (난이도)
-// - status: String (solved / unsolved)
-// - page: Integer (페이지 번호)
-// - size: Integer (페이지 크기)
-// - sort: String (id,desc 등)
+import { Link, useNavigate } from "react-router-dom";
+import useAuthStore from "../../store/useAuthStore";
 
 export default function MainContents() {
     // 전역 상태 가져오기
@@ -29,6 +22,21 @@ export default function MainContents() {
         setLevel,
     } = useCategoryStore();
 
+    const { isLoggedIn, accessToken } = useAuthStore();
+
+    // 페이지 이동 네비게이터
+    const navigate = useNavigate();
+
+    // 문제 클릭 시 풀이 페이지로 이동
+    const handleProblemClick = (problemId) => {
+        if (!isLoggedIn || !accessToken) {
+            alert("인증이 필요합니다. 로그인 페이지로 이동합니다.");
+            navigate("/login");
+            return;
+        }
+        navigate(`/solve/${problemId}`);
+    };
+
     // 검색 타이틀
     const [title, setTitle] = useState("");
 
@@ -36,6 +44,10 @@ export default function MainContents() {
     const [pageNumber, setPageNumber] = useState(1);
     // 문제들 (전역 관리할지 변수에 저장할지 아직 결정 못함)
     const [problems, setProblems] = useState([]);
+    // 총 페이지 수
+    const [totalPages, setTotalPages] = useState(0);
+    // 총 문제 개수
+    // const [totalElements, setTotalElements] = useState(0);
 
     // 로딩 상태
     const [loading, setLoading] = useState(false);
@@ -45,31 +57,41 @@ export default function MainContents() {
     const [isResetting, setIsResetting] = useState(false);
 
     // 문제 리스트 요청 함수
-    const fetchProblems = useCallback(async () => {
-        setLoading(true);
-        setError("");
-        try {
-            const data = await getProblemList({
-                title: title,
-                category: category,
-                level: level,
-                status: status,
-                page: pageNumber,
-                sort: sort,
-            });
-            setProblems(data.problems || []);
-        } catch (err) {
-            setError(err);
-        } finally {
-            setLoading(false);
-        }
-    }, [sort, status, pageNumber, level, category, title]);
+    const fetchProblems = useCallback(
+        async (currentPage) => {
+            setLoading(true);
+            setError("");
+            try {
+                const data = await getProblemList({
+                    title: title,
+                    category: category,
+                    level: level,
+                    status: status,
+                    page: currentPage,
+                    sort: sort,
+                });
+                setProblems(data?.content || []);
+                setTotalPages(data?.totalPages || 0);
+                if (
+                    currentPage > (data?.totalPages || 0) &&
+                    (data?.totalPages || 0) > 0
+                ) {
+                    setPageNumber(data.totalPages);
+                }
+            } catch (err) {
+                setError(err);
+            } finally {
+                setLoading(false);
+            }
+        },
+        [sort, status, pageNumber, level, category, title]
+    );
 
     // 카테고리 변경될 시 리스트 다시 받아오기
     useEffect(() => {
         if (isResetting) {
             const timeout = setTimeout(() => {
-                fetchProblems();
+                fetchProblems(1);
                 // 초기화 플래그 OFF
                 setIsResetting(false);
             }, 0);
@@ -77,7 +99,7 @@ export default function MainContents() {
         }
 
         if (!isResetting) {
-            fetchProblems();
+            fetchProblems(1);
         }
     }, [sort, status, level, category, pageNumber, isResetting]);
 
@@ -99,8 +121,63 @@ export default function MainContents() {
     const onSearch = useCallback(() => {
         console.log("검색");
         setPageNumber(1);
-        fetchProblems();
+        fetchProblems(1);
     }, [fetchProblems]);
+
+    const handlePageChange = (newPage) => {
+        if (
+            newPage >= 1 &&
+            newPage <= totalPages &&
+            newPage !== pageNumber &&
+            !loading
+        ) {
+            setPageNumber(newPage);
+        }
+    };
+
+    const renderPageNumbers = () => {
+        // ... (페이지네이션 UI 로직은 동일)
+        const pageNumbers = [];
+        const maxPagesToShow = 5;
+        let startPage, endPage;
+
+        if (totalPages <= maxPagesToShow) {
+            startPage = 1;
+            endPage = totalPages;
+        } else {
+            if (pageNumber <= Math.ceil(maxPagesToShow / 2)) {
+                startPage = 1;
+                endPage = maxPagesToShow;
+            } else if (
+                pageNumber + Math.floor(maxPagesToShow / 2) >=
+                totalPages
+            ) {
+                startPage = totalPages - maxPagesToShow + 1;
+                endPage = totalPages;
+            } else {
+                startPage = pageNumber - Math.floor(maxPagesToShow / 2);
+                endPage = pageNumber + Math.floor(maxPagesToShow / 2);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            pageNumbers.push(
+                <button
+                    key={i}
+                    onClick={() => handlePageChange(i)}
+                    disabled={loading || pageNumber === i}
+                    className={`px-3 py-1 mx-1 border rounded ${
+                        pageNumber === i
+                            ? "bg-blue-500 text-white"
+                            : "bg-white hover:bg-gray-100"
+                    } ${loading ? "cursor-not-allowed" : ""}`}
+                >
+                    {i}
+                </button>
+            );
+        }
+        return pageNumbers;
+    };
 
     return (
         <div className="mx-14">
@@ -140,11 +217,38 @@ export default function MainContents() {
                     {!loading &&
                         !error &&
                         problems.map((item) => (
-                            <ProblemItem key={item.id} {...item} />
+                            <ProblemItem
+                                key={item.id}
+                                {...item}
+                                onClick={handleProblemClick}
+                                p_id={item.id}
+                            />
                         ))}
-
-                    <Link to="/solve">문제 풀이 페이지로</Link>
                 </div>
+            </div>
+
+            {!loading && !error && totalPages > 0 && (
+                <div className="flex justify-center items-center mt-6 mb-4">
+                    <button
+                        onClick={() => handlePageChange(pageNumber - 1)}
+                        disabled={pageNumber === 1 || loading}
+                        className="px-3 py-1 mx-1 border rounded bg-white hover:bg-gray-100 disabled:opacity-50"
+                    >
+                        이전
+                    </button>
+                    {renderPageNumbers()}
+                    <button
+                        onClick={() => handlePageChange(pageNumber + 1)}
+                        disabled={pageNumber === totalPages || loading}
+                        className="px-3 py-1 mx-1 border rounded bg-white hover:bg-gray-100 disabled:opacity-50"
+                    >
+                        다음
+                    </button>
+                </div>
+            )}
+
+            <div>
+                <Link to="/solve/1">임시 문제 페이지로</Link>
             </div>
         </div>
     );

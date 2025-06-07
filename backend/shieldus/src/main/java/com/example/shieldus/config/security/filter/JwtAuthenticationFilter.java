@@ -4,6 +4,8 @@ package com.example.shieldus.config.security.filter;
 import com.example.shieldus.config.jwt.JwtTokenProvider;
 import com.example.shieldus.config.security.dto.LoginRequestDto;
 import com.example.shieldus.config.security.utils.RSAUtil;
+import com.example.shieldus.controller.dto.ResponseDto;
+import com.example.shieldus.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -44,8 +46,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // 로그인 object 추출
             LoginRequestDto loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
             // password 디코딩
-            String password = rsaUtil.decryptRsaBase64(loginRequest.getPassword());
-//            String password = loginRequest.getPassword();
+//            String password = rsaUtil.decryptRsaBase64(loginRequest.getPassword());
+            String password = loginRequest.getPassword();
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), password);
 
@@ -62,7 +64,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         String jwt = jwtTokenProvider.createToken(authResult);
 
-        Map<String, String> responseBody = new HashMap<>();
 
         ResponseCookie jwtCookie = ResponseCookie.from("Authorization", jwt)
                 .httpOnly(false)
@@ -75,7 +76,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader("Set-Cookie", jwtCookie.toString());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        new ObjectMapper().writeValue(response.getWriter(), responseBody);
+
+        // 성공시 data에도 jwt 추가
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("jwt", jwt);
+        ResponseDto<Map<String, String>> responseDto = ResponseDto.success(responseBody);
+
+        new ObjectMapper().writeValue(response.getWriter(), responseDto);
     }
 
     @Override
@@ -84,10 +91,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", "Authentication Failed");
-        errorResponse.put("message", failed.getMessage());
-        new ObjectMapper().writeValue(response.getWriter(), errorResponse);
+
+        ResponseDto<Map<String, String>> responseDto = ResponseDto.error(ErrorCode.AUTHENTICATION_FAILED);
+        new ObjectMapper().writeValue(response.getWriter(), responseDto);
     }
 
 

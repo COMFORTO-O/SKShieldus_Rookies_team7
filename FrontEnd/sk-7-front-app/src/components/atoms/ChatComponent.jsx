@@ -482,6 +482,7 @@ const ChatComponent = forwardRef(
                         const roomData = await createRoom({
                             problemId: p_id,
                             language: lang,
+                            code: code
                         });
                         if (roomData?.id) {
                             console.log(

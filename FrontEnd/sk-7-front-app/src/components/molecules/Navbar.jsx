@@ -8,9 +8,9 @@ const Navbar = () => {
     const { infoModalOpen, openInfoModal, closeInfoModal } = useModalStore();
 
     return (
-        <div className="bg-base-100 h-14 flex justify-between items-center border-b-2 px-4">
+        <div className="bg-white shadow-sm h-16 flex justify-between items-center px-6 border-b border-gray-200">
             {/* 로고 (홈 링크) */}
-            <Link to="/" className="flex items-center">
+            <Link to="/" className="flex items-center py-2">
                 <img
                     src={logo}
                     alt="로고"
@@ -19,13 +19,13 @@ const Navbar = () => {
             </Link>
 
             {/* 네비게이션 바 */}
-            <nav className="flex gap-4 items-center text-black font-sourgummy">
-                <Link to="/">홈</Link>
+            <nav className="flex items-center space-x-6 text-gray-700 font-semibold">
+                <Link to="/" className="hover:text-primary-focus transition-colors duration-200">홈</Link>
                 {isLoggedIn ? (
                     <>
-                        <Link to="/helpRoomList">방 목록</Link>
+                        <Link to="/helpRoomList" className="hover:text-primary-focus transition-colors duration-200">방 목록</Link>
                         <button
-                            className="rounded-md w-20 h-7 text-center bg-primary text-base-100 hover:bg-hoverButton-900"
+                            className="px-4 py-2 rounded-md bg-primary text-white hover:bg-primary-dark transition-colors duration-200 text-sm"
                             onClick={
                                 infoModalOpen ? closeInfoModal : openInfoModal
                             }
@@ -37,7 +37,7 @@ const Navbar = () => {
                     <>
                         <Link
                             to="/login"
-                            className="rounded-md w-16 h-7 text-center bg-blue-500 text-white border-solid border-2 hover:bg-blue-700 transition"
+                            className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200 text-sm"
                         >
                             로그인
                         </Link>

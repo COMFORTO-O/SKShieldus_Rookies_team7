@@ -1,6 +1,3 @@
-// 메인 컨텐츠
-// 코딩 테스트 문제 + 카테고리 + 검색
-
 import { useCallback, useEffect, useState } from "react";
 import useCategoryStore from "../../store/useCategoryStore";
 import CategoryBar from "../atoms/CategoryBar";
@@ -10,7 +7,6 @@ import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/useAuthStore";
 
 export default function MainContents() {
-    // 전역 상태 가져오기
     const {
         sort,
         status,
@@ -23,11 +19,8 @@ export default function MainContents() {
     } = useCategoryStore();
 
     const { isLoggedIn, accessToken } = useAuthStore();
-
-    // 페이지 이동 네비게이터
     const navigate = useNavigate();
 
-    // 문제 클릭 시 풀이 페이지로 이동
     const handleProblemClick = (problemId) => {
         if (!isLoggedIn || !accessToken) {
             alert("인증이 필요합니다. 로그인 페이지로 이동합니다.");
@@ -37,26 +30,14 @@ export default function MainContents() {
         navigate(`/solve/${problemId}`);
     };
 
-    // 검색 타이틀
     const [title, setTitle] = useState("");
-
-    // 페이지 넘버
     const [pageNumber, setPageNumber] = useState(1);
-    // 문제들 (전역 관리할지 변수에 저장할지 아직 결정 못함)
     const [problems, setProblems] = useState([]);
-    // 총 페이지 수
     const [totalPages, setTotalPages] = useState(0);
-    // 총 문제 개수
-    // const [totalElements, setTotalElements] = useState(0);
-
-    // 로딩 상태
     const [loading, setLoading] = useState(false);
-    // 에러 메세지 상태
     const [error, setError] = useState("");
-    // 카테고리 초기화 상태 플래그
     const [isResetting, setIsResetting] = useState(false);
 
-    // 문제 리스트 요청 함수
     const fetchProblems = useCallback(
         async (currentPage) => {
             setLoading(true);
@@ -84,42 +65,34 @@ export default function MainContents() {
                 setLoading(false);
             }
         },
-        [sort, status, pageNumber, level, category, title]
+        [sort, status, level, category, title]
     );
 
-    // 카테고리 변경될 시 리스트 다시 받아오기
     useEffect(() => {
         if (isResetting) {
             const timeout = setTimeout(() => {
                 fetchProblems(1);
-                // 초기화 플래그 OFF
                 setIsResetting(false);
             }, 0);
             return () => clearTimeout(timeout);
         }
 
         if (!isResetting) {
-            fetchProblems(1);
+            fetchProblems(pageNumber);
         }
-    }, [sort, status, level, category, pageNumber, isResetting]);
+    }, [sort, status, level, category, pageNumber, isResetting, fetchProblems]);
 
-    // 카테고리 초기화
     const onRefresh = useCallback(() => {
-        console.log("======초기화 시작======");
-        // 초기화 플래그 ON
         setIsResetting(true);
-        setSort("createdAt"); // 정렬 기본값
-        setStatus("unsolved"); // 상태 기본값
-        setCategory([]); // 카테고리(언어) 기본값
-        setLevel(null); // 레벨 기본값
-        setTitle(""); // 검색어 기본값
-        setPageNumber(1); // 페이지도 1로 초기화
-        console.log("======초기화 끝======");
+        setSort("createdAt");
+        setStatus("unsolved");
+        setCategory([]);
+        setLevel(null);
+        setTitle("");
+        setPageNumber(1);
     }, [setSort, setStatus, setCategory, setLevel, setTitle, setPageNumber]);
 
-    // 검색
     const onSearch = useCallback(() => {
-        console.log("검색");
         setPageNumber(1);
         fetchProblems(1);
     }, [fetchProblems]);
@@ -136,7 +109,6 @@ export default function MainContents() {
     };
 
     const renderPageNumbers = () => {
-        // ... (페이지네이션 UI 로직은 동일)
         const pageNumbers = [];
         const maxPagesToShow = 5;
         let startPage, endPage;
@@ -166,11 +138,11 @@ export default function MainContents() {
                     key={i}
                     onClick={() => handlePageChange(i)}
                     disabled={loading || pageNumber === i}
-                    className={`px-3 py-1 mx-1 border rounded ${
+                    className={`px-4 py-2 mx-1 rounded-lg transition-all duration-200 text-sm font-medium ${
                         pageNumber === i
-                            ? "bg-blue-500 text-white"
-                            : "bg-white hover:bg-gray-100"
-                    } ${loading ? "cursor-not-allowed" : ""}`}
+                            ? "bg-blue-600 text-white shadow-md transform scale-105" // 현재 페이지 강조
+                            : "bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:text-blue-600" // 기본 페이지 호버 효과
+                    } ${loading ? "cursor-not-allowed opacity-60" : ""}`}
                 >
                     {i}
                 </button>
@@ -180,8 +152,9 @@ export default function MainContents() {
     };
 
     return (
-        <div className="mx-14">
-            <div className="mt-5">
+        <div className="flex flex-col h-full">
+            {/* 카테고리 바 */}
+            <div className="mb-6">
                 <CategoryBar
                     onReset={onRefresh}
                     onSearch={onSearch}
@@ -189,29 +162,38 @@ export default function MainContents() {
                     setTitle={setTitle}
                 />
             </div>
-            <div className="border-solid border-2 mt-5">
-                <div className="flex px-4 w-full mb-1">
-                    <span className="px-2 py-1 text-xs">상태</span>
-                    <span className="flex-1 ml-4 py-1 text-xs">문제</span>
-                    <span className="ml-4 px-2 py-1 text-xs">난이도</span>
-                    <span className="ml-4 px-2 py-1 text-xs">정답률</span>
+
+            {/* 문제 리스트 컨테이너 */}
+            <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200 flex-1">
+                {/* 문제 목록 헤더 */}
+                <div className="grid grid-cols-[max-content_1fr_max-content_max-content] gap-4 items-center px-6 py-4 bg-gray-50 text-gray-600 border-b border-gray-200 text-sm font-semibold uppercase tracking-wide">
+                    <span className="w-16 text-center">상태</span>
+                    <span className="pl-4">문제</span>
+                    <span className="w-24 text-center">난이도</span>
+                    <span className="w-24 text-center">정답률</span>
                 </div>
 
-                <div>
-                    {/* 문제 리스트 가져오기 */}
+                {/* 문제 리스트 내용 */}
+                <div className="divide-y divide-gray-100">
                     {loading && (
-                        <div className="text-center py-8 text-gray-500">
-                            로딩 중...
+                        <div className="text-center py-12 text-gray-500 text-lg flex flex-col items-center justify-center">
+                            <svg className="animate-spin h-10 w-10 text-blue-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <p>문제 목록을 불러오는 중...</p>
                         </div>
                     )}
                     {error && (
-                        <div className="text-center py-8 text-red-500">
-                            {error}
+                        <div className="text-center py-12 text-red-500 text-lg">
+                            <p>오류 발생: {error.message || "알 수 없는 오류"}</p>
+                            <p className="text-sm text-gray-500 mt-2">잠시 후 다시 시도해주세요.</p>
                         </div>
                     )}
                     {!loading && !error && problems.length === 0 && (
-                        <div className="text-center py-8 text-gray-400">
-                            문제가 없습니다.
+                        <div className="text-center py-12 text-gray-400 text-lg">
+                            <p>해당 조건에 맞는 문제가 없습니다.</p>
+                            <p className="text-sm mt-2">검색 조건을 변경해보세요.</p>
                         </div>
                     )}
                     {!loading &&
@@ -227,12 +209,13 @@ export default function MainContents() {
                 </div>
             </div>
 
+            {/* 페이지네이션 */}
             {!loading && !error && totalPages > 0 && (
-                <div className="flex justify-center items-center mt-6 mb-4">
+                <div className="flex justify-center items-center mt-8 space-x-3">
                     <button
                         onClick={() => handlePageChange(pageNumber - 1)}
                         disabled={pageNumber === 1 || loading}
-                        className="px-3 py-1 mx-1 border rounded bg-white hover:bg-gray-100 disabled:opacity-50"
+                        className="px-5 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
                     >
                         이전
                     </button>
@@ -240,7 +223,7 @@ export default function MainContents() {
                     <button
                         onClick={() => handlePageChange(pageNumber + 1)}
                         disabled={pageNumber === totalPages || loading}
-                        className="px-3 py-1 mx-1 border rounded bg-white hover:bg-gray-100 disabled:opacity-50"
+                        className="px-5 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
                     >
                         다음
                     </button>

@@ -6,7 +6,7 @@ export async function loginAdminTask({ email, encryptedPassword }) {
     try {
         console.log(encryptedPassword);
         const response = await axios.post(
-            `http://localhost:8080/api/account/login`,
+            `${import.meta.env.VITE_API_URL}/api/account/login`,
             {
                 email: email,
                 password: encryptedPassword,

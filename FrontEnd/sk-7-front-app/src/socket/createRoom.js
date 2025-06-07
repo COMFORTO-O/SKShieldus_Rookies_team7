@@ -5,7 +5,7 @@ import axios from "axios";
 const createRoom = async ({ problemId, language, code }) => {
     try {
         const response = await axios.post(
-            "http://localhost:8080/api/rooms",
+            `${import.meta.env.VITE_API_URL}/api/rooms`,
             { problemId: problemId, language: language, code: code },
             { withCredentials: true }
         );

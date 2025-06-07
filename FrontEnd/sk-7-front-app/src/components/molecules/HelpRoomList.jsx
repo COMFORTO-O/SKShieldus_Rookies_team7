@@ -15,10 +15,9 @@ export default function HelpRoomList() {
             const fetchRooms = async () => {
                 try {
                     const response = await axios.get(
-                        "http://localhost:8080/api/rooms",
+                        `${import.meta.env.VITE_API_URL}/api/rooms`,
                         {
                             headers: {
-                                /* Authorization: `Bearer ${accessToken}` */
                             },
                             withCredentials: true,
                         }

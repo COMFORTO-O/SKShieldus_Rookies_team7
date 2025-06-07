@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const sortOptions = [
     { label: "최신순", value: "recent" },

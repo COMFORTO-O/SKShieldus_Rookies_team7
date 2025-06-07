@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AdminLayout from '../../layout/AdminLayout.jsx';
 import Button from '../../../components/atoms/Button.jsx';
 import Input from '../../../components/atoms/Input.jsx';

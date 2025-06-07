@@ -59,6 +59,9 @@ dependencies {
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 
 
+    // mariadb driver
+    implementation 'org.mariadb.jdbc:mariadb-java-client'
+
 
 }
 

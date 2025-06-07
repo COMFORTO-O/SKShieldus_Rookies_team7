@@ -3,10 +3,13 @@ import LanguageSelect from "../atoms/LanguageSelect";
 import Editor, { useMonaco } from "@monaco-editor/react";
 import { Button } from "@mui/material";
 import { sendUserCode } from "../../api/sendCode";
+import useCodeStore from "../../store/useCodeStore";
 
-function CodeEditorSection({ detail }) {
+function CodeEditorSection({ detail, onLocalCodeEdit }) {
+    // 코드 상태
+    const { code, setCode, resetCode } = useCodeStore();
+
     const [selectedLanguage, setSelectedLanguage] = useState("Java"); // 기본값 설정 예시
-    const [code, setCode] = useState("// 코드를 입력하세요.");
 
     const [result, setResult] = useState(null); // 실행 결과 상태
     const [loading, setLoading] = useState(false);
@@ -16,18 +19,29 @@ function CodeEditorSection({ detail }) {
 
     // 리사이저 상태
     const [editorSectionHeightPercent, setEditorSectionHeightPercent] =
-        useState(65); // 에디터 영역 (65%)
+        useState(80); // 에디터 영역
     const isResizingVertical = useRef(false);
     const resizableContainerRef = useRef(null); // 에디터와 결과창을 포함하는 컨테이너
 
     useEffect(() => {
         if (!monaco) return;
-    }, [monaco]);
+    }, [monaco, selectedLanguage]);
 
     // 에디터 핸들러
     const handleEditorMount = (editor) => {
         editorRef.current = editor;
     };
+
+    // 사용자가 에디터 내용을 변경했을 때 호출될 함수
+    const handleEditorContentChange = useCallback(
+        (value) => {
+            setCode(value);
+            if (onLocalCodeEdit) {
+                onLocalCodeEdit(value); // 변경된 코드를 부모에게 알림
+            }
+        },
+        [setCode]
+    );
 
     // 실행 버튼 클릭 시
     const handleRunCode = async () => {
@@ -44,6 +58,18 @@ function CodeEditorSection({ detail }) {
             setResult(err || "실행 중 오류 발생");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleResetCode = () => {
+        if (window.confirm("정말로 초기화하시겠습니까?")) {
+            resetCode();
+
+            if (onLocalCodeEdit) {
+                onLocalCodeEdit(code); // 초기화된 코드를 전송
+            }
+
+            setResult(null);
         }
     };
 
@@ -64,15 +90,20 @@ function CodeEditorSection({ detail }) {
         if (!isResizingVertical.current || !resizableContainerRef.current) {
             return;
         }
-        const containerRect = resizableContainerRef.current.getBoundingClientRect();
+        const containerRect =
+            resizableContainerRef.current.getBoundingClientRect();
         // containerRect.top 부터 마우스 y 위치까지의 높이를 계산
         let newEditorHeight = e.clientY - containerRect.top;
-        let newEditorHeightPercent = (newEditorHeight / containerRect.height) * 100;
+        let newEditorHeightPercent =
+            (newEditorHeight / containerRect.height) * 100;
 
         // 높이 제한 (예: 에디터 20% ~ 80%)
         const minHeightPercent = 20;
         const maxHeightPercent = 80;
-        newEditorHeightPercent = Math.max(minHeightPercent, Math.min(newEditorHeightPercent, maxHeightPercent));
+        newEditorHeightPercent = Math.max(
+            minHeightPercent,
+            Math.min(newEditorHeightPercent, maxHeightPercent)
+        );
 
         setEditorSectionHeightPercent(newEditorHeightPercent);
 
@@ -80,13 +111,12 @@ function CodeEditorSection({ detail }) {
         if (editorRef.current) {
             editorRef.current.layout();
         }
-
     }, []); // editorRef.current는 dependency array에 넣지 않아도 됨 (ref는 변경되어도 리렌더링 X)
     const handleMouseUpVertical = useCallback(() => {
         if (isResizingVertical.current) {
             isResizingVertical.current = false;
-            document.body.style.cursor = 'default';
-            document.body.style.userSelect = 'auto';
+            document.body.style.cursor = "default";
+            document.body.style.userSelect = "auto";
         }
     }, []);
 
@@ -97,9 +127,10 @@ function CodeEditorSection({ detail }) {
         return () => {
             window.removeEventListener("mousemove", handleMouseMoveVertical);
             window.removeEventListener("mouseup", handleMouseUpVertical);
-            if (isResizingVertical.current) { // 컴포넌트 언마운트 시 정리
-                document.body.style.cursor = 'default';
-                document.body.style.userSelect = 'auto';
+            if (isResizingVertical.current) {
+                // 컴포넌트 언마운트 시 정리
+                document.body.style.cursor = "default";
+                document.body.style.userSelect = "auto";
             }
         };
     }, [handleMouseMoveVertical, handleMouseUpVertical]);
@@ -131,7 +162,7 @@ function CodeEditorSection({ detail }) {
                         width="100%"
                         language={selectedLanguage.toLowerCase()}
                         value={code}
-                        onChange={(value) => setCode(value || "")} // value가 undefined일 경우 대비
+                        onChange={handleEditorContentChange} // 사용자가 내용 변경 시 호출될 함수
                         theme="vs-dark"
                         onMount={handleEditorMount}
                         options={{
@@ -291,12 +322,7 @@ function CodeEditorSection({ detail }) {
                     variant="contained"
                     sx={{ backgroundColor: "#44576c", color: "#fff" }}
                     size="small"
-                    onClick={() => {
-                        if (window.confirm("정말로 초기화하시겠습니까?")) {
-                            setCode("// 코드를 입력하세요.");
-                            setResult(null); // 실행 결과도 초기화
-                        }
-                    }}
+                    onClick={handleResetCode} // 초기화 버튼 핸들러 연결
                 >
                     초기화
                 </Button>

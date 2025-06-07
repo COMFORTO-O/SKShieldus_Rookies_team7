@@ -1,20 +1,25 @@
 import ProblemSection from "../components/molecules/ProblemSection";
 import CodeEditorSection from "../components/molecules/CodeEditorSection";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef, useCallback } from "react";
 import getProblemDetail from "../api/getProblemDetail";
 import useCodeStore from "../store/useCodeStore";
+import ProblemSectionForJoin from "../components/molecules/ProblemSectionForJoin";
 
 const MD_BREAKPOINT = 768;
 
-function SolvePage() {
+export default function JoinRoomPage() {
+    // 문제 id
     const { id } = useParams();
+
+    const location = useLocation();
+    // roomToJoinData
+    const { roomToJoinData } = location.state || null;
 
     const [data, setData] = useState(null);
 
     // 코드 전역 상태
     const { code, setCode, resetCode } = useCodeStore();
-    const chatComponentRef = useRef(null); // ChatComponent의 메서드 호출용 ref
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -26,17 +31,6 @@ function SolvePage() {
     const [leftPanelWidth, setLeftPanelWidth] = useState(50); // 초기는 반반
     const isResizingHorizontal = useRef(false); // 수평 리사이징 상태
     const mainContainerRef = useRef(null);
-
-    // CodeEditorSection에서 사용자가 코드를 로컬에서 변경했을 때 호출될 콜백 함수
-    const handleLocalCodeEdit = useCallback((newCodeFromEditor) => {
-        if (
-            chatComponentRef.current &&
-            typeof chatComponentRef.current.sendCodeUpdateFromParent === "function"
-        ) {
-            chatComponentRef.current.sendCodeUpdateFromParent(newCodeFromEditor);
-        }
-    }, []); // chatComponentRef는 ref
-
 
     useEffect(() => {
         const checkMobileView = () => {
@@ -185,13 +179,9 @@ function SolvePage() {
                     }
                 >
                     {/* ProblemSection 자체가 내부 스크롤을 갖도록 설계 */}
-                    <ProblemSection
+                    <ProblemSectionForJoin
                         detail={data}
-                        // ChatComponent에 필요한 props 전달
-                        p_id={id} // ChatComponent가 방 생성/참여 시 문제 ID를 알 수 있도록
-                        lang={data?.language || "default"} // ChatComponent가 언어 정보를 알 수 있도록 (API 응답 구조에 따라 수정)
-  
-                        chatComponentRef={chatComponentRef} // ChatComponent 인스턴스 접근용
+                        roomId={roomToJoinData.id}
                     />
                 </div>
 
@@ -217,14 +207,9 @@ function SolvePage() {
                                 }`}
                 >
                     {/* CodeEditorSection이 h-full과 flex flex-col 등을 통해 부모를 채우도록 설계 */}
-                    <CodeEditorSection
-                        detail={data}
-                        onLocalCodeEdit={handleLocalCodeEdit}
-                    />
+                    <CodeEditorSection detail={data} />
                 </div>
             </main>
         </div>
     );
 }
-
-export default SolvePage;

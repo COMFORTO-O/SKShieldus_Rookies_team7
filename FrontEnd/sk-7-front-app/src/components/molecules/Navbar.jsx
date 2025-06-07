@@ -18,7 +18,7 @@ const Navbar = () => {
                 <Link to="/">홈</Link>
                 {isLoggedIn ? (
                     <>
-                        <button>알림</button>
+                        <Link to="/helpRoomList">방 목록</Link>
                         <button
                             className="rounded-md w-20 h-7 text-center bg-primary text-base-100 hover:bg-hoverButton-900"
                             onClick={

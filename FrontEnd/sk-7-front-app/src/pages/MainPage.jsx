@@ -19,7 +19,7 @@ function MainPage() {
                     <MainContents />
                 </div>
 
-                <div className={rightSideContentClass}>
+                <div className={rightSideContentClass  + " h-fit self-start"}>
                     <UserInfo />
                 </div>
             </div>

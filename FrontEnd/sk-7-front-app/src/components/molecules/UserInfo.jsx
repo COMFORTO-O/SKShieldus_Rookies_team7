@@ -8,10 +8,19 @@ const UserInfoContainerStyle =
     "mx-14 h-36 flex flex-row border-solid border-2 rounded-lg xl:mx-0 xl:flex-col xl:h-full ";
 
 const UserInfo = () => {
-    const { isLoggedIn, accessToken, setLogout } = useAuthStore();
-    const [name, setName] = useState("");
+    const {
+        isLoggedIn,
+        accessToken,
+        userName,
+        userEmail,
+        setName,
+        setEmail,
+        setLogout,
+    } = useAuthStore();
+
+    // TODO : const [memberRank, setMemberRank] = useState(0);
+    // setMemberRank(data.memberRank)
     const [solvedCount, setSolvedCount] = useState(0);
-    const [email, setEmail] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
@@ -34,7 +43,7 @@ const UserInfo = () => {
             };
             fetchUserInfo();
         }
-    }, [isLoggedIn, setLogout]);
+    }, [isLoggedIn, setLogout, setEmail, setName]);
 
     return (
         <>
@@ -53,10 +62,10 @@ const UserInfo = () => {
                         <div className="flex-1 flex flex-col justify-center">
                             <ul className="flex flex-col gap-3">
                                 <li className="font-sourgummy font-semibold text-lg text-blue-700 xl:text-center">
-                                    {name || "이름"}
+                                    {userName || "이름"}
                                 </li>
 
-                                <li>이메일 : {email} (User)</li>
+                                <li>이메일 : {userEmail} (User)</li>
                                 <li>해결한 문제 수 : {solvedCount}</li>
                             </ul>
                         </div>
@@ -68,8 +77,8 @@ const UserInfo = () => {
             ) : (
                 <div className={UserInfoContainerStyle}>
                     <div
-                        className="flex flex-col gap-3 w-full items-center justify-center
-                    xl:h-full"
+                        className="flex flex-col gap-3 w-full xl:h-[400px] items-center justify-center
+                    "
                     >
                         <h2
                             className="text-xl text-primary font-semibold font-sourgummy

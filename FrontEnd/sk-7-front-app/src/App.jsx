@@ -10,8 +10,9 @@ import Navbar from "./components/molecules/Navbar";
 import useAuthStore from "./store/useAuthStore";
 import LoadingSpinner from "./components/atoms/LoadingSpinner";
 import useModalStore from "./store/useModalStore";
-import { Avatar } from "@mui/material";
 import InfoModal from "./components/modals/InfoModal";
+import HelpRoomListPage from "./pages/HelpRoomListPage";
+import JoinRoomPage from "./pages/JoinRoomPage";
 
 // React.lazy를 사용하여 페이지 컴포넌트 동적 임포트
 const MainPage = React.lazy(() => import("./pages/MainPage"));
@@ -22,7 +23,7 @@ const InfoPage = React.lazy(() => import("./pages/InfoPage"));
 
 /*앱 컨테이너*/
 function App() {
-    const { setLogin, user } = useAuthStore(); // Zustand에서 상태와 액션을 가져옵니다.
+    const { setLogin, user, setEmail } = useAuthStore(); // Zustand에서 상태와 액션을 가져옵니다.
     const navigate = useNavigate();
 
     // Modal 상태 가져오기
@@ -31,13 +32,15 @@ function App() {
     // 앱이 처음 마운트될 때 한 번만 실행되어 accessToken을 확인하고 상태를 업데이트합니다.
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
-        if (token) {
+        const email = localStorage.getItem("Email");
+        if (token && email) {
             // 토큰이 만료된 상태라면
 
             console.log("현재 로그인 상태입니다.\nAccess Token:", token);
             setLogin(token); // Zustand 상태 업데이트
+            setEmail(email);
         }
-    }, [setLogin]);
+    }, [setLogin, setEmail]);
 
     const location = useLocation();
     // Navbar 표시 조건은 그대로 유지
@@ -90,6 +93,11 @@ function App() {
                         <Route path="/register" element={<SignupPage />} />
                         <Route path="/solve/:id" element={<SolvePage />} />
                         <Route path="/info" element={<InfoPage />} />
+                        <Route
+                            path="/helpRoomList"
+                            element={<HelpRoomListPage />}
+                        />
+                        <Route path="/join/:id" element={<JoinRoomPage />} />
                     </Routes>
                 </Suspense>
             </main>

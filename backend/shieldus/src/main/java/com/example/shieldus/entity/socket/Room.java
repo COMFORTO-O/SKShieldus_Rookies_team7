@@ -12,12 +12,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Room {
     private String id;
     private String title;
+    private Long problemId;
     private MemberUserDetails owner;
     private Map<String, RoomRole> memberRoles = new ConcurrentHashMap<>();
 
-    public Room(String id, String name) {
+    public Room(String id, String name, Long problemId) {
         this.id = id;
         this.title = name;
+        this.problemId = problemId;
     }
 
     // Getters & Setters 생략 가능 (Lombok 써도 OK)

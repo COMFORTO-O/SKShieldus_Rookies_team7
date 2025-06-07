@@ -20,7 +20,7 @@ public class RoomController {
 
     private final MemberRepository memberRepository;
     private final ProblemRepository problemRepository;
-            ;
+
 
     public static final Map<String, Room> roomMap = new ConcurrentHashMap<>();
     public static final Map<String, String> userToRoomId = new ConcurrentHashMap<>();
@@ -34,9 +34,10 @@ public class RoomController {
         String problemTitle = problem.getTitle();
         String roomId = UUID.randomUUID().toString();
 
-        String title = problemTitle+"//"+langauge+"//"+userDetails.getUsername();
 
-        Room room = new Room(roomId, title);
+        String title = problemTitle+"//"+langauge+"//"+ (userDetails != null ? userDetails.getUsername() : null);
+
+        Room room = new Room(roomId, title, problemId);
 
         room.setOwner(userDetails);
 

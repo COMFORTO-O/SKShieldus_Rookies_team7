@@ -39,7 +39,7 @@ public class RoomController {
         String title = problemTitle+"//"+langauge+"//"+owner.getUsername();
 
         Room room = new Room(roomId, title);
-
+        room.setProblemId(problemId);
         room.setOwner(owner);
 
         roomMap.put(roomId, room);

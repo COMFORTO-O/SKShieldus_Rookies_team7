@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Room {
     private String id;
     private String title;
+    private Long problemId;
     private OwnerDto owner;
     private Map<String, RoomRole> memberRoles = new ConcurrentHashMap<>();
 

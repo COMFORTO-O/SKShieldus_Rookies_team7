@@ -180,6 +180,12 @@ public class ProblemRepositoryImpl implements ProblemRepositoryCustom {
                 if (property.equals("createdAt")) {
                     return new OrderSpecifier<>(direction, problem.createdAt);
                 }
+                if (property.equals("level")) {
+                    return new OrderSpecifier<>(direction, problem.level);
+                }
+                if(property.equals("id")){
+                    return new OrderSpecifier<>(direction, problem.id);
+                }
                 return problem.id.desc();
             }).toArray(OrderSpecifier[]::new);
 

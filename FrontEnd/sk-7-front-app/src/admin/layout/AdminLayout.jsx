@@ -1,7 +1,7 @@
 import { FaUsers, FaDollarSign, FaChartBar } from "react-icons/fa";
 
-import Header from "../component/AdminHeader";
-import Sidebar from "../component/AdminSidebar";
+import Header from "../components/AdminHeader";
+import Sidebar from "../components/AdminSidebar";
 
 const AdminLayout = ({ children }) => {
     return (

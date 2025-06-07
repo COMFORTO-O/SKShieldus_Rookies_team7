@@ -30,9 +30,10 @@ const UserInfo = () => {
             const fetchUserInfo = async () => {
                 try {
                     const data = await getUserInfo();
-                    setName(data.name);
-                    setSolvedCount(data.solvedProblems.length);
-                    setEmail(data.email);
+
+                    setName(data.member.name);
+                    setSolvedCount(data.submissions.length);
+                    setEmail(data.member.email);
                 } catch (e) {
                     setError(
                         e?.message || "사용자 정보를 불러오지 못했습니다."

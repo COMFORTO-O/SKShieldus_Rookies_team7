@@ -22,7 +22,7 @@ export default function HelpRoomListPage() {
                             withCredentials: true,
                         }
                     );
-                    
+
                     setRoomList(response.data || []);
                 } catch (error) {
                     console.error("방 목록 불러오기 실패:", error);
@@ -43,7 +43,7 @@ export default function HelpRoomListPage() {
                 alert("잘못된 방 정보입니다.");
                 return;
             }
-            
+
             navigate(`/join/${roomClicked.problemId}`, {
                 // URL은 problemId를 사용
                 state: { roomToJoinData: roomClicked },
@@ -53,47 +53,68 @@ export default function HelpRoomListPage() {
     );
 
     return (
-        <>
-            <div>
-                <div>
-                    <h1 className="text-2xl font-bold mb-6 text-gray-700">
+        <div className="min-h-0 h-full bg-primary py-10 px-4">
+            <div className="m-16">
+                <div className="flex items-center justify-between mb-8">
+                    <h1 className="text-3xl font-bold text-secondary tracking-tight drop-shadow">
                         참여 가능한 도움방 목록
                     </h1>
+                    <button
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition font-semibold"
+                        onClick={() => navigate("/")}
+                    >
+                        메인으로
+                    </button>
+                </div>
+                <div className="bg-white rounded-2xl shadow-lg p-8">
                     {isLoggedIn && roomList.length > 0 ? (
                         <div
                             className="
-                                bg-base-100
-                                grid
-                                gap-4
-                                min-h-0
-                                grid-cols-1
-                                sm:grid-cols-2
-                                lg:grid-cols-3
-                                xl:grid-cols-4
-                            "
+                            grid
+                            gap-6
+                            min-h-0
+                            grid-cols-1
+                            sm:grid-cols-2
+                            lg:grid-cols-3
+                            xl:grid-cols-4
+                        "
                         >
                             {roomList.map((room) => (
-                                <RoomItem
+                                <div
                                     key={room.id}
-                                    id={room.id}
-                                    title={room.title}
-                                    owner={room.owner}
-                                    problemId={room.problemId}
-                                    onJoin={() => handleJoinRoom(room)}
-                                />
+                                    className="transition-transform hover:-translate-y-1 hover:shadow-xl"
+                                >
+                                    <RoomItem
+                                        id={room.id}
+                                        title={room.title}
+                                        owner={room.owner}
+                                        problemId={room.problemId}
+                                        onJoin={() => handleJoinRoom(room)}
+                                    />
+                                </div>
                             ))}
                         </div>
                     ) : isLoggedIn && roomList.length === 0 ? (
-                        <p className="text-gray-500">
-                            현재 참여 가능한 방이 없습니다.
-                        </p>
+                        <div className="flex flex-col items-center py-16">
+                            <p className="text-gray-500 text-lg font-medium">
+                                현재 참여 가능한 방이 없습니다.
+                            </p>
+                        </div>
                     ) : (
-                        <p className="text-gray-500">
-                            로그인 후 방 목록을 볼 수 있습니다.
-                        </p>
+                        <div className="flex flex-col items-center py-16">
+                            <p className="text-gray-500 text-lg font-medium">
+                                로그인 후 방 목록을 볼 수 있습니다.
+                                <button
+                                    className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition font-bold"
+                                    onClick={() => navigate("/login")}
+                                >
+                                    로그인 하러가기
+                                </button>
+                            </p>
+                        </div>
                     )}
                 </div>
             </div>
-        </>
+        </div>
     );
 }

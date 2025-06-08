@@ -127,6 +127,7 @@ public class ChatController {
         payload.put("owner", room.getOwner().getEmail());
         messagingTemplate.convertAndSend("/topic/members." + roomId, payload);
     }
+
     @MessageMapping("/room.kick.{roomId}")
     public void kickUser(@DestinationVariable String roomId,
                          @Payload Map<String, String> payload,
@@ -139,6 +140,7 @@ public class ChatController {
             System.out.println("방장 아님");
             return;
         }
+
         //강제 퇴장 메세지 전송
         messagingTemplate.convertAndSendToUser(
                 targetUsername,
@@ -148,6 +150,9 @@ public class ChatController {
                         "roomId", roomId // <--- roomId 추가
                 )
         );
+
+        System.out.println("강제 퇴장됨: " + targetUsername);
+        System.out.println("참여자 목록: " + room.getMemberRoles());
     }
 
 }

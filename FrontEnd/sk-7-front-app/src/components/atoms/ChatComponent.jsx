@@ -232,12 +232,38 @@ const ChatComponent = forwardRef(
                     return;
                 }
                 console.log(`[${roomId}] 초기 설정 구독 시도.`);
+                // 안전하게 구독 해제하고 null로 만드는 헬퍼 함수
+                const safeUnsubscribe = (subscriptionRefProperty) => {
+                    if (
+                        initialSettingsSubscriptions.current[
+                            subscriptionRefProperty
+                        ]
+                    ) {
+                        try {
+                            initialSettingsSubscriptions.current[
+                                subscriptionRefProperty
+                            ].unsubscribe();
+                        } catch (e) {
+                            console.warn(
+                                `${subscriptionRefProperty} 구독 해제 중 오류`,
+                                e,
+                                initialSettingsSubscriptions.current[
+                                    subscriptionRefProperty
+                                ]
+                            );
+                        }
+                        initialSettingsSubscriptions.current[
+                            subscriptionRefProperty
+                        ] = null;
+                    }
+                };
 
-                // 이전 Topic 구독 해제 (User-specific Queue는 일반적으로 유지하거나 STOMP가 관리)
-                if (initialSettingsSubscriptions.current.roomDeleted)
-                    initialSettingsSubscriptions.current.roomDeleted.unsubscribe();
-                if (initialSettingsSubscriptions.current.members)
-                    initialSettingsSubscriptions.current.members.unsubscribe();
+                // 이전 구독들 해제 (사용자 큐 포함)
+                safeUnsubscribe("initCode");
+                safeUnsubscribe("chatHistory");
+                safeUnsubscribe("kick");
+                safeUnsubscribe("roomDeleted");
+                safeUnsubscribe("members");
 
                 // User-specific queue 구독 (STOMP 클라이언트 활성화 시 한 번만 해도 될 수 있음)
                 initialSettingsSubscriptions.current.initCode =
@@ -275,14 +301,13 @@ const ChatComponent = forwardRef(
                         "/user/queue/kick",
                         (message) => {
                             try {
-                                    console.log(message);
-                                    alert(`강퇴 되었습니다.`);
-                                    setCurrentRoomId("");
-                                    setConnectionStatus(
-                                        "강퇴됨 (새로운 방 요청 가능)"
-                                    );
-                                    navigate("/helpRoomList"); // 페이지 이동
-                                
+                                console.log(message);
+                                alert(`강퇴 되었습니다.`);
+                                setCurrentRoomId("");
+                                setConnectionStatus(
+                                    "강퇴됨 (새로운 방 요청 가능)"
+                                );
+                                navigate("/helpRoomList"); // 페이지 이동
                             } catch (e) {
                                 console.error("강퇴 메시지 파싱 오류:", e);
                             }
@@ -359,10 +384,14 @@ const ChatComponent = forwardRef(
             [
                 setCode,
                 currentUserEmail,
-                currentRoomId,
                 navigate,
                 setRole,
                 myRole,
+                setReceivedMessages, // 추가
+                setConnectionStatus, // 추가
+                setCurrentRoomId, // 추가 (kick 콜백에서 사용하므로 필요)
+                setMemberMap, // 추가
+                setOwnerEmail, // 추가
             ]
         ); // currentRoomId 의존성 추가 (kick 메시지 처리)
 
@@ -477,7 +506,7 @@ const ChatComponent = forwardRef(
                         const roomData = await createRoom({
                             problemId: p_id,
                             language: lang,
-                            code: code
+                            code: code,
                         });
                         if (roomData?.id) {
                             console.log(
@@ -541,7 +570,7 @@ const ChatComponent = forwardRef(
             unsubscribeAllRoomSpecific,
             setRole,
             setEditingBy,
-            code
+            code,
         ]);
 
         useEffect(() => {
@@ -933,17 +962,19 @@ const ChatComponent = forwardRef(
                                                                     코드편집
                                                                 </option>
                                                             </select>
-                                                            { <button
-                                                                onClick={() =>
-                                                                    forceKickUser(
-                                                                        email
-                                                                    )
-                                                                }
-                                                                className="text-xs bg-red-500 hover:bg-red-600 px-1 py-0.5 rounded"
-                                                                title="강퇴"
-                                                            >
-                                                                X
-                                                            </button> }
+                                                            {
+                                                                <button
+                                                                    onClick={() =>
+                                                                        forceKickUser(
+                                                                            email
+                                                                        )
+                                                                    }
+                                                                    className="text-xs bg-red-500 hover:bg-red-600 px-1 py-0.5 rounded"
+                                                                    title="강퇴"
+                                                                >
+                                                                    X
+                                                                </button>
+                                                            }
                                                         </>
                                                     )}
                                             </div>

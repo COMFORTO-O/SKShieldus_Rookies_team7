@@ -252,12 +252,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
             safeUnsubscribe("roomDeleted");
             safeUnsubscribe("members");
 
-            // // 이전 Topic 구독 해제 (User-specific Queue는 일반적으로 유지하거나 STOMP가 관리)
-            // if (initialSettingsSubscriptions.current.roomDeleted)
-            //     initialSettingsSubscriptions.current.roomDeleted.unsubscribe();
-            // if (initialSettingsSubscriptions.current.members)
-            //     initialSettingsSubscriptions.current.members.unsubscribe();
-
             // User-specific queue 구독 (STOMP 클라이언트 활성화 시 한 번만 해도 될 수 있음)
             initialSettingsSubscriptions.current.initCode =
                 stompClientRef.current.subscribe(

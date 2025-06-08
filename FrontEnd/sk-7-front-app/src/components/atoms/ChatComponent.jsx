@@ -693,36 +693,36 @@ const ChatComponent = forwardRef(
             }
         };
 
-        // // 유저 추방
-        // const forceKickUser = (targetUserEmail) => {
-        //     if (
-        //         stompClientRef.current?.active &&
-        //         currentRoomId &&
-        //         currentUserEmail === ownerEmail
-        //     ) {
-        //         if (targetUserEmail === currentUserEmail) {
-        //             alert("자기 자신을 강퇴할 수 없습니다.");
-        //             return;
-        //         }
-        //         if (
-        //             window.confirm(
-        //                 `${
-        //                     targetUserEmail.split("@")[0]
-        //                 } 사용자를 강퇴하시겠습니까?`
-        //             )
-        //         ) {
-        //             console.log(targetUserEmail);
-        //             stompClientRef.current.publish({
-        //                 destination: `/app/room.kick.${currentRoomId}`,
-        //                 body: JSON.stringify({
-        //                     targetUsername: targetUserEmail,
-        //                 }),
-        //             });
-        //         }
-        //     } else {
-        //         alert("방장만 사용자를 강퇴할 수 있습니다.");
-        //     }
-        // };
+        // 유저 추방
+        const forceKickUser = (targetUserEmail) => {
+            if (
+                stompClientRef.current?.active &&
+                currentRoomId &&
+                currentUserEmail === ownerEmail
+            ) {
+                if (targetUserEmail === currentUserEmail) {
+                    alert("자기 자신을 강퇴할 수 없습니다.");
+                    return;
+                }
+                if (
+                    window.confirm(
+                        `${
+                            targetUserEmail.split("@")[0]
+                        } 사용자를 강퇴하시겠습니까?`
+                    )
+                ) {
+                    console.log(targetUserEmail);
+                    stompClientRef.current.publish({
+                        destination: `/app/room.kick.${currentRoomId}`,
+                        body: JSON.stringify({
+                            targetUsername: targetUserEmail,
+                        }),
+                    });
+                }
+            } else {
+                alert("방장만 사용자를 강퇴할 수 있습니다.");
+            }
+        };
 
         // UI 렌더링 (이전 답변의 JSX 구조와 유사하게 구성)
         return (
@@ -938,7 +938,7 @@ const ChatComponent = forwardRef(
                                                                     코드편집
                                                                 </option>
                                                             </select>
-                                                            {/* <button
+                                                            { <button
                                                                 onClick={() =>
                                                                     forceKickUser(
                                                                         email
@@ -948,7 +948,7 @@ const ChatComponent = forwardRef(
                                                                 title="강퇴"
                                                             >
                                                                 X
-                                                            </button> */}
+                                                            </button> }
                                                         </>
                                                     )}
                                             </div>

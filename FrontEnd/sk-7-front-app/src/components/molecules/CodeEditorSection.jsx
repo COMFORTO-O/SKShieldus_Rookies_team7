@@ -195,6 +195,7 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
                         width="100%"
                         language={selectedLanguage}
                         value={code}
+                        defaultValue={code}
                         onChange={handleEditorContentChange} // 사용자가 내용 변경 시 호출될 함수
                         theme="vs-dark"
                         onMount={handleEditorMount}

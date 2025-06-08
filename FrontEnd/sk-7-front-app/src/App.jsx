@@ -101,7 +101,7 @@ function App() {
                     <Navbar />
                 </header>
             )}
-            <main className="flex-auto h-full min-h-0 overflow-auto">
+            <main className="flex-auto min-h-0 overflow-auto">
                 {infoModalOpen && <InfoModal />}
                 {/* Suspense로 Routes를 감싸고, fallback UI를 지정합니다. */}
                 <Suspense fallback={<LoadingSpinner />}>

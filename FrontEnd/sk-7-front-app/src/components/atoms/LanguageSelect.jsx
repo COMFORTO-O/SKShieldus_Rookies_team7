@@ -15,7 +15,7 @@ const LanguageSelect = ({
                 className="border border-gray-300 rounded-md w-full p-2"
             >
                 {languages.map((item) => (
-                    <option value={item.code}>{item.code}</option>
+                    <option key={item.code} value={item.code}>{item.code}</option>
                 ))}
             </select>
         </div>

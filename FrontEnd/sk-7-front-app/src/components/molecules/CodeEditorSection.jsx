@@ -14,9 +14,9 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
     const { role } = RoleStore();
     const { editingBy } = editByStore();
     const { userEmail: currentUser } = useAuthStore();
-
+    const [languages, setLanguages]= useState(detail.languages);
     const [selectedLanguage, setSelectedLanguage] = useState(
-        detail.category.code
+        detail.languages[0].code
     ); // 기본값 설정 예시
 
     const [result, setResult] = useState(null); // 실행 결과 상태
@@ -149,7 +149,7 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
             <div className="flex-none flex justify-end items-center p-2 border-b border-gray-700">
                 <div className="w-[150px]">
                     <LanguageSelect
-                        languages={[detail.category]}
+                        languages={languages}
                         selectedLanguage={selectedLanguage}
                         setSelectedLanguage={setSelectedLanguage}
                     />
@@ -169,7 +169,7 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
                     <Editor
                         height="100%"
                         width="100%"
-                        language={selectedLanguage.toLowerCase()}
+                        language={selectedLanguage}
                         value={code}
                         onChange={handleEditorContentChange} // 사용자가 내용 변경 시 호출될 함수
                         theme="vs-dark"

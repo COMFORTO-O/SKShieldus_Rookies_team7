@@ -178,8 +178,7 @@ export default function MainContents() {
     };
 
     return (
-        <div className="flex flex-col h-full p-4 sm:p-6 bg-gray-50 min-h-screen">
-
+        <div className="flex flex-col bg-gray-50 rounded-2xl shadow-xl border border-gray-100 p-4 sm:p-6 lg:p-8">
             <div className="mb-8">
                 <CategoryBar
                     onReset={onRefresh}

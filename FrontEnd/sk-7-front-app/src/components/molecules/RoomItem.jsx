@@ -13,13 +13,11 @@ export default function RoomItem({
             onClick={onJoin} // div 전체를 클릭 가능하게 하거나, 내부에 버튼을 만들 수 있음
         >
             <div>
-                <div>방 ID: {id}</div>
-                <div>문제 ID: {problemId}</div>
                 <h3
                     className="text-lg font-semibold text-gray-800 mb-1 truncate"
                     title={title}
                 >
-                    {title}
+                    {problemId}. {title}
                 </h3>
                 <p className="text-xs text-gray-500 mb-1">
                     개설자: {owner.name}

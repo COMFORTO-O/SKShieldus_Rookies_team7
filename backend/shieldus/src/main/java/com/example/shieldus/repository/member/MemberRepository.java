@@ -17,5 +17,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     boolean existsByEmail(String email);
 
     Optional<Member> findByIdAndIsDeletedIsFalse(Long memberId);
-
+    long countByIsDeletedFalse();
+    long countByMemberRankGreaterThanAndIsDeletedFalse(int memberRank);
 }

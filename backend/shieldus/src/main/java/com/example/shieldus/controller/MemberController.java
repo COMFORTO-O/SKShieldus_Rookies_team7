@@ -127,6 +127,8 @@ public class MemberController {
             Long memberId = getIdCheck(id, userDetails);
             // ResponseDto 불러와 제작
             MemberResponseDto myPageData = memberService.getMember(memberId);
+            float ranking = memberService.calculateRanking(memberId);
+            myPageData.setRanking(ranking);
             Page<SubmissionDto> submissionDtoPage = memberService.getSubmissions(memberId, pageable);
             return ResponseDto.success(new MemberResponseDto.Detail(myPageData, submissionDtoPage));
         }catch(CustomException e){

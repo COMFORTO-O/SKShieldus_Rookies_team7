@@ -195,5 +195,22 @@ public class MemberService {
     }
 
 
+    public float calculateRanking(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        int myRank = member.getMemberRank() != null ? member.getMemberRank() : 0;
+
+        // 0점이면 무조건 최하위 → 100%
+        if (myRank == 0) return 100.0f;
+
+        long total = memberRepository.countByIsDeletedFalse();
+        if (total == 0) return 100.0f;
+
+        long higherCount = memberRepository.countByMemberRankGreaterThanAndIsDeletedFalse(myRank);
+
+        float ranking = (higherCount * 100.0f) / total;
+        return Math.min(ranking, 100.0f);
+    }
 
 }

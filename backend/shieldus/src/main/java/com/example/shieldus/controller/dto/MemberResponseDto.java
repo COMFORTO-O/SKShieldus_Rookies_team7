@@ -9,28 +9,30 @@ import java.util.List;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 public class MemberResponseDto {
     private Long id;
     private String email;
     private String name;
     private String phone;
+    private Integer memberRank;
     private MemberRoleEnum role;
     private boolean isDeleted;
+    private float ranking;
     // 기타 필요한 필드들...
 
-    public MemberResponseDto(Long id, String email, String name, String phone, MemberRoleEnum role, boolean isDeleted) {
+    public MemberResponseDto(Long id, String email, String name, String phone, Integer memberRank,MemberRoleEnum role, boolean isDeleted) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.phone = phone;
+        this.memberRank = memberRank;
         this.role = role;
         this.isDeleted = isDeleted;
     }
 
     public static MemberResponseDto fromEntity(Member member) {
-        return new MemberResponseDto(member.getId(), member.getEmail(), member.getName(), member.getPhone(), member.getRole(), member.getIsDeleted());
+        return new MemberResponseDto(member.getId(), member.getEmail(), member.getName(), member.getPhone(), member.getMemberRank(), member.getRole(), member.getIsDeleted());
     }
 
 

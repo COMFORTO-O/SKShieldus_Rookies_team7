@@ -45,14 +45,41 @@ public class DataInitRunner implements CommandLineRunner {
     private final MemberTempCodeRepository memberTempCodeRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // 사용자 이름을 100개로 확장
     private final String[] userKoreanNames = {
-            "김민준", "이서준", "박도윤", "정하준", "조은우",
-            "최아윤", "강지유", "장서윤", "임채원", "한수아"
+            "김민준", "이서준", "박도윤", "정하준", "조은우", "최아윤", "강지유", "장서윤", "임채원", "한수아",
+            "김서준", "이도윤", "박하준", "정은우", "조아윤", "최지유", "강서윤", "장채원", "임수아", "한민준",
+            "김도윤", "이하준", "박은우", "정아윤", "조지유", "최서윤", "강채원", "장수아", "임민준", "한서준",
+            "김하준", "이은우", "박아윤", "정지유", "조서윤", "최채원", "강수아", "장민준", "임서준", "한도윤",
+            "김은우", "이아윤", "박지유", "정서윤", "조채원", "최수아", "강민준", "장서준", "임도윤", "한하준",
+            "김아윤", "이지유", "박서윤", "정채원", "조수아", "최민준", "강서준", "장도윤", "임하준", "한은우",
+            "김지유", "이서윤", "박채원", "정수아", "조민준", "최서준", "강도윤", "장하준", "임은우", "한아윤",
+            "김서윤", "이채원", "박수아", "정민준", "조서준", "최도윤", "강하준", "장은우", "임아윤", "한지유",
+            "김채원", "이수아", "박민준", "정서준", "조도윤", "최하준", "강은우", "장아윤", "임지유", "한서윤",
+            "김수아", "이민준", "박서준", "정도윤", "조하준", "최은우", "강아윤", "장지유", "임서윤", "한채원"
     };
 
     private final String[] userEmailPrefixes = {
             "kim.minjun", "lee.seojun", "park.doyun", "jeong.hajun", "cho.eunwoo",
-            "choi.ayun", "kang.jiyu", "jang.seoyun", "im.chaewon", "han.sua"
+            "choi.ayun", "kang.jiyu", "jang.seoyun", "im.chaewon", "han.sua",
+            "kim.seojun", "lee.doyun", "park.hajun", "jeong.eunwoo", "cho.ayun",
+            "choi.jiyu", "kang.seoyun", "jang.chaewon", "im.sua", "han.minjun",
+            "kim.doyun", "lee.hajun", "park.eunwoo", "jeong.ayun", "cho.jiyu",
+            "choi.seoyun", "kang.chaewon", "jang.sua", "im.minjun", "han.seojun",
+            "kim.hajun", "lee.eunwoo", "park.ayun", "jeong.jiyu", "cho.seoyun",
+            "choi.chaewon", "kang.sua", "jang.minjun", "im.seojun", "han.doyun",
+            "kim.eunwoo", "lee.ayun", "park.jiyu", "jeong.seoyun", "cho.chaewon",
+            "choi.sua", "kang.minjun", "jang.seojun", "im.doyun", "han.hajun",
+            "kim.ayun", "lee.jiyu", "park.seoyun", "jeong.chaewon", "cho.sua",
+            "choi.minjun", "kang.seojun", "jang.doyun", "im.hajun", "han.eunwoo",
+            "kim.jiyu", "lee.seoyun", "park.chaewon", "jeong.sua", "cho.minjun",
+            "choi.seojun", "kang.doyun", "jang.hajun", "im.eunwoo", "han.ayun",
+            "kim.seoyun", "lee.chaewon", "park.sua", "jeong.minjun", "cho.seojun",
+            "choi.doyun", "kang.hajun", "jang.eunwoo", "im.ayun", "han.jiyu", // 이 부분 수정됨
+            "kim.chaewon", "lee.sua", "park.minjun", "jeong.seojun", "cho.doyun",
+            "choi.hajun", "kang.eunwoo", "jang.ayun", "im.jiyu", "han.seoyun", // 이 부분 수정됨
+            "kim.sua", "lee.minjun", "park.seojun", "jeong.doyun", "cho.hajun",
+            "choi.eunwoo", "kang.ayun", "jang.jiyu", "im.seoyun", "han.chaewon"
     };
 
     private final String[] adminKoreanNames = {

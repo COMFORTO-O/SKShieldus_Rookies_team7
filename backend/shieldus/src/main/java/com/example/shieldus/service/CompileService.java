@@ -120,15 +120,51 @@ public class CompileService {
                 .submitDate(LocalDateTime.now())
                 .build());
         submit.setUpdatedAt(LocalDateTime.now());
+        int plus=0;
         if (allPass) {
             submit.setPass(true);
             submit.setCompletedAt(LocalDateTime.now());
             memberSubmitProblemRepository.save(submit);
+
+            int score = member.getMemberRank();
+            int level = problem.getLevel();
+            switch (level){
+                case 0:
+                    score+=2;
+                    plus=2;
+                    break;
+                case 1:
+                    score+=4;
+                    plus=4;
+                    break;
+                case 2:
+                    score+=6;
+                    plus=6;
+                    break;
+                case 3:
+                    score+=8;
+                    plus=8;
+                    break;
+                case 4:
+                    score+=10;
+                    plus=10;
+                    break;
+                case 5:
+                    score+=12;
+                    plus=12;
+                    break;
+                default:
+                    System.out.println("레벨 없음");
+                    break;
+            }
+            member.setMemberRank(score);
+            memberRepository.save(member);
         }
 
         return CompileResponseDto.builder()
                 .passedCount(passed)
                 .totalCount(testCases.size())
+                .score(plus)
                 .testCaseResults(results)
                 .build();
     }

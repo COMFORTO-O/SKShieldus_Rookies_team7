@@ -11,6 +11,7 @@ public class CompileResponseDto {
     private int passedCount;
     private int totalCount;
     private List<TestCaseResult> testCaseResults;
+    private int score;
 
     @Getter
     @Builder

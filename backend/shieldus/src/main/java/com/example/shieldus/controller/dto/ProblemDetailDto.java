@@ -9,6 +9,7 @@ import com.example.shieldus.entity.member.MemberSubmitProblem;
 import com.example.shieldus.entity.problem.Problem;
 import com.example.shieldus.entity.problem.ProblemCode;
 import com.example.shieldus.entity.problem.ProblemTestCase;
+import com.example.shieldus.entity.problem.enumration.ProblemLanguageEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Getter
 @Builder
+@Setter
 @AllArgsConstructor
 public class ProblemDetailDto {
     private Long id;
@@ -34,7 +36,7 @@ public class ProblemDetailDto {
 
     // 테스트케이스 목록
     private List<TestCaseInfoDto> testCase;
-
+    List<ProblemResponseDto.ProblemLanguageDto> languages;
 
     // Member Submit Problem -> Problem Detail Dto
     public ProblemDetailDto(MemberSubmitProblem submitProblem) {

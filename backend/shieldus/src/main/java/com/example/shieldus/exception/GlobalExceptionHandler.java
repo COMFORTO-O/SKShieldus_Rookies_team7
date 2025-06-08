@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 
 @Slf4j
@@ -59,6 +60,22 @@ public class GlobalExceptionHandler {
                 errorCode.getCode(),
                 errorCode.getMessage()
         );
+        return ResponseEntity.status(errorCode.getStatus()).body(response);
+    }
+
+    /*
+    * 접근거부 핸들러
+    * */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ResponseDto<Void>> handleAccessDeniedException(AccessDeniedException e) {
+        log.warn("Access denied: {}", e.getMessage());
+        ErrorCode errorCode = ErrorCode.ACCESS_DENIED;
+        ResponseDto<Void> response = ResponseDto.error(
+                errorCode.getStatus(),
+                errorCode.getCode(), // "SYS500"
+                errorCode.getMessage()
+        );
+
         return ResponseEntity.status(errorCode.getStatus()).body(response);
     }
 

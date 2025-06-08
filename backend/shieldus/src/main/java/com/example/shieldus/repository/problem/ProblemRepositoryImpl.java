@@ -1,6 +1,7 @@
 package com.example.shieldus.repository.problem;
 
 import com.example.shieldus.controller.dto.ProblemResponseDto;
+import com.example.shieldus.controller.dto.SubmissionDto;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -104,29 +105,54 @@ public class ProblemRepositoryImpl implements ProblemRepositoryCustom {
             }
         });
 
-        Long total;
-        if (memberId == null) {
-            total = null;
-        }
-        else {
-            total = queryFactory.select(problem.count())
-                    .from(problem)
-                    .leftJoin(problem.category)
-                    .leftJoin(memberSubmitProblem)
-                    .on(memberSubmitProblem.member.id.eq(memberId)
-                            .and(memberSubmitProblem.problem.id.eq(problem.id)))
-                    .where(
-                            eqCategory(category),
-                            eqLevel(level),
-                            containsTitle(title),
-                            eqStatus(memberId, solved)
-                    )
-                    .fetchOne();
-        }
+
+
+        Long total = queryFactory.select(problem.count())
+                .from(problem)
+                .leftJoin(problem.category)
+                .where(
+                        eqCategory(category),
+                        eqLevel(level),
+                        containsTitle(title)
+                )
+                .fetchOne();
         if (total == null) {
             total = 0L;
         }
-        return new PageImpl<>(problemResponses, pageable, 0);
+        return new PageImpl<>(problemResponses, pageable, total);
+    }
+
+    public Page<SubmissionDto> getSubmissions(Long memberId, Pageable pageable) {
+
+        List<SubmissionDto> list = queryFactory
+                .select(Projections.constructor(
+                        SubmissionDto.class,
+                        memberSubmitProblem.id,
+                        memberSubmitProblem.problem.id,
+                        memberSubmitProblem.problem.title,
+                        memberSubmitProblem.pass,
+                        memberSubmitProblem.createdAt,
+                        memberSubmitProblem.updatedAt,
+                        memberSubmitProblem.completedAt
+                ))
+                .from(memberSubmitProblem)
+                .leftJoin(memberSubmitProblem.problem)
+                .where(memberSubmitProblem.member.id.eq(memberId))
+                .orderBy(memberSubmitProblem.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long total = queryFactory.select(memberSubmitProblem.count())
+                .from(memberSubmitProblem)
+                .leftJoin(memberSubmitProblem.problem)
+                .where(memberSubmitProblem.member.id.eq(memberId))
+                .fetchOne();
+
+        if(total == null) {
+            total = 0L;
+        }
+        return new PageImpl<>(list,pageable,total);
     }
 
     private BooleanExpression eqCategory(String category) {
@@ -153,6 +179,12 @@ public class ProblemRepositoryImpl implements ProblemRepositoryCustom {
 
                 if (property.equals("createdAt")) {
                     return new OrderSpecifier<>(direction, problem.createdAt);
+                }
+                if (property.equals("level")) {
+                    return new OrderSpecifier<>(direction, problem.level);
+                }
+                if(property.equals("id")){
+                    return new OrderSpecifier<>(direction, problem.id);
                 }
                 return problem.id.desc();
             }).toArray(OrderSpecifier[]::new);

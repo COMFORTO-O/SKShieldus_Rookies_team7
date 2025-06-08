@@ -10,4 +10,8 @@ public class ProblemCodeRequestDto {
     private Long id;
     private String code;
     private String description;
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

@@ -76,7 +76,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader("Set-Cookie", jwtCookie.toString());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-
         // 성공시 data에도 jwt 추가
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("jwt", jwt);
@@ -91,7 +90,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-
         ResponseDto<Map<String, String>> responseDto = ResponseDto.error(ErrorCode.AUTHENTICATION_FAILED);
         new ObjectMapper().writeValue(response.getWriter(), responseDto);
     }

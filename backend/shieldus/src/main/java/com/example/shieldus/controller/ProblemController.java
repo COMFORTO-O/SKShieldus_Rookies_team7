@@ -153,6 +153,8 @@ public class ProblemController {
         // 변경: userDetails null 체크하여 memberId 넘김
         Long memberId = (userDetails != null) ? userDetails.getMemberId() : null;
         ProblemDetailDto dto = problemService.getProblemDetail(memberId, id);
+        List<ProblemResponseDto.ProblemLanguageDto> languages = ProblemLanguageEnum.getAllLanguages().stream().map(ProblemResponseDto.ProblemLanguageDto::fromEnum).toList();
+        dto.setLanguages(languages);
         return ResponseDto.success(dto);
     }
 
@@ -197,7 +199,9 @@ public class ProblemController {
     @PreAuthorize("hasPermission(null, 'PROBLEM_UPDATE')")
     @PutMapping("/category/update/{id}")
     public ResponseDto<ProblemCodeResponseDto> updateCategory(
+            @PathVariable Long id,
             @RequestBody ProblemCodeRequestDto dto){
+        dto.setId(id);
         return ResponseDto.success(problemService.updateProblemCode(dto));
     }
 

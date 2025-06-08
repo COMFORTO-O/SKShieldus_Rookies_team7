@@ -33,8 +33,8 @@ public class MemberUserDetails implements UserDetails {
         this.name=member.getName();
         this.phone=member.getPhone();
         this.memberRank=member.getMemberRank();
-        // TODO : 05-27 : getRole 권한 넣기
         this.authorities= member.getRole().getAuthorities();
+        this.role=member.getRole();
     }
 
     @Override

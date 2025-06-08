@@ -1,6 +1,8 @@
 package com.example.shieldus.entity.member;
 
+import com.example.shieldus.controller.dto.MemberRequestDto;
 import com.example.shieldus.entity.member.enumration.MemberRoleEnum;
+import com.example.shieldus.entity.problem.BaseEntity;
 import jakarta.persistence.*;
         import lombok.*;
 
@@ -12,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "member")
-public class Member {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,5 +44,7 @@ public class Member {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
     }
+
+
 
 }

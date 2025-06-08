@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 5s # 5초마다 지표를 수집합니다.
+
+scrape_configs:
+  - job_name: 'springboot-app'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['springboot-app:8080']
+
+  - job_name: 'nginx-exporter' # Nginx Exporter 추가
+    static_configs:
+      - targets: ['nginx-exporter:9113'] # nginx-exporter 서비스 이름과 포트

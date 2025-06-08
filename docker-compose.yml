@@ -1,0 +1,82 @@
+services:
+  mariadb:
+    image: mariadb:10.10
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: shieldus
+      MYSQL_USER: shieldus
+      MYSQL_PASSWORD: shieldus
+    ports:
+      - "11010:3306"
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - monitoring
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      timeout: 20s
+      retries: 10
+      start_period: 10s 
+
+  springboot-app:
+    build: 
+      context: ./backend/shieldus
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - monitoring
+
+  frontend: 
+      build:
+        context: ./FrontEnd/sk-7-front-app 
+        dockerfile: Dockerfile
+      ports:
+        - "3000:80" 
+      depends_on:
+        springboot-app: 
+          condition: service_started 
+      networks:
+        - monitoring
+  nginx-exporter: 
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: nginx-exporter
+    ports:
+      - "9113:9113"
+    command:
+      - '-nginx.scrape-uri=http://frontend:80/nginx_status' 
+     
+    depends_on:
+      frontend: 
+        condition: service_started
+    networks:
+      - monitoring
+      
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3011:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=shieldus
+      - GF_SECURITY_ADMIN_PASSWORD=shieldus
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+
+volumes:
+  mariadb-data:

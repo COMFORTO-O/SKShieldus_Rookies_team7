@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,6 +33,7 @@ public class Problem extends BaseEntity {
     private Member member;
 
     private String title;
+
     private String detail;
 
 

@@ -7,32 +7,39 @@ import getUserInfo from "../../api/getUserInfo";
 
 // 유저 정보 Modal
 const InfoModal = () => {
-    const { isLoggedIn } = useAuthStore();
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
+    const {
+        isLoggedIn,
+        userName,
+        userEmail, // 이메일 정보는 그대로 유지
+        setName,
+        setEmail,
+        setLogout,
+    } = useAuthStore();
+
     const [error, setError] = useState("");
     const { closeInfoModal } = useModalStore();
+
     const navigate = useNavigate();
     const modalRef = useRef(null);
 
     useEffect(() => {
         if (isLoggedIn) {
-            // 유저 정보 가져오기
             const fetchUserInfo = async () => {
                 try {
                     const data = await getUserInfo();
-                    setName(data.name);
-                    setEmail(data.email);
+                    setName(data.member.name);
+                    setEmail(data.member.email);
                 } catch (e) {
                     setError(
                         e?.message || "사용자 정보를 불러오지 못했습니다."
                     );
                     setName(null);
+                    setLogout();
                 }
             };
             fetchUserInfo();
         }
-    }, [isLoggedIn]);
+    }, [isLoggedIn, setLogout, setEmail, setName]);
 
     // 바깥 클릭 시 모달 닫기
     useEffect(() => {
@@ -54,7 +61,7 @@ const InfoModal = () => {
     };
     return (
         <div
-            className="fixed mt-2 mr-5 right-0 z-50 flex bg-secondary h-[300px] w-[250px] rounded-lg border-solid border-2"
+            className="fixed mt-2 mr-5 right-0 z-50 flex bg-secondary h-[300px] w-[300px] rounded-lg border-solid border-2"
             style={{
                 animation: "modalDropFade 0.4s cubic-bezier(0.4,0,0.2,1)",
             }}
@@ -73,8 +80,8 @@ const InfoModal = () => {
                         <div className="text-red-500 text-sm">{error}</div>
                     ) : (
                         <>
-                            <h1>이름 : {name}</h1>
-                            <h1>이메일 : {email} (User)</h1>
+                            <h1>이름: {userName}</h1>
+                            <h1>이메일: {userEmail}</h1>
                         </>
                     )}
                 </div>

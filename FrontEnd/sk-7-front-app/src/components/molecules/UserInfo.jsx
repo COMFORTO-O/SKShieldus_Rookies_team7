@@ -19,6 +19,8 @@ const UserInfo = () => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
+    //맞은 갯수
+    const [passCount, setPassCount] = useState(0);
     useEffect(() => {
         if (isLoggedIn) {
             const fetchUserInfo = async () => {
@@ -27,6 +29,10 @@ const UserInfo = () => {
                     setName(data.member.name);
                     setSolvedCount(data.submissions.totalElements);
                     setEmail(data.member.email);
+                    const passed = data.submissions.content.filter(
+                        (item) => item.pass === true
+                    ).length;
+                    setPassCount(passed);
                 } catch (e) {
                     setError(
                         e?.message || "사용자 정보를 불러오지 못했습니다."
@@ -53,9 +59,9 @@ const UserInfo = () => {
                             sx={{
                                 width: 70,
                                 height: 70,
-                                border: '2px solid',
-                                borderColor: 'blue.500',
-                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                border: "2px solid",
+                                borderColor: "blue.500",
+                                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
                             }}
                         />
                     </div>
@@ -67,12 +73,24 @@ const UserInfo = () => {
                                 {userName || "사용자 이름"}
                             </li>
                             <li className="text-gray-600 text-xs">
-                                <span className="font-semibold">이메일:</span> {userEmail}
+                                <span className="font-semibold">이메일:</span>{" "}
+                                {userEmail}
                             </li>
                             <li className="text-gray-600 text-xs">
-                                <span className="font-semibold">제출한 문제 수:</span>{" "}
+                                <span className="font-semibold">
+                                    시도한 문제 수:
+                                </span>{" "}
                                 <span className="font-extrabold text-blue-600 text-base">
                                     {solvedCount}
+                                </span>{" "}
+                                문제
+                            </li>
+                            <li className="text-gray-600 text-xs">
+                                <span className="font-semibold">
+                                    맞힌 문제 수:
+                                </span>{" "}
+                                <span className="font-extrabold text-green-600 text-base">
+                                    {passCount}
                                 </span>{" "}
                                 문제
                             </li>
@@ -86,7 +104,10 @@ const UserInfo = () => {
                     {/* 랭킹 정보 */}
                     <div className="w-full mt-3">
                         <div className="bg-blue-50 rounded-md p-2 text-center text-blue-700 font-bold text-sm shadow-sm">
-                            현재 랭킹: <span className="text-blue-800 text-base">상위 10%</span>
+                            현재 랭킹:{" "}
+                            <span className="text-blue-800 text-base">
+                                상위 10%
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -105,17 +126,17 @@ const UserInfo = () => {
                             });
                         }}
                         sx={{
-                            backgroundColor: '#2563EB',
-                            '&:hover': {
-                                backgroundColor: '#1E40AF',
+                            backgroundColor: "#2563EB",
+                            "&:hover": {
+                                backgroundColor: "#1E40AF",
                             },
-                            borderRadius: '0.5rem',
-                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                            padding: '0.6rem 1.8rem',
-                            fontSize: '1rem',
-                            fontWeight: 'bold',
-                            textTransform: 'none',
-                            transition: 'all 0.3s ease-out',
+                            borderRadius: "0.5rem",
+                            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                            padding: "0.6rem 1.8rem",
+                            fontSize: "1rem",
+                            fontWeight: "bold",
+                            textTransform: "none",
+                            transition: "all 0.3s ease-out",
                         }}
                         className="mt-3 transform hover:scale-105"
                     >

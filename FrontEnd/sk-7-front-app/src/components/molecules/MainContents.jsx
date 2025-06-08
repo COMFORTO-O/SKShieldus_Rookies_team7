@@ -79,7 +79,7 @@ export default function MainContents() {
                 setLoading(false);
             }
         },
-        [sort, status, level, category, title] // 의존성 배열에 필터 상태 포함
+        [sort, status, level, category, title], // 의존성 배열에 필터 상태 포함
     );
 
     // 필터 상태 또는 페이지 번호 변경 시 문제 목록을 다시 불러옵니다.
@@ -171,7 +171,7 @@ export default function MainContents() {
                     } ${loading ? "cursor-not-allowed opacity-60" : ""}`}
                 >
                     {i}
-                </button>
+                </button>,
             );
         }
         return pageNumbers;
@@ -179,7 +179,7 @@ export default function MainContents() {
 
     return (
         <div className="flex flex-col h-full p-4 sm:p-6 bg-gray-50 min-h-screen">
-            {/* 카테고리/검색 바 섹션 */}
+
             <div className="mb-8">
                 <CategoryBar
                     onReset={onRefresh}
@@ -189,31 +189,39 @@ export default function MainContents() {
                 />
             </div>
 
-            {/* --- 문제 리스트 컨테이너 --- */}
+
             <div className="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100 flex-1 flex flex-col">
-                {/* 문제 목록 헤더 */}
-                <div className="grid grid-cols-[80px_100px_1fr_90px_90px] gap-4 items-center px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-800 border-b border-blue-200 text-sm font-bold uppercase tracking-wide">
-                    <span className="text-center">상태</span>
-                    <span className="text-center">문제 ID</span> {/* 문제 ID 추가 */}
-                    <span className="pl-4">문제 제목</span>
+
+                {/* Header */}
+                <div
+                    className="grid grid-cols-[60px_90px_2fr_1.2fr_90px_90px_100px] gap-4 items-center px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-800 border-b border-blue-200 text-sm font-bold uppercase tracking-wide">
+                    <span className="text-center">번호</span>
                     <span className="text-center">난이도</span>
-                    <span className="text-center">정답률</span>
+                    <span className="pl-4">문제 제목</span>
+                    <span className="text-center">카테고리</span>
+                    <span className="text-center">정답률 (%)</span>
+                    <span className="text-center">생성일</span>
                 </div>
 
-                {/* 문제 리스트 내용 */}
+
                 <div className="divide-y divide-gray-100 flex-1">
                     {loading && (
-                        <div className="flex flex-col items-center justify-center py-12 text-gray-500 text-lg bg-white h-full">
-                            <svg className="animate-spin h-12 w-12 text-blue-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <div
+                            className="flex flex-col items-center justify-center py-12 text-gray-500 text-lg bg-white h-full">
+                            <svg className="animate-spin h-12 w-12 text-blue-500 mx-auto mb-4"
+                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor"
+                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
                             <p className="font-semibold">문제 목록을 불러오는 중입니다...</p>
                             <p className="text-sm text-gray-600 mt-2">잠시만 기다려 주세요.</p>
                         </div>
                     )}
                     {error && (
-                        <div className="flex flex-col items-center justify-center py-12 text-red-500 text-lg bg-red-50 rounded-b-xl h-full">
+                        <div
+                            className="flex flex-col items-center justify-center py-12 text-red-500 text-lg bg-red-50 rounded-b-xl h-full">
                             <p className="text-xl font-bold mb-2">🚨 오류 발생!</p>
                             <p className="text-md text-red-600">{error.message || "알 수 없는 오류가 발생했습니다."}</p>
                             <p className="text-sm text-gray-600 mt-3">문제 정보를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.</p>
@@ -226,7 +234,8 @@ export default function MainContents() {
                         </div>
                     )}
                     {!loading && !error && problems.length === 0 && (
-                        <div className="flex flex-col items-center justify-center py-12 text-gray-500 text-lg bg-gray-50 rounded-b-xl h-full">
+                        <div
+                            className="flex flex-col items-center justify-center py-12 text-gray-500 text-lg bg-gray-50 rounded-b-xl h-full">
                             <p className="text-xl font-semibold mb-2">😭 해당 조건에 맞는 문제가 없습니다.</p>
                             <p className="text-md text-gray-600">검색 조건을 변경하거나 모든 필터를 초기화해보세요.</p>
                             <button
@@ -244,7 +253,7 @@ export default function MainContents() {
                                 key={item.id}
                                 id={item.id} // 문제 ID 추가
                                 title={item.title}
-                                category={item.category?.description || 'N/A'} // 카테고리 설명 (없으면 'N/A')
+                                category={item.category?.description || "N/A"} // 카테고리 설명 (없으면 'N/A')
                                 level={item.level}
                                 passRate={item.passRate}
                                 solved={item.solved ?? false} // solved가 null이면 false로 처리
@@ -254,7 +263,7 @@ export default function MainContents() {
                 </div>
             </div>
 
-            {/* 페이지네이션 섹션 */}
+
             {!loading && !error && totalPages > 0 && (
                 <div className="flex justify-center items-center mt-8 space-x-4">
                     <button

@@ -1,18 +1,10 @@
-// /problem/temp/{problemId}
-
-// get
-
-// Yes
-
-// problemId:Long
+import axios from "axios";
 
 export default async function getTempCode(problemId) {
     try {
+
         const response = await axios.get(
-            `${import.meta.env.VITE_API_URL}/problem/temp/${problemId}`,
-            {
-                problemId: problemId,
-            },
+            `${import.meta.env.VITE_API_URL}/api/member/problem/temp/${problemId}`,
             {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem(
@@ -23,8 +15,8 @@ export default async function getTempCode(problemId) {
                 withCredentials: true,
             }
         );
-
-        return response?.data?.data;
+        console.log(response.data);
+        return response?.data;
     } catch (err) {
         console.error(err);
     }

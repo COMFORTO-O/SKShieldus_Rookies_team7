@@ -231,8 +231,28 @@ public class DataInitRunner implements CommandLineRunner {
         predefinedProblems.add(new ProblemDetail("제곱근 계산", "주어진 숫자의 제곱근을 계산하는 문제입니다.", 2, "MATH"));
         predefinedProblems.add(new ProblemDetail("약수 구하기", "주어진 숫자의 모든 약수를 찾아 반환하는 문제입니다.", 2, "MATH"));
         predefinedProblems.add(new ProblemDetail("이진수 변환", "10진수를 2진수로 변환하는 문제입니다.", 3, "IMPLEMENTATION"));
-        predefinedProblems.add(new ProblemDetail("배열 정렬", "주어진 정수 배열을 오름차순으로 정렬하는 문제입니다.", 3, "SORTING"));
-
+        predefinedProblems.add(new ProblemDetail(
+                "배열 정렬",
+                """
+                정수로 이루어진 배열이 주어집니다. 해당 배열을 오름차순으로 정렬한 결과를 반환하세요.
+            
+                ### 입력 형식
+                - 첫째 줄에 정수 N이 주어집니다. (1 ≤ N ≤ 100)
+                - 둘째 줄에 N개의 정수가 공백으로 구분되어 주어집니다. (-1000 ≤ 각 정수 ≤ 1000)
+            
+                ### 출력 형식
+                - 오름차순으로 정렬된 정수들을 공백으로 출력합니다.
+            
+                ### 입력 예시
+                5
+                5 3 2 4 1
+            
+                ### 출력 예시
+                1 2 3 4 5
+                """,
+                3,
+                "SORTING"
+        ));
 
         List<Member> adminMembers = membersToSave.stream()
                 .filter(m -> m.getRole().equals(MemberRoleEnum.ADMIN))
@@ -298,6 +318,28 @@ public class DataInitRunner implements CommandLineRunner {
             submitsToSave.add(submit);
         }
         System.out.println("생성 대기 중인 제출 내역 수: " + submitsToSave.size());
+
+        List<ProblemTestCase> arraySortTestCases = List.of(
+                new ProblemTestCase(null, "5\n5 3 2 4 1", "1 2 3 4 5", true),
+                new ProblemTestCase(null, "3\n10 -1 3", "-1 3 10", true),
+                new ProblemTestCase(null, "4\n0 0 0 0", "0 0 0 0", true),
+                new ProblemTestCase(null, "2\n1000 -1000", "-1000 1000", true),
+                new ProblemTestCase(null, "6\n9 8 7 6 5 4", "4 5 6 7 8 9", true),
+                new ProblemTestCase(null, "10\n1 3 2 6 5 4 10 9 8 7", "1 2 3 4 5 6 7 8 9 10", false),
+                new ProblemTestCase(null, "1\n42", "42", false),
+                new ProblemTestCase(null, "7\n-3 -1 -2 -7 -5 -4 -6", "-7 -6 -5 -4 -3 -2 -1", false),
+                new ProblemTestCase(null, "5\n100 200 100 200 100", "100 100 100 200 200", false),
+                new ProblemTestCase(null, "8\n10 20 10 30 40 10 20 30", "10 10 10 20 20 30 30 40", false)
+        );
+        Problem arraySortProblem = problemsToSave.stream()
+                .filter(p -> p.getTitle().equals("배열 정렬"))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("배열 정렬 문제를 찾을 수 없습니다."));
+
+        arraySortTestCases.forEach(tc -> tc.setProblem(arraySortProblem));
+
+        testCaseRepository.saveAll(arraySortTestCases);
+        System.out.println("--- '배열 정렬' 문제의 테스트케이스 10개 DB 저장 완료 ---");
 
         // 모든 제출 내역을 한 번에 저장
         memberSubmitProblemRepository.saveAll(submitsToSave);

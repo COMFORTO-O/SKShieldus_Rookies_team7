@@ -72,7 +72,10 @@ public class MemberController {
 
         // 필요하다면 메시지도 따로 설정 가능
         if (tempCode == null) {
-            return ResponseDto.success(null);
+            return ResponseDto.success(MemberTempCodeResponseDto
+                    .builder()
+                    .code("// 코드를 입력하세요.")
+                    .build());
         }
 
         return ResponseDto.success(tempCode);

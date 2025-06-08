@@ -7,6 +7,7 @@ import useCodeStore from "../../store/useCodeStore";
 import RoleStore from "../../store/RoleStore";
 import editByStore from "../../store/editByStore";
 import useAuthStore from "../../store/useAuthStore";
+import { submitCode } from "../../api/submitCode";
 
 function CodeEditorSection({ detail, onLocalCodeEdit }) {
     // 코드 상태
@@ -14,12 +15,14 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
     const { role } = RoleStore();
     const { editingBy } = editByStore();
     const { userEmail: currentUser } = useAuthStore();
-    const [languages, setLanguages]= useState(detail.languages);
+    const [languages, setLanguages] = useState(detail.languages);
     const [selectedLanguage, setSelectedLanguage] = useState(
         detail.languages[0].code
     ); // 기본값 설정 예시
 
     const [result, setResult] = useState(null); // 실행 결과 상태
+    const [score, setScore] = useState(0);
+    const [scoreMessage, setScoreMessage] = useState("");
     const [loading, setLoading] = useState(false);
 
     const monaco = useMonaco();
@@ -36,9 +39,9 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
     }, [monaco, selectedLanguage]);
 
     // 에디터 핸들러
-    const handleEditorMount = (editor) => {
+    const handleEditorMount = useCallback((editor) => {
         editorRef.current = editor;
-    };
+    }, []);
 
     // 사용자가 에디터 내용을 변경했을 때 호출될 함수
     const handleEditorContentChange = useCallback(
@@ -52,7 +55,7 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
     );
 
     // 실행 버튼 클릭 시
-    const handleRunCode = async () => {
+    const handleRunCode = useCallback(async () => {
         if (!detail || !detail.id) {
             setResult({ message: "문제 정보를 가져올 수 없습니다." });
             return;
@@ -67,9 +70,10 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [detail, code, selectedLanguage]);
 
-    const handleResetCode = () => {
+    // 초기화 버튼 클릭 시
+    const handleResetCode = useCallback(() => {
         if (window.confirm("정말로 초기화하시겠습니까?")) {
             resetCode();
 
@@ -79,13 +83,33 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
 
             setResult(null);
         }
-    };
+    }, [resetCode, onLocalCodeEdit, code]);
 
     // 제출 버튼 클릭 시
-    const handleSubmitCode = async () => {
-        // TODO: 제출 로직 구현
-        alert("제출 기능은 아직 구현되지 않았습니다.");
-    };
+    const handleSubmitCode = useCallback(async () => {
+        setLoading(true);
+        setResult("실행 중...");
+
+        try {
+            const res = await submitCode(detail.id, code, selectedLanguage);
+
+            setScore(res.score);
+            setResult(res ?? "결과 없음");
+
+            if (score > 0) {
+                setScoreMessage(
+                    `정답입니다!${diff > 0 ? ` (+${score}점)` : ""}`
+                );
+            } else {
+                setScoreMessage("틀렸습니다.");
+            }
+        } catch (err) {
+            setResult(err || "제출 중 오류 발생");
+            setScoreMessage("");
+        } finally {
+            setLoading(false);
+        }
+    }, [detail, code, selectedLanguage, score]);
 
     // 리사이저 이벤트 핸들러
     const handleMouseDownOnVerticalResizer = useCallback((e) => {
@@ -201,6 +225,15 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
                     <h2 className="text-white text-md font-semibold p-2 bg-gray-700 flex-none">
                         실행 결과
                     </h2>
+                    {/* 점수 메시지 표시 */}
+                    {scoreMessage && (
+                        <div
+                            className="p-2 text-center text-lg font-bold"
+                            style={{ color: score > 0 ? "#22c55e" : "#ef4444" }}
+                        >
+                            {scoreMessage}
+                        </div>
+                    )}
                     <div className="flex-1 bg-gray-900 p-2 overflow-auto text-sm text-white">
                         {loading ? (
                             <div className="p-4 text-center text-gray-400">

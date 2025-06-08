@@ -19,7 +19,6 @@ import axios from "axios";
 //  }
 
 export async function sendUserCode(p_id, code, lang = "PYTHON") {
-    console.log(`id=${p_id}\ncode=${code}\nlang=${lang}`);
     try {
         const response = await axios.post(
             `${import.meta.env.VITE_API_URL}/api/compile/test`,

@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect, useRef, useCallback } from "react";
 import getProblemDetail from "../api/getProblemDetail";
 import useCodeStore from "../store/useCodeStore";
+import getTempCode from "../api/getTempCode";
 
 const MD_BREAKPOINT = 768;
 
@@ -13,7 +14,7 @@ function SolvePage() {
     const [data, setData] = useState(null);
 
     // 코드 전역 상태
-    const { code, setCode, resetCode } = useCodeStore();
+    const { setCode } = useCodeStore();
     const chatComponentRef = useRef(null); // ChatComponent의 메서드 호출용 ref
 
     const [loading, setLoading] = useState(true);
@@ -31,12 +32,14 @@ function SolvePage() {
     const handleLocalCodeEdit = useCallback((newCodeFromEditor) => {
         if (
             chatComponentRef.current &&
-            typeof chatComponentRef.current.sendCodeUpdateFromParent === "function"
+            typeof chatComponentRef.current.sendCodeUpdateFromParent ===
+                "function"
         ) {
-            chatComponentRef.current.sendCodeUpdateFromParent(newCodeFromEditor);
+            chatComponentRef.current.sendCodeUpdateFromParent(
+                newCodeFromEditor
+            );
         }
     }, []); // chatComponentRef는 ref
-
 
     useEffect(() => {
         const checkMobileView = () => {
@@ -129,6 +132,11 @@ function SolvePage() {
             .then((res) => setData(res))
             .catch((err) => setError(err.message))
             .finally(() => setLoading(false));
+
+        getTempCode(id)
+            .then((res) => setCode(res.code))
+            .catch((err) => setError(err.message))
+            .finally(() => setLoading(false));
     }, [id]);
 
     if (loading) {
@@ -190,7 +198,6 @@ function SolvePage() {
                         // ChatComponent에 필요한 props 전달
                         p_id={id} // ChatComponent가 방 생성/참여 시 문제 ID를 알 수 있도록
                         lang={data?.language || "default"} // ChatComponent가 언어 정보를 알 수 있도록 (API 응답 구조에 따라 수정)
-  
                         chatComponentRef={chatComponentRef} // ChatComponent 인스턴스 접근용
                     />
                 </div>

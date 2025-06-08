@@ -79,10 +79,10 @@ function ProblemSection({ detail, chatComponentRef }) {
                     style={{ height: `${editorSectionHeightPercent}%` }}
                 >
                     <div className="text-white mb-2 font-bold text-xl">
-                        {detail.title}
+                        {detail?.title}
                     </div>
                     <div className="w-full h-[390px] resize-none bg-gray-700 text-white overflow-auto p-2">
-                        {detail.detail}
+                        {detail?.detail}
                     </div>
                 </section>
 
@@ -97,8 +97,8 @@ function ProblemSection({ detail, chatComponentRef }) {
                 <section className="px-2 flex-1 flex flex-col min-h-[400px]">
                     {/* 채팅 메시지 출력 영역 */}
                     <ChatComponent
-                        p_id={detail.id}
-                        lang={detail.category.code}
+                        p_id={detail?.id}
+                        lang={detail?.category.code}
                         ref={chatComponentRef}
                     />
                 </section>

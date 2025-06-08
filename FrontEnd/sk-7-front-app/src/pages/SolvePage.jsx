@@ -126,17 +126,37 @@ function SolvePage() {
     }, [isMobileView, handleMouseMoveHorizontal, handleMouseUpHorizontal]);
 
     useEffect(() => {
-        setLoading(true);
-        setError("");
-        getProblemDetail(id)
-            .then((res) => setData(res))
-            .catch((err) => setError(err.message))
-            .finally(() => setLoading(false));
-
-        getTempCode(id)
-            .then((res) => setCode(res.code))
-            .catch((err) => setError(err.message))
-            .finally(() => setLoading(false));
+        let ignore = false;
+        (async () => {
+            setLoading(true);
+            setError("");
+            try {
+                const [problem, tempCode] = await Promise.all([
+                    getProblemDetail(id),
+                    getTempCode(id),
+                ]);
+                if (!ignore) {
+                    setData(problem);
+                    setCode(tempCode.data.code); // ← tempCode가 undefined면 여기서 에러
+                }
+            } catch (err) {
+                if (!ignore) {
+                    if (
+                        err?.code === "ERR_CANCELED" ||
+                        err?.message?.includes("canceled")
+                    ) {
+                        console.warn("요청이 취소되었습니다.");
+                    } else {
+                        setError(err.message || "알 수 없는 오류");
+                    }
+                }
+            } finally {
+                if (!ignore) setLoading(false);
+            }
+        })();
+        return () => {
+            ignore = true;
+        };
     }, [id]);
 
     if (loading) {

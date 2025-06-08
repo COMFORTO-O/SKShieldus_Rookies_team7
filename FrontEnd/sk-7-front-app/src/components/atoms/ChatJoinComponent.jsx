@@ -219,11 +219,44 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
             }
             console.log(`[${roomId}] 초기 설정 구독 시도.`);
 
-            // 이전 Topic 구독 해제 (User-specific Queue는 일반적으로 유지하거나 STOMP가 관리)
-            if (initialSettingsSubscriptions.current.roomDeleted)
-                initialSettingsSubscriptions.current.roomDeleted.unsubscribe();
-            if (initialSettingsSubscriptions.current.members)
-                initialSettingsSubscriptions.current.members.unsubscribe();
+            // 안전하게 구독 해제하고 null로 만드는 헬퍼 함수
+            const safeUnsubscribe = (subscriptionRefProperty) => {
+                if (
+                    initialSettingsSubscriptions.current[
+                        subscriptionRefProperty
+                    ]
+                ) {
+                    try {
+                        initialSettingsSubscriptions.current[
+                            subscriptionRefProperty
+                        ].unsubscribe();
+                    } catch (e) {
+                        console.warn(
+                            `${subscriptionRefProperty} 구독 해제 중 오류`,
+                            e,
+                            initialSettingsSubscriptions.current[
+                                subscriptionRefProperty
+                            ]
+                        );
+                    }
+                    initialSettingsSubscriptions.current[
+                        subscriptionRefProperty
+                    ] = null;
+                }
+            };
+
+            // 이전 구독들 해제 (사용자 큐 포함)
+            safeUnsubscribe("initCode");
+            safeUnsubscribe("chatHistory");
+            safeUnsubscribe("kick");
+            safeUnsubscribe("roomDeleted");
+            safeUnsubscribe("members");
+
+            // // 이전 Topic 구독 해제 (User-specific Queue는 일반적으로 유지하거나 STOMP가 관리)
+            // if (initialSettingsSubscriptions.current.roomDeleted)
+            //     initialSettingsSubscriptions.current.roomDeleted.unsubscribe();
+            // if (initialSettingsSubscriptions.current.members)
+            //     initialSettingsSubscriptions.current.members.unsubscribe();
 
             // User-specific queue 구독 (STOMP 클라이언트 활성화 시 한 번만 해도 될 수 있음)
             initialSettingsSubscriptions.current.initCode =
@@ -265,7 +298,11 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
                                 message: alertMsg,
                                 roomId: kickedFromRoomId,
                             } = JSON.parse(message.body);
-                            if (kickedFromRoomId === currentRoomId) {
+
+                            console.log(
+                                `kickedRoomId: ${kickedFromRoomId}\ncurrent: ${roomId}`
+                            );
+                            if (kickedFromRoomId === roomId) {
                                 // 현재 방에서 강퇴된 경우
                                 alert(`강퇴 알림: ${alertMsg}`);
                                 setCurrentRoomId("");
@@ -341,7 +378,18 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
 
             setConnectionStatus("도움방 참여 완료"); // 모든 구독 및 요청 후 상태 변경
         },
-        [setCode, currentUserEmail, currentRoomId, navigate, setRole, myRole]
+        [
+            setCode,
+            currentUserEmail,
+            navigate,
+            setRole,
+            myRole,
+            setReceivedMessages,
+            setConnectionStatus,
+            setCurrentRoomId,
+            setMemberMap,
+            setOwnerEmail,
+        ]
     ); // currentRoomId 의존성 추가 (kick 메시지 처리)
 
     // <---- 도움방 연결 해제 ---->

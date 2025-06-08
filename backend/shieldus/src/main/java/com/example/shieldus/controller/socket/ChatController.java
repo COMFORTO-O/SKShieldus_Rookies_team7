@@ -143,7 +143,10 @@ public class ChatController {
         messagingTemplate.convertAndSendToUser(
                 targetUsername,
                 "/queue/kick",
-                Map.of("message", "방장에 의해 강제 퇴장되었습니다.")
+                Map.of(
+                        "message", "방장에 의해 강제 퇴장되었습니다.",
+                        "roomId", roomId // <--- roomId 추가
+                )
         );
     }
 

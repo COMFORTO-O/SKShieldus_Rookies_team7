@@ -92,13 +92,13 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
 
         try {
             const res = await submitCode(detail.id, code, selectedLanguage);
-
+            console.log(res)
             setScore(res.score);
             setResult(res ?? "결과 없음");
 
-            if (score > 0) {
+            if (res.score > 0) {
                 setScoreMessage(
-                    `정답입니다!${diff > 0 ? ` (+${score}점)` : ""}`
+                    `정답입니다!${res.score > 0 ? ` (+${res.score}점)` : ""}`
                 );
             } else {
                 setScoreMessage("틀렸습니다.");
@@ -109,7 +109,7 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
         } finally {
             setLoading(false);
         }
-    }, [detail, code, selectedLanguage, score]);
+    }, [detail, code, selectedLanguage, score,setScore]);
 
     // 리사이저 이벤트 핸들러
     const handleMouseDownOnVerticalResizer = useCallback((e) => {

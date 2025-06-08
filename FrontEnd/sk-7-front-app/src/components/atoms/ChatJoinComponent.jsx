@@ -289,20 +289,14 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
                     (message) => {
                         try {
                             const {
-                                message: alertMsg,
-                                roomId: kickedFromRoomId,
+                                message: alertMsg
                             } = JSON.parse(message.body);
-
-                            console.log(
-                                `kickedRoomId: ${kickedFromRoomId}\ncurrent: ${roomId}`
-                            );
-                            if (kickedFromRoomId === roomId) {
                                 // 현재 방에서 강퇴된 경우
                                 alert(`강퇴 알림: ${alertMsg}`);
                                 setCurrentRoomId("");
                                 setConnectionStatus("강퇴됨");
                                 navigate("/helpRoomList"); // 페이지 이동
-                            }
+                                window.location.reload();
                         } catch (e) {
                             console.error("강퇴 메시지 파싱 오류:", e);
                         }
@@ -390,15 +384,9 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
     const disconnectFromHelpRoom = useCallback(() => {
         console.log("도움방 연결 해제 시도...");
         if (stompClientRef.current?.active) {
-            if (currentRoomId) {
-                // 현재 방이 있을 때만 퇴장 메시지 전송
-                stompClientRef.current.publish({
-                    destination: `/app/room.leave.${currentRoomId}`,
-                    body: "",
-                });
-            }
             stompClientRef.current.deactivate(); // onDisconnect 콜백이 트리거되어 나머지 정리
             console.log("STOMP 연결 해제 요청됨 (deactivate 호출)");
+            navigate("/helpRoomList")
         } else {
             // 이미 비활성 상태이거나 stompClientRef가 null인 경우 수동 초기화
             console.log(
@@ -503,6 +491,10 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
     ]);
 
     useEffect(() => {
+        if (roomId && !isConnected && connectionStatus === "방 입장") {
+        console.log("자동 방 입장 실행");
+        handleHelpRequestClick();
+    }
         // 주 구독 관리 로직: currentRoomId, isConnected, stompClientRef.current.active 변경 시 실행
         const clientIsActive = stompClientRef.current?.active;
         console.log(

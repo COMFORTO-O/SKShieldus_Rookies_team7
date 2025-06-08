@@ -301,8 +301,8 @@ const ChatComponent = forwardRef(
                         "/user/queue/kick",
                         (message) => {
                             try {
-                                console.log(message);
-                                alert(`강퇴 되었습니다.`);
+                                console.log(message+"asd");
+                                alert(`강퇴 되었습니다.`+message+"asd");
                                 setCurrentRoomId("");
                                 setConnectionStatus(
                                     "강퇴됨 (새로운 방 요청 가능)"
@@ -399,13 +399,6 @@ const ChatComponent = forwardRef(
         const disconnectFromHelpRoom = useCallback(() => {
             console.log("도움방 연결 해제 시도...");
             if (stompClientRef.current?.active) {
-                if (currentRoomId) {
-                    // 현재 방이 있을 때만 퇴장 메시지 전송
-                    stompClientRef.current.publish({
-                        destination: `/app/room.leave.${currentRoomId}`,
-                        body: "",
-                    });
-                }
                 stompClientRef.current.deactivate(); // onDisconnect 콜백이 트리거되어 나머지 정리
                 console.log("STOMP 연결 해제 요청됨 (deactivate 호출)");
             } else {

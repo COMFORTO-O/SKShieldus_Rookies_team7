@@ -24,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -168,9 +169,14 @@ public class MemberService {
      * Member Temp Code 가져오기
      * */
     public MemberTempCodeResponseDto getMemberTempCode(Long memberId, Long problemId){
-        return tempCodeRepository.findTopByProblemIdAndMemberIdOrderBySubmitDateDesc(memberId, problemId)
+
+        Optional<MemberSubmitProblem> submitProblem = submitProblemRepository.findByMemberIdAndProblem_Id(memberId,problemId);
+
+        return submitProblem
+                .flatMap(submit ->
+                        tempCodeRepository.findTopByMemberSubmitProblemIdOrderBySubmitDateDesc(submit.getId()))
                 .map(MemberTempCodeResponseDto::fromEntity)
-                .orElse(null); // 없으면 null 반환
+                .orElse(null);
     }
 
     public List<MemberTempCodeDto> getTempCodesForSubmission(Long submitProblemId, Long memberId) {

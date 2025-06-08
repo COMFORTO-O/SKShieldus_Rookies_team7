@@ -30,4 +30,5 @@ public interface MemberTempCodeRepository extends JpaRepository<MemberTempCode, 
             @Param("problemId") Long problemId,
             @Param("memberId") Long memberId
     );
+    Optional<MemberTempCode> findTopByMemberSubmitProblemIdOrderBySubmitDateDesc(Long submitProblemId);
 }

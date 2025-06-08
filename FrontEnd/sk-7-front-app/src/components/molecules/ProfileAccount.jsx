@@ -35,7 +35,7 @@ export default function ProfileAccount({ name, email }) {
                                 />
                             </div>
                             <div className="flex items-center ml-5 text-2xl font-bold">
-                                {profile.name}
+                            
                             </div>
                         </div>
 

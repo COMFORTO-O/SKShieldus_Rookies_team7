@@ -81,7 +81,7 @@ public class CompileService {
                 .code(requestDto.getCode())
                 .submitDate(LocalDateTime.now())
                 .build());
-
+        System.out.println(requestDto.getCode()+"asdasd");
         return CompileResponseDto.builder()
                 .passedCount(passed)
                 .totalCount(total)

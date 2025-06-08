@@ -76,6 +76,8 @@ public class MemberController {
                     .builder()
                     .code("// 코드를 입력하세요.")
                     .build());
+        }else {
+            System.out.println(tempCode.getCode()+"asdfasdfsadf");
         }
 
         return ResponseDto.success(tempCode);

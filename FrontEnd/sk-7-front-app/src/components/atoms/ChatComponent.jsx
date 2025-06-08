@@ -275,19 +275,14 @@ const ChatComponent = forwardRef(
                         "/user/queue/kick",
                         (message) => {
                             try {
-                                const {
-                                    message: alertMsg,
-                                    roomId: kickedFromRoomId,
-                                } = JSON.parse(message.body);
-                                if (kickedFromRoomId === currentRoomId) {
-                                    // 현재 방에서 강퇴된 경우
-                                    alert(`강퇴 알림: ${alertMsg}`);
+                                    console.log(message);
+                                    alert(`강퇴 되었습니다.`);
                                     setCurrentRoomId("");
                                     setConnectionStatus(
                                         "강퇴됨 (새로운 방 요청 가능)"
                                     );
                                     navigate("/helpRoomList"); // 페이지 이동
-                                }
+                                
                             } catch (e) {
                                 console.error("강퇴 메시지 파싱 오류:", e);
                             }

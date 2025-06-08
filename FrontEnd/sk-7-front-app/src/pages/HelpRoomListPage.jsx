@@ -3,7 +3,6 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
 import RoomItem from "../components/molecules/RoomItem";
-import UserInfo from "../components/molecules/UserInfo";
 
 export default function HelpRoomListPage() {
     const { isLoggedIn, accessToken } = useAuthStore();
@@ -23,7 +22,7 @@ export default function HelpRoomListPage() {
                             withCredentials: true,
                         }
                     );
-                    console.log("Fetched rooms:", response.data);
+                    
                     setRoomList(response.data || []);
                 } catch (error) {
                     console.error("방 목록 불러오기 실패:", error);
@@ -44,12 +43,7 @@ export default function HelpRoomListPage() {
                 alert("잘못된 방 정보입니다.");
                 return;
             }
-            console.log(
-                `Navigating to JoinRoomPage for problemId: ${roomClicked.problemId}, to join roomId: ${roomClicked.id}`
-            );
-            console.log(
-                `방 데이터 : \nID: ${roomClicked.id}\nProblemID: ${roomClicked.problemId}`
-            );
+            
             navigate(`/join/${roomClicked.problemId}`, {
                 // URL은 problemId를 사용
                 state: { roomToJoinData: roomClicked },

@@ -14,6 +14,7 @@ import createRoom from "../../socket/createRoom";
 import useCodeStore from "../../store/useCodeStore";
 import RoleStore from "../../store/RoleStore";
 import editByStore from "../../store/editByStore";
+import PropTypes from "prop-types";
 
 const ChatComponent = forwardRef(
     (
@@ -482,7 +483,6 @@ const ChatComponent = forwardRef(
                         const roomData = await createRoom({
                             problemId: p_id,
                             language: lang,
-                            code: code
                         });
                         if (roomData?.id) {
                             console.log(
@@ -546,7 +546,7 @@ const ChatComponent = forwardRef(
             unsubscribeAllRoomSpecific,
             setRole,
             setEditingBy,
-            code
+            code,
         ]);
 
         useEffect(() => {
@@ -968,5 +968,10 @@ const ChatComponent = forwardRef(
         );
     }
 );
+
+ChatComponent.propTypes = {
+    p_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    lang: PropTypes.string,
+};
 
 export default ChatComponent;

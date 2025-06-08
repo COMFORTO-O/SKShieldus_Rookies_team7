@@ -18,9 +18,6 @@ export default function JoinRoomPage() {
 
     const [data, setData] = useState(null);
 
-    // 코드 전역 상태
-    const { code, setCode, resetCode } = useCodeStore();
-
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 

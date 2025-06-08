@@ -1,4 +1,5 @@
 import Label from "./Label";
+import PropTypes from "prop-types";
 
 const AuthInput = ({
     id,
@@ -62,6 +63,19 @@ const AuthInput = ({
             </div>
         </div>
     );
+};
+
+AuthInput.propTypes = {
+    id: PropTypes.string.isRequired,
+    label: PropTypes.string,
+    type: PropTypes.string,
+    placeholder: PropTypes.string,
+    bottomMessage: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    required: PropTypes.bool,
+    error: PropTypes.string,
+    onChange: PropTypes.func.isRequired,
+    className: PropTypes.string,
 };
 
 export default AuthInput;

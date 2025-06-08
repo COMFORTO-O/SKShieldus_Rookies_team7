@@ -1,5 +1,6 @@
-// 문제 아이템
+import PropTypes from "prop-types";
 
+// 문제 아이템
 const levelColor = {
     5: "bg-levelColor-5 text-gray-100",
     4: "bg-levelColor-4 text-gray-200",
@@ -32,6 +33,15 @@ const ProblemItem = ({ level, title, passRate, solved, p_id, onClick }) => {
             <span className="w-16 ml-4 text-center">{passRate}</span>
         </div>
     );
+};
+
+ProblemItem.propTypes = {
+    level: PropTypes.number.isRequired,
+    title: PropTypes.string.isRequired,
+    passRate: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    solved: PropTypes.bool,
+    p_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    onClick: PropTypes.func,
 };
 
 export default ProblemItem;

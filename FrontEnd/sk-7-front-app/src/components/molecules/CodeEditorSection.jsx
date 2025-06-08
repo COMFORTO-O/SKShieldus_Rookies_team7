@@ -7,6 +7,7 @@ import useCodeStore from "../../store/useCodeStore";
 import RoleStore from "../../store/RoleStore";
 import editByStore from "../../store/editByStore";
 import useAuthStore from "../../store/useAuthStore";
+import PropTypes from "prop-types";
 
 function CodeEditorSection({ detail, onLocalCodeEdit }) {
     // 코드 상태
@@ -343,5 +344,25 @@ function CodeEditorSection({ detail, onLocalCodeEdit }) {
         </div>
     );
 }
+
+CodeEditorSection.propTypes = {
+    detail: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        title: PropTypes.string,
+        detail: PropTypes.string,
+        category: PropTypes.shape({
+            code: PropTypes.string.isRequired,
+            description: PropTypes.string,
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        }).isRequired,
+        level: PropTypes.number,
+        memberName: PropTypes.string,
+        solved: PropTypes.bool,
+        testCase: PropTypes.array,
+        createdAt: PropTypes.string,
+        updatedAt: PropTypes.string,
+    }).isRequired,
+    onLocalCodeEdit: PropTypes.func,
+};
 
 export default CodeEditorSection;

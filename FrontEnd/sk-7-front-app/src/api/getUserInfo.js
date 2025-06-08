@@ -16,10 +16,7 @@ export default async function getUserInfo() {
                 withCredentials: true,
             }
         );
-
-        console.log("응답 결과 : ", response.data);
         if (response.data.status === 200) {
-            console.log("사용자 정보 가져오기 성공");
             return response?.data?.data;
         } else {
             console.error("사용자 정보 가져오기 실패", response.status);

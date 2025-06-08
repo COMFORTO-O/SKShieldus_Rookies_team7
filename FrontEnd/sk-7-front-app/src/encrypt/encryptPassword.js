@@ -13,9 +13,6 @@ export function encryptPassword(password) {
     // encrypt.encrypt() 메서드는 암호화된 결과를 Base64 인코딩된 문자열로 반환
     const encryptedPassword = encrypt.encrypt(password);
 
-    // console.log("공개키 : ", pk);
-    // console.log("rsa 결과 : ", encryptedPassword);
-
     if (encryptedPassword) {
         return encryptedPassword;
     } else {

@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 const LanguageSelect = ({
     languages,
     selectedLanguage,
@@ -20,6 +22,16 @@ const LanguageSelect = ({
             </select>
         </div>
     );
+};
+
+LanguageSelect.propTypes = {
+    languages: PropTypes.arrayOf(
+        PropTypes.shape({
+            code: PropTypes.string.isRequired,
+        })
+    ).isRequired,
+    selectedLanguage: PropTypes.string.isRequired,
+    setSelectedLanguage: PropTypes.func.isRequired,
 };
 
 export default LanguageSelect;

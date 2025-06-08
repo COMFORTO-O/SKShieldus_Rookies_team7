@@ -1,10 +1,7 @@
-import useCodeStore from "../../store/useCodeStore";
-import ChatComponent from "../atoms/ChatComponent";
 import ChatJoinComponent from "../atoms/ChatJoinComponent";
+import PropTypes from "prop-types";
 
 function ProblemSectionForJoin({ detail, roomId, chatComponentRef }) {
-    // 코드 상태
-    const { code, setCode, resetCode } = useCodeStore();
     return (
         <div className="flex-1 h-full p-3 overflow-auto bg-gray-700 border-y border-r border-gray-600 ">
             <section className="flex flex-col h-full gap-2">
@@ -25,5 +22,31 @@ function ProblemSectionForJoin({ detail, roomId, chatComponentRef }) {
         </div>
     );
 }
+
+ProblemSectionForJoin.propTypes = {
+    detail: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+            .isRequired,
+        title: PropTypes.string,
+        detail: PropTypes.string,
+        category: PropTypes.shape({
+            code: PropTypes.string.isRequired,
+            description: PropTypes.string,
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        }),
+        level: PropTypes.number,
+        memberName: PropTypes.string,
+        solved: PropTypes.bool,
+        testCase: PropTypes.array,
+        createdAt: PropTypes.string,
+        updatedAt: PropTypes.string,
+    }).isRequired,
+    roomId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+        .isRequired,
+    chatComponentRef: PropTypes.oneOfType([
+        PropTypes.func,
+        PropTypes.shape({ current: PropTypes.any }),
+    ]),
+};
 
 export default ProblemSectionForJoin;

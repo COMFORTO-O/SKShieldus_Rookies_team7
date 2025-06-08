@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 const Input = ({
     id,
     type = "text",
@@ -8,7 +10,7 @@ const Input = ({
     className = "",
     required = false,
     error = "",
-    readOnly = false
+    readOnly = false,
 }) => {
     return (
         <div className="mb-4">
@@ -34,6 +36,19 @@ const Input = ({
             {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
         </div>
     );
+};
+
+Input.propTypes = {
+    id: PropTypes.string,
+    type: PropTypes.string,
+    name: PropTypes.string,
+    placeholder: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    onChange: PropTypes.func.isRequired,
+    className: PropTypes.string,
+    required: PropTypes.bool,
+    error: PropTypes.string,
+    readOnly: PropTypes.bool,
 };
 
 export default Input;

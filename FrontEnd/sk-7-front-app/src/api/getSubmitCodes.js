@@ -7,7 +7,9 @@ export default async function getSubmitCodes(submitProblemId) {
         const token = localStorage.getItem("accessToken");
 
         const response = await axios.get(
-            `${import.meta.env.VITE_API_URL}/api/member/problem/submitcodes/${submitProblemId}`,
+            `${
+                import.meta.env.VITE_API_URL
+            }/api/member/problem/submitcodes/${submitProblemId}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -24,6 +26,5 @@ export default async function getSubmitCodes(submitProblemId) {
         }
     } catch (err) {
         console.error("제출 코드 요청 실패", err);
-        throw err;
     }
 }

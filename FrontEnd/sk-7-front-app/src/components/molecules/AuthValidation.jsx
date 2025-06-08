@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
 
 const AuthValidation = (initialFields) => {
@@ -73,6 +74,10 @@ const AuthValidation = (initialFields) => {
         errors,
         handleChange,
     };
+};
+
+AuthValidation.propTypes = {
+    initialFields: PropTypes.object.isRequired,
 };
 
 export default AuthValidation;

@@ -31,9 +31,9 @@ const UserInfo = () => {
                 try {
                     const data = await getUserInfo();
 
-                    setName(data.member.name);
-                    setSolvedCount(data.submissions.length);
-                    setEmail(data.member.email);
+                    setName(data.name);
+                    setSolvedCount(0);
+                    setEmail(data.email);
                 } catch (e) {
                     setError(
                         e?.message || "사용자 정보를 불러오지 못했습니다."

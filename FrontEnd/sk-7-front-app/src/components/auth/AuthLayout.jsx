@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 
 function AuthLayout({ children, title }) {
     return (
@@ -12,5 +12,10 @@ function AuthLayout({ children, title }) {
         </div>
     );
 }
+
+AuthLayout.propTypes = {
+    children: PropTypes.node.isRequired,
+    title: PropTypes.string.isRequired,
+};
 
 export default AuthLayout;

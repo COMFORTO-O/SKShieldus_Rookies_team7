@@ -2,12 +2,9 @@ import { useState } from "react";
 import image from "../../../public/image.png";
 import Input from "../atoms/Input";
 import Label from "../atoms/Label";
-import LoadingSpinner from "../atoms/LoadingSpinner";
-import Button from "../atoms/Button";
+import PropTypes from "prop-types";
 
 export default function ProfileAccount({ name, email }) {
-    const [isLoading, setIsLoading] = useState(false);
-
     const [profile, setProfile] = useState({
         name,
         email,
@@ -89,3 +86,8 @@ export default function ProfileAccount({ name, email }) {
         </div>
     );
 }
+
+ProfileAccount.PropTypes = {
+    name: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+};

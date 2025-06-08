@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 export default function RoomItem({
     id,
     title,
@@ -38,7 +40,10 @@ export default function RoomItem({
                 )}
                 <button
                     className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
-                    onClick={(e) => { e.stopPropagation(); onJoin(); }} // 버튼 클릭 시 이벤트 전파 중지
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onJoin();
+                    }} // 버튼 클릭 시 이벤트 전파 중지
                 >
                     참여하기
                 </button>
@@ -46,3 +51,12 @@ export default function RoomItem({
         </div>
     );
 }
+
+RoomItem.propTypes = {
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    owner: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+    }).isRequired,
+    problemId: PropTypes.string.isRequired,
+};

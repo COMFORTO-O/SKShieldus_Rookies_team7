@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import useCategoryStore from "../../store/useCategoryStore";
+import PropTypes from "prop-types";
 
 // // 정렬, 카테고리, 푼 문제 제외 체크박스 등
-
 const sortOptions = [
     { label: "최신순", value: "createdAt" },
     { label: "ID 순", value: "id" },
@@ -184,6 +184,13 @@ const CategoryBar = ({ onReset, onSearch, title, setTitle }) => {
             </div>
         </div>
     );
+};
+
+CategoryBar.propTypes = {
+    onReset: PropTypes.func.isRequired,
+    onSearch: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+    setTitle: PropTypes.func.isRequired,
 };
 
 export default CategoryBar;

@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import useCodeStore from "../../store/useCodeStore";
 import RoleStore from "../../store/RoleStore";
 import editByStore from "../../store/editByStore";
+import PropTypes from "prop-types";
 
 const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
     // 코드 상태 (Global)
@@ -104,7 +105,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
         }
     }, []);
     const unsubscribeAllRoomSpecific = useCallback(() => {
-        console.log("모든 방 특정 구독 해제 시도...");
         unsubscribe(chatSubscriptionRef);
         unsubscribe(codeUpdateSubscriptionRef);
 
@@ -115,8 +115,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
         if (initialSettingsSubscriptions.current.members)
             initialSettingsSubscriptions.current.members.unsubscribe();
         initialSettingsSubscriptions.current.members = null;
-
-        console.log("방 특정 구독 해제 완료.");
     }, [unsubscribe]);
 
     // <---- 채팅 메시지 구독 ---->
@@ -133,7 +131,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
             unsubscribe(chatSubscriptionRef); // 이전 구독이 있다면 확실히 해제
 
             const chatDestination = `/topic/chatroom.${roomId}`;
-            console.log(`${chatDestination} 채팅 구독 시도.`);
             chatSubscriptionRef.current = stompClientRef.current.subscribe(
                 chatDestination,
                 (message) => {
@@ -142,7 +139,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
 
                         receivedMessage.isMine =
                             receivedMessage.sender === currentUserEmail;
-                        console.log("채팅 메시지 수신:", receivedMessage);
                         setReceivedMessages((prevMessages) => [
                             ...prevMessages,
                             receivedMessage,
@@ -156,7 +152,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
                     }
                 }
             );
-            console.log(`[${roomId}] 채팅 메시지 구독 완료.`);
         },
         [currentUserEmail, unsubscribe]
     );
@@ -174,7 +169,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
             unsubscribe(codeUpdateSubscriptionRef); // 이전 구독이 있다면 확실히 해제
 
             const codeDestination = `/topic/code.${roomId}`;
-            console.log(`${codeDestination} 코드 업데이트 구독 시도.`);
             codeUpdateSubscriptionRef.current =
                 stompClientRef.current.subscribe(codeDestination, (message) => {
                     try {
@@ -203,7 +197,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
                         );
                     }
                 });
-            console.log(`[${roomId}] 코드 업데이트 구독 완료.`);
         },
         [currentUserEmail, setCode, unsubscribe, setEditingBy]
     );
@@ -217,7 +210,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
                 );
                 return;
             }
-            console.log(`[${roomId}] 초기 설정 구독 시도.`);
 
             // 이전 Topic 구독 해제 (User-specific Queue는 일반적으로 유지하거나 STOMP가 관리)
             if (initialSettingsSubscriptions.current.roomDeleted)
@@ -233,7 +225,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
                         try {
                             const latest = JSON.parse(message.body)?.code;
                             if (latest !== undefined) setCode(latest);
-                            console.log("초기 코드 수신:", latest);
                         } catch (e) {
                             console.error("초기 코드 파싱 오류:", e);
                         }
@@ -249,7 +240,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
                             setReceivedMessages(
                                 Array.isArray(history) ? history : []
                             );
-                            console.log("채팅 기록 수신:", history);
                         } catch (e) {
                             console.error("채팅 기록 파싱 오류:", e);
                         }
@@ -298,12 +288,7 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
                     (message) => {
                         try {
                             const { members, owner } = JSON.parse(message.body);
-                            console.log(
-                                "멤버 목록 수신:",
-                                members,
-                                "방장:",
-                                owner
-                            );
+
                             setMemberMap(members || {});
                             setOwnerEmail(owner || "");
                             if (
@@ -322,8 +307,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
                         }
                     }
                 );
-
-            console.log(`[${roomId}] 초기 설정 구독 완료.`);
 
             // 초기 데이터 요청
             stompClientRef.current.publish({
@@ -346,7 +329,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
 
     // <---- 도움방 연결 해제 ---->
     const disconnectFromHelpRoom = useCallback(() => {
-        console.log("도움방 연결 해제 시도...");
         if (stompClientRef.current?.active) {
             if (currentRoomId) {
                 // 현재 방이 있을 때만 퇴장 메시지 전송
@@ -356,12 +338,8 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
                 });
             }
             stompClientRef.current.deactivate(); // onDisconnect 콜백이 트리거되어 나머지 정리
-            console.log("STOMP 연결 해제 요청됨 (deactivate 호출)");
         } else {
             // 이미 비활성 상태이거나 stompClientRef가 null인 경우 수동 초기화
-            console.log(
-                "STOMP 클라이언트 비활성 또는 없음. 수동 상태 초기화 실행."
-            );
             setIsConnected(false);
             setCurrentRoomId("");
             setReceivedMessages([]);
@@ -391,7 +369,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
             connectionStatus === "연결 시도 중..." ||
             connectionStatus === "도움방 생성 중..."
         ) {
-            console.log("이미 연결/생성 작업 진행 중입니다.");
             return;
         }
 
@@ -403,12 +380,11 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
             connectHeaders: {
                 /* Authorization: `Bearer ${localStorage.getItem("accessToken")}`, */
             },
-            debug: (str) => console.log("STOMP Debug: ", str),
+            // debug: (str) => console.log("STOMP Debug: ", str),
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
             onConnect: async (frame) => {
-                console.log("STOMP 서버에 연결되었습니다:", frame);
                 stompClientRef.current = client;
                 setIsConnected(true);
 
@@ -434,9 +410,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
                 stompClientRef.current = null;
             },
             onDisconnect: () => {
-                console.log(
-                    "STOMP 서버와의 연결이 끊어졌습니다. (onDisconnect 콜백)"
-                );
                 setIsConnected(false);
                 setCurrentRoomId("");
                 setReceivedMessages([]);
@@ -463,14 +436,8 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
     useEffect(() => {
         // 주 구독 관리 로직: currentRoomId, isConnected, stompClientRef.current.active 변경 시 실행
         const clientIsActive = stompClientRef.current?.active;
-        console.log(
-            `구독 관리 useEffect 실행: currentRoomId=${currentRoomId}, isConnected=${isConnected}, clientActive=${clientIsActive}`
-        );
 
         if (currentRoomId && isConnected && clientIsActive) {
-            console.log(
-                `[EFFECT] RoomID ${currentRoomId}, 연결 활성. 모든 구독 설정 시도.`
-            );
             // 구독 함수들은 useCallback으로 메모이징되어 의존성 배열에 포함 가능
             subscribeToChatMessages(currentRoomId);
             subscribeToCodeUpdates(currentRoomId);
@@ -482,17 +449,12 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
             });
         } else {
             // 방에 연결되지 않았거나, STOMP 연결이 끊어졌거나, 클라이언트가 비활성 상태인 경우
-            console.log(
-                `[useEffect] 구독 해제 조건 충족 또는 구독 설정 조건 미충족.`
-            );
+
             // unsubscribeAllRoomSpecific(); // 여기서 호출하면, 방 생성 중 잠깐 currentRoomId가 없을 때도 해제될 수 있음
             // onDisconnect 또는 disconnectFromHelpRoom에서 주로 처리.
             // 단, STOMP는 연결되었으나 방에서 나간 경우(currentRoomId가 ""로 바뀜)는 여기서 해제 필요.
             if (!currentRoomId && isConnected && clientIsActive) {
                 // 방에서 나갔지만 STOMP 연결은 유지된 경우
-                console.log(
-                    "[useEffect] 방에서 나감 (currentRoomId 없음), 방 특정 구독 해제."
-                );
                 unsubscribeAllRoomSpecific();
                 setReceivedMessages([]);
                 setMemberMap({});
@@ -533,7 +495,6 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
             return;
         }
         if (currentRoomId && isConnected) {
-            console.log("도움방 나가기 버튼 클릭");
             disconnectFromHelpRoom();
         } else if (!isConnected || (isConnected && !currentRoomId)) {
             // "도움방 생성 중..." 또는 "연결 시도 중..." 상태가 아닐 때만 connectToHelpRoom 호출
@@ -541,19 +502,8 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
                 connectionStatus !== "도움방 생성 중..." &&
                 connectionStatus !== "연결 시도 중..."
             ) {
-                console.log("방 참여 버튼 클릭");
                 connectToHelpRoom();
-            } else {
-                console.log(
-                    "이미 연결/생성 작업 진행 중입니다. 버튼 클릭 무시."
-                );
             }
-        } else {
-            console.log("handleHelpRequestClick: 알 수 없는 상태", {
-                currentRoomId,
-                isConnected,
-                connectionStatus,
-            });
         }
     };
 
@@ -778,5 +728,10 @@ const ChatJoinComponent = forwardRef(({ roomId }, ref) => {
         </div>
     );
 });
+
+ChatJoinComponent.propTypes = {
+    roomId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+        .isRequired,
+};
 
 export default ChatJoinComponent;

@@ -105,7 +105,6 @@ export default function MainContents() {
 
     // 카테고리 초기화
     const onRefresh = useCallback(() => {
-        console.log("======초기화 시작======");
         // 초기화 플래그 ON
         setIsResetting(true);
         setSort("createdAt"); // 정렬 기본값
@@ -114,12 +113,10 @@ export default function MainContents() {
         setLevel(null); // 레벨 기본값
         setTitle(""); // 검색어 기본값
         setPageNumber(1); // 페이지도 1로 초기화
-        console.log("======초기화 끝======");
     }, [setSort, setStatus, setCategory, setLevel, setTitle, setPageNumber]);
 
     // 검색
     const onSearch = useCallback(() => {
-        console.log("검색");
         setPageNumber(1);
         fetchProblems(1);
     }, [fetchProblems]);

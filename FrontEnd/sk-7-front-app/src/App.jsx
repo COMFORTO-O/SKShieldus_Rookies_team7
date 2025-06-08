@@ -1,10 +1,4 @@
-import {
-    Routes,
-    Route,
-    useLocation,
-    useNavigate,
-    Link,
-} from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import React, { Suspense, useEffect } from "react";
 import Navbar from "./components/molecules/Navbar";
 import useAuthStore from "./store/useAuthStore";
@@ -25,6 +19,7 @@ const LoginPage = React.lazy(() => import("./pages/LoginPage"));
 const SignupPage = React.lazy(() => import("./pages/SignupPage"));
 const SolvePage = React.lazy(() => import("./pages/SolvePage"));
 const InfoPage = React.lazy(() => import("./pages/InfoPage"));
+const NotFoundPage = React.lazy(() => import("./pages/NotFoundPage"));
 
 // 어드민 페이지 임포트트
 const AdminDashboardPage = React.lazy(() =>
@@ -51,9 +46,6 @@ function App() {
         const token = localStorage.getItem("accessToken");
         const email = localStorage.getItem("Email");
         if (token && email) {
-            // 토큰이 만료된 상태라면
-
-            console.log("현재 로그인 상태입니다.\nAccess Token:", token);
             setLogin(token); // Zustand 상태 업데이트
             setEmail(email);
         }
@@ -117,7 +109,6 @@ function App() {
                             element={<HelpRoomListPage />}
                         />
                         <Route path="/join/:id" element={<JoinRoomPage />} />
-
                         {/* 어드민 라우트 */}
                         <Route element={<AdminRoute />}>
                             <Route
@@ -153,6 +144,9 @@ function App() {
                                 element={<AdminCategoryManagePage />}
                             />
                         </Route>
+                        {/* 404 Not Found 페이지 */}
+                        <Route path="/404" element={<NotFoundPage />} />
+                        <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                 </Suspense>
             </main>

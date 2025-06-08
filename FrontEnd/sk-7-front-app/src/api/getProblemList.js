@@ -17,16 +17,6 @@ export const getProblemList = async ({
     size = 10,
     sort,
 }) => {
-    // 각 상태를 보기 좋게 출력
-    console.log("=== 문제 리스트 요청 상태 ===");
-    console.log("title:", title);
-    console.log("category:", category);
-    console.log("level:", level);
-    console.log("status:", status);
-    console.log("page:", page);
-    console.log("size:", size);
-    console.log("sort:", sort);
-    console.log("===========================");
 
     // URLSearchParams 객체 생성
     const params = new URLSearchParams();
@@ -61,7 +51,6 @@ export const getProblemList = async ({
             );
         }
     }
-    console.log(params);
 
     try {
         const response = await axios.get(
@@ -74,7 +63,6 @@ export const getProblemList = async ({
                 withCredentials: true,
             }
         );
-        console.log(response.data);
 
         // content만 반환
         return response.data?.data;

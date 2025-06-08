@@ -1,11 +1,8 @@
-import useCodeStore from "../../store/useCodeStore";
 import ChatComponent from "../atoms/ChatComponent";
 import { useRef, useState, useEffect, useCallback } from "react";
+import PropTypes from "prop-types";
 
 function ProblemSection({ detail, chatComponentRef }) {
-    // 코드 상태
-    const { code, setCode, resetCode } = useCodeStore();
-
     const editorRef = useRef(null);
     // 리사이저 상태
     const [editorSectionHeightPercent, setEditorSectionHeightPercent] =
@@ -106,5 +103,29 @@ function ProblemSection({ detail, chatComponentRef }) {
         </div>
     );
 }
+
+ProblemSection.propTypes = {
+    detail: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+            .isRequired,
+        title: PropTypes.string,
+        detail: PropTypes.string,
+        category: PropTypes.shape({
+            code: PropTypes.string.isRequired,
+            description: PropTypes.string,
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        }).isRequired,
+        level: PropTypes.number,
+        memberName: PropTypes.string,
+        solved: PropTypes.bool,
+        testCase: PropTypes.array,
+        createdAt: PropTypes.string,
+        updatedAt: PropTypes.string,
+    }).isRequired,
+    chatComponentRef: PropTypes.oneOfType([
+        PropTypes.func,
+        PropTypes.shape({ current: PropTypes.any }),
+    ]),
+};
 
 export default ProblemSection;

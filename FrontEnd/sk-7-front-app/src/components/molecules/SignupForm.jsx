@@ -2,7 +2,6 @@ import AuthInput from "../atoms/AuthInput";
 import Button from "../atoms/Button";
 import AuthValidation from "../molecules/AuthValidation";
 
-import { encryptPassword } from "../../encrypt/encryptPassword";
 import { RegisterTask } from "../../api/RegisterTask";
 import { useNavigate } from "react-router-dom";
 

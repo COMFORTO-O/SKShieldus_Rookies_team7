@@ -21,6 +21,10 @@ const UserInfo = () => {
 
     //맞은 갯수
     const [passCount, setPassCount] = useState(0);
+    //랭킹
+    const [ranking, setRanking] = useState(null);
+    //점수
+    const [memberRank, setMemberRank] = useState(null);
     useEffect(() => {
         if (isLoggedIn) {
             const fetchUserInfo = async () => {
@@ -33,6 +37,8 @@ const UserInfo = () => {
                         (item) => item.pass === true
                     ).length;
                     setPassCount(passed);
+                    setMemberRank(data.member.memberRank);
+                    setRanking(data.member.ranking);
                 } catch (e) {
                     setError(
                         e?.message || "사용자 정보를 불러오지 못했습니다."
@@ -94,6 +100,15 @@ const UserInfo = () => {
                                 </span>{" "}
                                 문제
                             </li>
+                            <li className="text-gray-600 text-xs">
+                                <span className="font-semibold">
+                                    누적 점수:
+                                </span>{" "}
+                                <span className="font-extrabold text-purple-600 text-base">
+                                    {memberRank}
+                                </span>{" "}
+                                점
+                            </li>
                             {error && (
                                 <li className="text-red-500 text-xs mt-1">
                                     {error}
@@ -104,9 +119,11 @@ const UserInfo = () => {
                     {/* 랭킹 정보 */}
                     <div className="w-full mt-3">
                         <div className="bg-blue-50 rounded-md p-2 text-center text-blue-700 font-bold text-sm shadow-sm">
-                            현재 랭킹:{" "}
+                            상위:{" "}
                             <span className="text-blue-800 text-base">
-                                상위 10%
+                                {typeof ranking === "number"
+                                    ? `${ranking.toFixed(2)}/100`
+                                    : "랭킹 계산 중..."}
                             </span>
                         </div>
                     </div>

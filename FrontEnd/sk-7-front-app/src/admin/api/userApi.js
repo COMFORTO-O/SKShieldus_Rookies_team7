@@ -13,10 +13,9 @@ export const updateUser = (updateData) => {
 };
 
 export const getUserInfo = (searchData = null) => {
-    return api.get("/api/member/info", searchData);
+    return api.get("/api/member/info", { params: searchData });
 };
 
 export const getUserList = () => {
-    return api.get("/api/member/list", )
-}
-
+    return api.get("/api/member/list");
+};

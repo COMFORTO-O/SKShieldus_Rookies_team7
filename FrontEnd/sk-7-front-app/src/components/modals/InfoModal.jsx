@@ -16,6 +16,8 @@ const InfoModal = () => {
         setLogout,
     } = useAuthStore();
 
+    const [role, setRole] = useState("USER");
+
     const [error, setError] = useState("");
     const { closeInfoModal } = useModalStore();
 
@@ -29,11 +31,14 @@ const InfoModal = () => {
                     const data = await getUserInfo();
                     setName(data.member.name);
                     setEmail(data.member.email);
+                    setRole(data.member.role);
                 } catch (e) {
                     setError(
                         e?.message || "사용자 정보를 불러오지 못했습니다."
                     );
                     setName(null);
+                    setEmail(null);
+                    setRole("USER");
                     setLogout();
                 }
             };
@@ -59,9 +64,17 @@ const InfoModal = () => {
 
         navigate("/info");
     };
+
+    const handleAdminClick = (e) => {
+        e.preventDefault();
+        closeInfoModal();
+
+        navigate("/admin");
+    };
+
     return (
         <div
-            className="fixed mt-2 mr-5 right-0 z-50 flex bg-secondary h-[300px] w-[300px] rounded-lg border-solid border-2"
+            className="fixed mt-2 mr-5 right-0 z-50 flex bg-secondary h-[400px] w-[300px] rounded-lg border-solid border-2"
             style={{
                 animation: "modalDropFade 0.4s cubic-bezier(0.4,0,0.2,1)",
             }}
@@ -85,6 +98,16 @@ const InfoModal = () => {
                         </>
                     )}
                 </div>
+                {role === "ADMIN" ? (
+                    <button
+                        className="bg-white font-bold text-blue-600 flex justify-center items-center h-12 border-t-2 font-sourgummy"
+                        onClick={handleAdminClick}
+                    >
+                        관리자 페이지로
+                    </button>
+                ) : (
+                    <></>
+                )}
                 <button
                     className="bg-white flex justify-center items-center h-12 border-t-2 font-sourgummy"
                     onClick={handleInfoClick}

@@ -301,8 +301,8 @@ const ChatComponent = forwardRef(
                         "/user/queue/kick",
                         (message) => {
                             try {
-                                console.log(message+"asd");
-                                alert(`강퇴 되었습니다.`+message+"asd");
+                                console.log(message + "asd");
+                                alert(`강퇴 되었습니다.` + message + "asd");
                                 setCurrentRoomId("");
                                 setConnectionStatus(
                                     "강퇴됨 (새로운 방 요청 가능)"

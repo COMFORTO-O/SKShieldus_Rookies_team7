@@ -15,10 +15,10 @@ public class MemberResponseDto {
     private String email;
     private String name;
     private String phone;
-    private Integer memberRank;
+    private Integer memberRank;//
     private MemberRoleEnum role;
     private boolean isDeleted;
-    private float ranking;
+    private float ranking;//
     // 기타 필요한 필드들...
 
     public MemberResponseDto(Long id, String email, String name, String phone, Integer memberRank,MemberRoleEnum role, boolean isDeleted) {
@@ -27,6 +27,14 @@ public class MemberResponseDto {
         this.name = name;
         this.phone = phone;
         this.memberRank = memberRank;
+        this.role = role;
+        this.isDeleted = isDeleted;
+    }
+    public MemberResponseDto(Long id, String email, String name, String phone, MemberRoleEnum role, boolean isDeleted) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.phone = phone;
         this.role = role;
         this.isDeleted = isDeleted;
     }

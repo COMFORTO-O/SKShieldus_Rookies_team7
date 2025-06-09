@@ -90,7 +90,7 @@ public class MemberController {
     public ResponseDto<Page<MemberResponseDto>> getSolvedProblemDetail(
             @RequestParam(required = false) String searchName,
             @RequestParam(required = false) String searchValue,
-            @PageableDefault(size = 10, sort = "id,desc") Pageable pageable,
+            @PageableDefault(size = 100, sort = "id,desc") Pageable pageable,
             @AuthenticationPrincipal MemberUserDetails userDetails) {
         Page<MemberResponseDto> solvedProblem = memberService.getMembers(searchName, searchValue, pageable);
         return ResponseDto.success(solvedProblem);

@@ -1,3 +1,5 @@
+# docker-compose.monitoring.yml
+
 services:
   mariadb:
     image: mariadb:10.10
@@ -13,14 +15,15 @@ services:
       - mariadb-data:/var/lib/mysql
     networks:
       - monitoring
+      - shared_app_network # <--- 추가: Judge0과 공유할 네트워크에 연결
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       timeout: 20s
       retries: 10
-      start_period: 10s 
+      start_period: 10s
 
   springboot-app:
-    build: 
+    build:
       context: ./backend/shieldus
       dockerfile: Dockerfile
     ports:
@@ -30,32 +33,35 @@ services:
         condition: service_healthy
     networks:
       - monitoring
+      - shared_app_network # <--- 추가: Judge0과 공유할 네트워크에 연결
 
-  frontend: 
-      build:
-        context: ./FrontEnd/sk-7-front-app 
-        dockerfile: Dockerfile
-      ports:
-        - "3000:80" 
-      depends_on:
-        springboot-app: 
-          condition: service_started 
-      networks:
-        - monitoring
-  nginx-exporter: 
+  frontend:
+    build:
+      context: ./FrontEnd/sk-7-front-app
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      springboot-app:
+        condition: service_started
+    networks:
+      - monitoring
+      - shared_app_network # <--- 추가: Judge0과 공유할 네트워크에 연결
+
+  nginx-exporter:
     image: nginx/nginx-prometheus-exporter:latest
     container_name: nginx-exporter
     ports:
       - "9113:9113"
     command:
-      - '-nginx.scrape-uri=http://frontend:80/nginx_status' 
-     
+      - '-nginx.scrape-uri=http://frontend:80/nginx_status'
     depends_on:
-      frontend: 
+      frontend:
         condition: service_started
     networks:
       - monitoring
-      
+      - shared_app_network # <--- 추가: Judge0과 공유할 네트워크에 연결
+
   prometheus:
     image: prom/prometheus
     volumes:
@@ -64,6 +70,7 @@ services:
       - "9090:9090"
     networks:
       - monitoring
+      - shared_app_network # <--- 추가: Judge0과 공유할 네트워크에 연결
 
   grafana:
     image: grafana/grafana
@@ -74,9 +81,13 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=shieldus
     networks:
       - monitoring
-
-networks:
-  monitoring:
+      - shared_app_network # <--- 추가: Judge0과 공유할 네트워크에 연결
 
 volumes:
   mariadb-data:
+
+networks:
+  monitoring:
+  shared_app_network: # <--- 추가: 이 네트워크를 Judge0과 공유할 것임
+    name: skshieldus_rookies_team7_shared_network # 실제 생성될 네트워크 이름 (원하는대로 변경 가능)
+    external: true # 이 네트워크는 외부에서 생성될 것임을 명시

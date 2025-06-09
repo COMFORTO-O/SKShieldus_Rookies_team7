@@ -1,3 +1,5 @@
+# docker-compose.judge0.yml
+
 x-logging:
   &default-logging
   logging:
@@ -6,18 +8,22 @@ x-logging:
       max-size: 100M
 
 services:
-  server:
+  server: # <--- 이게 Judge0 서비스 이름
     image: judge0/judge0:latest
-    volumes:  
-     - ./judge0.conf:/judge0.conf:ro
+    volumes:
+      - ./judge0.conf:/judge0.conf:ro
     ports:
-      - "2358:2358"
+      - "2358:2358" # 외부에서 2358로 접속 가능
     privileged: true
     <<: *default-logging
     restart: always
     depends_on:
       - db
       - redis
+    networks:
+      - judge0_internal_network # Judge0 스택 내부 네트워크 (선택 사항)
+      - shared_app_network # <--- 추가: Spring Boot 앱과 공유할 네트워크에 연결
+
   worker:
     image: judge0/judge0:latest
     command: ["./scripts/workers"]
@@ -29,6 +35,9 @@ services:
     depends_on:
       - db
       - redis
+    networks:
+      - judge0_internal_network
+      - shared_app_network
 
   db:
     image: postgres:16.2
@@ -37,6 +46,9 @@ services:
       - data:/var/lib/postgresql/data/
     <<: *default-logging
     restart: always
+    networks:
+      - judge0_internal_network
+      - shared_app_network
 
   redis:
     image: redis:7.2.4
@@ -47,6 +59,16 @@ services:
     env_file: judge0.conf
     <<: *default-logging
     restart: always
+    networks:
+      - judge0_internal_network
+      - shared_app_network
 
 volumes:
   data:
+
+networks:
+  judge0_internal_network: # 이 네트워크는 Judge0 스택 내부에서만 사용
+    driver: bridge
+  shared_app_network: # <--- 추가: 이 네트워크를 Spring Boot 앱과 공유할 것임
+    name: skshieldus_rookies_team7_shared_network # 실제 생성될 네트워크 이름 (위의 monitoring 파일과 일치해야 함!)
+    external: true # 이 네트워크는 외부에서 생성될 것임을 명시

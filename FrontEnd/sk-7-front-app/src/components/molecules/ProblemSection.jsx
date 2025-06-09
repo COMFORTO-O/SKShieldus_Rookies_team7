@@ -75,7 +75,7 @@ function ProblemSection({ detail, chatComponentRef }) {
                 className="flex-1 min-h-0 overflow-hidden flex flex-col h-full gap-2"
             >
                 <section
-                    className="min-h-0 relative"
+                    className="min-h-0 relative overflow-auto"
                     style={{ height: `${editorSectionHeightPercent}%` }}
                 >
                     <div className="text-white mb-2 font-bold text-xl">
@@ -94,7 +94,7 @@ function ProblemSection({ detail, chatComponentRef }) {
                     onTouchStart={handleMouseDownOnVerticalResizer}
                 ></div>
 
-                <section className="px-2 flex-1 flex flex-col min-h-[400px]">
+                <section className="px-2 flex flex-col min-h-0 overflow-auto">
                     {/* 채팅 메시지 출력 영역 */}
                     <ChatComponent
                         p_id={detail?.id}
